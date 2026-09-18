@@ -16,7 +16,7 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 if (!process.env.JWT_SECRET) {
-  console.error('❌ НЕТ JWT_SECRET! Добавь переменную окружения.');
+  console.error('❌ НЕТ JWT_SECRET!');
   process.exit(1);
 }
 
@@ -45,6 +45,8 @@ async function initDB() {
         photo TEXT,
         vide INTEGER DEFAULT 100,
         password_hash TEXT,
+        reg_ip TEXT,
+        device_id TEXT,
         is_admin INTEGER DEFAULT 0,
         is_premium INTEGER DEFAULT 0,
         card_color TEXT DEFAULT '',
@@ -104,6 +106,16 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS bans (
+        id SERIAL PRIMARY KEY,
+        ip TEXT,
+        device_id TEXT,
+        reason TEXT DEFAULT '',
+        banned_by TEXT DEFAULT 'admin',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS vide INTEGER DEFAULT 100;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_admin INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_premium INTEGER DEFAULT 0;`);
@@ -114,6 +126,10 @@ async function initDB() {
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS theme_web INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS theme_glass INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS password_hash TEXT;`);
+    await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS reg_ip TEXT;`);
+    await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS device_id TEXT;`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_profiles_reg_ip ON profiles(reg_ip);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_profiles_device_id ON profiles(device_id);`);
     console.log('✅ Таблицы готовы');
   } catch (err) {
     console.error('❌ Ошибка инициализации БД:', err.message);
@@ -178,6 +194,14 @@ function sanitize(str, maxLen = 500) {
   if (typeof str !== 'string') return '';
   return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen);
 }
+function getIp(req) {
+  const raw = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString();
+  return raw.split(',')[0].trim().slice(0, 64);
+}
+function getDeviceId(req) {
+  const d = req.headers['x-device-id'] || req.body.deviceId || '';
+  return String(d).slice(0, 128);
+}
 function makeUserToken(profileId) {
   return jwt.sign({ uid: profileId, type: 'user' }, JWT_SECRET, { expiresIn: '30d' });
 }
@@ -211,13 +235,43 @@ function authAdmin(req, res, next) {
 }
 async function audit(userId, action, details, req) {
   try {
-    const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().slice(0, 64);
+    const ip = getIp(req);
     await pool.query(
       'INSERT INTO audit_log (user_id, action, details, ip) VALUES ($1, $2, $3, $4)',
       [userId || null, action, (details || '').slice(0, 500), ip]
     );
   } catch {}
 }
+
+// Проверка бана по IP + device
+async function checkBan(req, res, next) {
+  try {
+    const ip = getIp(req);
+    const device = getDeviceId(req);
+    if (!ip && !device) return next();
+
+    const result = await pool.query(`
+      SELECT id, ip, device_id FROM bans
+      WHERE (ip IS NOT NULL AND ip = $1)
+         OR (device_id IS NOT NULL AND device_id = $2 AND $2 <> '')
+      LIMIT 1
+    `, [ip, device]);
+
+    if (result.rows.length) {
+      await audit(null, 'ban_block', `ip=${ip} device=${device}`, req);
+      return res.status(403).json({ error: '🚫 Доступ запрещён. Ты забанен.' });
+    }
+    next();
+  } catch (err) {
+    console.error(err);
+    next();
+  }
+}
+
+app.use('/api/register', checkBan);
+app.use('/api/login', checkBan);
+app.use('/api/profiles', checkBan);
+app.use('/api/like', checkBan);
 
 // ==================== РЕГИСТРАЦИЯ / ВХОД ====================
 app.post('/api/register', registerLimiter, upload.single('photo'), async (req, res) => {
@@ -228,10 +282,27 @@ app.post('/api/register', registerLimiter, upload.single('photo'), async (req, r
     const cleanContact = sanitize(contactValue, 60);
     const cleanContactType = ['telegram', 'discord'].includes(contactType) ? contactType : 'telegram';
     const ageNum = parseInt(age);
+    const ip = getIp(req);
+    const device = getDeviceId(req);
 
     if (!cleanName || cleanName.length < 2) return res.status(400).json({ error: 'Имя минимум 2 символа' });
     if (!ageNum || ageNum < 16 || ageNum > 99) return res.status(400).json({ error: 'Возраст 16–99' });
     if (!password || password.length < 6) return res.status(400).json({ error: 'Пароль минимум 6 символов' });
+
+    if (ip) {
+      const dup = await pool.query('SELECT id, name FROM profiles WHERE reg_ip = $1 LIMIT 1', [ip]);
+      if (dup.rows.length) {
+        await audit(null, 'register_ip_block', `ip=${ip} exists=${dup.rows[0].id}`, req);
+        return res.status(403).json({ error: 'С этого IP уже есть анкета. Один IP — одна анкета.' });
+      }
+    }
+    if (device) {
+      const dup = await pool.query('SELECT id FROM profiles WHERE device_id = $1 LIMIT 1', [device]);
+      if (dup.rows.length) {
+        await audit(null, 'register_device_block', `device=${device}`, req);
+        return res.status(403).json({ error: 'С этого устройства уже есть анкета. Одно устройство — одна анкета.' });
+      }
+    }
 
     const exist = await pool.query('SELECT id FROM profiles WHERE LOWER(name)=LOWER($1)', [cleanName]);
     if (exist.rows.length) return res.status(400).json({ error: 'Имя занято. Выбери другое.' });
@@ -240,15 +311,15 @@ app.post('/api/register', registerLimiter, upload.single('photo'), async (req, r
     const photoPath = req.file ? `/uploads/${req.file.filename}` : null;
 
     const result = await pool.query(`
-      INSERT INTO profiles (name, age, bio, contact_type, contact_value, photo, password_hash, vide)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, 100)
+      INSERT INTO profiles (name, age, bio, contact_type, contact_value, photo, password_hash, vide, reg_ip, device_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, 100, $8, $9)
       RETURNING id, name, age, bio, contact_type, contact_value, photo, vide, is_premium,
                 card_color, card_bg, card_rgb, card_pinned, theme_web, theme_glass, created_at
-    `, [cleanName, ageNum, cleanBio, cleanContactType, cleanContact, photoPath, hash]);
+    `, [cleanName, ageNum, cleanBio, cleanContactType, cleanContact, photoPath, hash, ip || null, device || null]);
 
     const profile = result.rows[0];
     const token = makeUserToken(profile.id);
-    await audit(profile.id, 'register', `name=${cleanName}`, req);
+    await audit(profile.id, 'register', `name=${cleanName} ip=${ip}`, req);
     res.json({ profile, token });
   } catch (err) {
     console.error(err);
@@ -260,11 +331,13 @@ app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     const { name, password } = req.body;
     const cleanName = sanitize(name, 40);
+    const ip = getIp(req);
+    const device = getDeviceId(req);
     if (!cleanName || !password) return res.status(400).json({ error: 'Введи имя и пароль' });
 
     const result = await pool.query('SELECT * FROM profiles WHERE LOWER(name)=LOWER($1)', [cleanName]);
     if (!result.rows.length) {
-      await audit(null, 'login_fail', `name=${cleanName} (not found)`, req);
+      await audit(null, 'login_fail', `name=${cleanName} (not found) ip=${ip}`, req);
       return res.status(401).json({ error: 'Неверное имя или пароль' });
     }
     const row = result.rows[0];
@@ -273,7 +346,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     }
     const ok = await bcrypt.compare(password, row.password_hash);
     if (!ok) {
-      await audit(row.id, 'login_fail', `name=${cleanName} (wrong pw)`, req);
+      await audit(row.id, 'login_fail', `name=${cleanName} (wrong pw) ip=${ip}`, req);
       return res.status(401).json({ error: 'Неверное имя или пароль' });
     }
     const token = makeUserToken(row.id);
@@ -285,7 +358,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
       card_pinned: row.card_pinned, theme_web: row.theme_web, theme_glass: row.theme_glass,
       created_at: row.created_at
     };
-    await audit(row.id, 'login_ok', `name=${cleanName}`, req);
+    await audit(row.id, 'login_ok', `name=${cleanName} ip=${ip} device=${device}`, req);
     res.json({ profile, token });
   } catch (err) {
     console.error(err);
@@ -703,7 +776,7 @@ app.post('/api/admin/users', authAdmin, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT id, name, age, photo, vide, is_admin, is_premium, card_color, card_bg, card_rgb, card_pinned,
-        theme_web, theme_glass, created_at,
+        theme_web, theme_glass, reg_ip, device_id, created_at,
         (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
       FROM profiles ORDER BY id DESC
     `);
@@ -812,6 +885,94 @@ app.post('/api/admin/purge-nopass', authAdmin, async (req, res) => {
     res.status(500).json({ error: 'Ошибка очистки' });
   } finally {
     client.release();
+  }
+});
+
+app.post('/api/admin/purge-by-ids', authAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || !ids.length) return res.status(400).json({ error: 'Нужен массив ids' });
+    const cleanIds = ids.map(x => parseInt(x)).filter(x => Number.isInteger(x) && x > 0);
+    if (!cleanIds.length) return res.status(400).json({ error: 'Нет валидных ID' });
+
+    await client.query('BEGIN');
+    const existing = await client.query('SELECT id FROM profiles WHERE id = ANY($1)', [cleanIds]);
+    const existingIds = existing.rows.map(r => r.id);
+    if (!existingIds.length) {
+      await client.query('ROLLBACK');
+      return res.json({ ok: true, deleted: 0, found: [] });
+    }
+    await client.query('DELETE FROM likes WHERE liker_id = ANY($1) OR target_id = ANY($1)', [existingIds]);
+    await client.query('DELETE FROM wheel_spins WHERE user_id = ANY($1)', [existingIds]);
+    await client.query('DELETE FROM inventory WHERE user_id = ANY($1)', [existingIds]);
+    await client.query('DELETE FROM market WHERE seller_id = ANY($1) OR buyer_id = ANY($1)', [existingIds]);
+    await client.query('DELETE FROM audit_log WHERE user_id = ANY($1)', [existingIds]);
+    await client.query('DELETE FROM profiles WHERE id = ANY($1)', [existingIds]);
+    await client.query('COMMIT');
+    await audit(null, 'admin_purge_by_ids', `deleted=${existingIds.length}`, req);
+    res.json({ ok: true, deleted: existingIds.length, found: existingIds });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка удаления' });
+  } finally {
+    client.release();
+  }
+});
+
+// ==================== БАНЫ ====================
+// забанить по ip / device / обоим
+app.post('/api/admin/ban', authAdmin, async (req, res) => {
+  try {
+    const { userId, banIp, banDevice, reason } = req.body;
+    const existing = await pool.query('SELECT id, name, reg_ip, device_id FROM profiles WHERE id=$1', [userId]);
+    if (!existing.rows.length) return res.status(404).json({ error: 'Не найдено' });
+    const u = existing.rows[0];
+
+    if (!banIp && !banDevice) return res.status(400).json({ error: 'Выбери что банить' });
+
+    if (banIp && u.reg_ip) {
+      await pool.query(
+        'INSERT INTO bans (ip, reason, banned_by) VALUES ($1, $2, $3)',
+        [u.reg_ip, (reason || '').slice(0, 200), 'admin']
+      );
+    }
+    if (banDevice && u.device_id) {
+      await pool.query(
+        'INSERT INTO bans (device_id, reason, banned_by) VALUES ($1, $2, $3)',
+        [u.device_id, (reason || '').slice(0, 200), 'admin']
+      );
+    }
+    await audit(null, 'admin_ban', `user=${userId} ip=${banIp ? u.reg_ip : '-'} dev=${banDevice ? u.device_id : '-'}`, req);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка бана' });
+  }
+});
+
+// список банов
+app.post('/api/admin/bans', authAdmin, async (req, res) => {
+  try {
+    const r = await pool.query('SELECT * FROM bans ORDER BY id DESC LIMIT 500');
+    res.json(r.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+// снять бан по id бана
+app.post('/api/admin/unban', authAdmin, async (req, res) => {
+  try {
+    const { banId } = req.body;
+    await pool.query('DELETE FROM bans WHERE id=$1', [banId]);
+    await audit(null, 'admin_unban', `banId=${banId}`, req);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
   }
 });
 
