@@ -7,19 +7,35 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
+  :root {
+    --accent: #a0a0b8;
+    --accent-light: #e8e8f0;
+    --accent-dark: #6b6b85;
+    --accent-glow: rgba(170,170,200,0.45);
+    --bg-1: #14141a;
+    --bg-2: #1c1c24;
+    --bg-3: #101014;
+    --bg-radial-1: rgba(120,120,140,0.25);
+    --bg-radial-2: rgba(90,90,110,0.28);
+    --bg-radial-3: rgba(140,140,160,0.15);
+    --float-1: rgba(180,180,200,0.10);
+    --float-2: rgba(150,150,175,0.12);
+  }
+
   body {
     min-height: 100vh;
-    background: #0d0d10;
+    background: var(--bg-3);
     background-image:
-      radial-gradient(circle at 15% 20%, rgba(120,120,140,0.25), transparent 45%),
-      radial-gradient(circle at 85% 80%, rgba(90,90,110,0.28), transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(140,140,160,0.15), transparent 60%),
-      linear-gradient(135deg, #14141a 0%, #1c1c24 50%, #101014 100%);
+      radial-gradient(circle at 15% 20%, var(--bg-radial-1), transparent 45%),
+      radial-gradient(circle at 85% 80%, var(--bg-radial-2), transparent 50%),
+      radial-gradient(circle at 50% 50%, var(--bg-radial-3), transparent 60%),
+      linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
     background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
     animation: bgShift 18s ease-in-out infinite;
     color: #e8e8f0;
     overflow-x: hidden;
     padding-bottom: 60px;
+    transition: background-color 0.4s ease;
   }
   @keyframes bgShift {
     0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0 0; }
@@ -32,11 +48,12 @@
     top: -20%; left: -20%;
     width: 140%; height: 140%;
     background:
-      radial-gradient(circle at 30% 30%, rgba(180,180,200,0.10), transparent 40%),
-      radial-gradient(circle at 70% 70%, rgba(150,150,175,0.12), transparent 45%);
+      radial-gradient(circle at 30% 30%, var(--float-1), transparent 40%),
+      radial-gradient(circle at 70% 70%, var(--float-2), transparent 45%);
     animation: floatGlow 22s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 0;
+    transition: background 0.4s ease;
   }
   @keyframes floatGlow {
     0%   { transform: translate(0,0) scale(1); }
@@ -60,7 +77,7 @@
   .brand {
     font-size: 24px;
     letter-spacing: 4px;
-    background: linear-gradient(90deg, #e8e8f0, #a0a0b8, #e8e8f0);
+    background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light));
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -75,6 +92,20 @@
 
   .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+  .theme-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(60,60,78,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #e8e8f0; font-size: 18px; cursor: pointer;
+    transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .theme-btn:hover {
+    background: rgba(150,150,180,0.5);
+    box-shadow: 0 0 18px var(--accent-glow);
+    transform: rotate(15deg);
+  }
+
   .user-chip {
     display: flex; align-items: center; gap: 10px;
     padding: 6px 14px 6px 6px;
@@ -82,7 +113,7 @@
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 30px; cursor: pointer; transition: all 0.25s;
   }
-  .user-chip:hover { background: rgba(90,90,115,0.65); box-shadow: 0 0 18px rgba(170,170,200,0.3); }
+  .user-chip:hover { background: rgba(90,90,115,0.65); box-shadow: 0 0 18px var(--accent-glow); }
   .user-chip img, .user-chip .avatar-placeholder {
     width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
     background: linear-gradient(135deg, #2a2a34, #3a3a48);
@@ -97,24 +128,40 @@
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit;
   }
-  .login-btn:hover, .logout-btn:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px rgba(170,170,200,0.35); }
+  .login-btn:hover, .logout-btn:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px var(--accent-glow); }
   .logout-btn { color: #ff9aa7; }
-  .logout-btn:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.4); }
+  .logout-btn:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.4); box-shadow: none; }
+
+  .vide-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; font-size: 13px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,180,0,0.15));
+    border: 1px solid rgba(255,215,0,0.4);
+    border-radius: 20px;
+    color: #ffd970;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: inherit;
+  }
+  .vide-badge:hover {
+    background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25));
+    box-shadow: 0 0 18px rgba(255,215,0,0.4);
+  }
 
   .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
 
   .add-btn {
     display: block; margin: 0 auto 30px; padding: 14px 32px;
     font-size: 15px; letter-spacing: 1px; color: #e8e8f0;
-    background: linear-gradient(135deg, rgba(110,110,135,0.55), rgba(70,70,90,0.55));
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 55%, transparent),
+      color-mix(in srgb, var(--accent-dark) 55%, transparent));
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 30px; cursor: pointer; backdrop-filter: blur(12px);
     transition: all 0.3s; font-family: inherit;
   }
-  .add-btn:hover {
-    background: linear-gradient(135deg, rgba(150,150,180,0.7), rgba(95,95,120,0.7));
-    box-shadow: 0 0 28px rgba(170,170,200,0.45); transform: translateY(-2px);
-  }
+  .add-btn:hover { box-shadow: 0 0 28px var(--accent-glow); transform: translateY(-2px); }
 
   .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 
@@ -123,19 +170,25 @@
     background: rgba(38,38,46,0.55); backdrop-filter: blur(16px);
     border: 1px solid rgba(255,255,255,0.08);
     box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.4s;
     animation: cardIn 0.4s ease;
     display: flex; flex-direction: column;
   }
-  .profile-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px rgba(170,170,200,0.25); }
-  .profile-card.mine { border-color: rgba(170,170,200,0.4); box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px rgba(170,170,200,0.25); }
+  .profile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px var(--accent-glow);
+  }
+  .profile-card.mine {
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px var(--accent-glow);
+  }
   @keyframes cardIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
   .mine-badge {
     position: absolute; top: 10px; left: 10px;
     padding: 5px 12px; font-size: 11px; letter-spacing: 1px;
     background: rgba(20,20,26,0.8);
-    border: 1px solid rgba(170,170,200,0.5);
+    border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
     border-radius: 14px; color: #d8d8e4;
     text-transform: uppercase; z-index: 2; backdrop-filter: blur(8px);
   }
@@ -157,12 +210,16 @@
   .contact-badge {
     display: inline-flex; align-items: center; gap: 6px;
     margin-top: 10px; padding: 7px 12px; font-size: 12.5px;
-    color: #e8e8f5; background: rgba(90,90,115,0.45);
+    color: #e8e8f5;
+    background: color-mix(in srgb, var(--accent) 25%, transparent);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 20px; text-decoration: none; word-break: break-all;
     transition: all 0.25s; align-self: flex-start; max-width: 100%;
   }
-  .contact-badge:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px rgba(170,170,200,0.35); }
+  .contact-badge:hover {
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 18px var(--accent-glow);
+  }
 
   .like-row {
     display: flex; align-items: center; gap: 8px;
@@ -201,7 +258,7 @@
     box-shadow: 0 25px 70px rgba(0,0,0,0.7);
     animation: modalIn 0.3s ease;
   }
-  .modal-content.wide { max-width: 500px; }
+  .modal-content.wide { max-width: 600px; }
   @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
   .modal-content h2 {
     font-size: 20px; letter-spacing: 2px; margin-bottom: 20px;
@@ -227,8 +284,8 @@
     resize: vertical; font-family: inherit;
   }
   form input:focus, form textarea:focus, form select:focus {
-    border-color: rgba(170,170,200,0.6);
-    box-shadow: 0 0 0 3px rgba(170,170,200,0.15);
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
   }
   form input[type="file"] { padding: 8px; font-size: 12.5px; color: #b0b0c4; }
   form input[type="file"]::file-selector-button {
@@ -243,11 +300,13 @@
     width: 100%; padding: 14px; margin-top: 8px;
     font-size: 15px; letter-spacing: 1px;
     color: #f0f0f8;
-    background: linear-gradient(135deg, rgba(110,110,135,0.7), rgba(70,70,90,0.7));
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 70%, transparent),
+      color-mix(in srgb, var(--accent-dark) 70%, transparent));
     border: 1px solid rgba(255,255,255,0.14);
     border-radius: 12px; cursor: pointer; transition: all 0.3s; font-family: inherit;
   }
-  .submit-btn:hover { background: linear-gradient(135deg, rgba(150,150,180,0.8), rgba(95,95,120,0.8)); box-shadow: 0 0 24px rgba(170,170,200,0.5); }
+  .submit-btn:hover { box-shadow: 0 0 24px var(--accent-glow); }
   .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .form-status { margin-top: 12px; text-align: center; font-size: 13px; min-height: 18px; color: #a8a8c0; }
@@ -302,12 +361,15 @@
   .liker-row .liker-info small { font-size: 12px; color: #8a8a9c; }
   .liker-row .liker-contact {
     font-size: 12.5px; color: #e8e8f5;
-    background: rgba(90,90,115,0.45);
+    background: color-mix(in srgb, var(--accent) 25%, transparent);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 16px; padding: 6px 11px;
     text-decoration: none; white-space: nowrap; transition: all 0.25s;
   }
-  .liker-row .liker-contact:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 14px rgba(170,170,200,0.3); }
+  .liker-row .liker-contact:hover {
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 14px var(--accent-glow);
+  }
 
   .empty-small {
     text-align: center; padding: 20px; font-size: 13.5px; color: #7a7a8c;
@@ -328,6 +390,127 @@
   .modal-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .modal-actions button.danger:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.55); }
 
+  /* ===== ТЕМЫ ===== */
+  .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .theme-swatch {
+    position: relative; padding: 14px 8px; border-radius: 14px; cursor: pointer;
+    text-align: center; border: 2px solid transparent; transition: all 0.25s;
+    background: rgba(20,20,26,0.6); overflow: hidden;
+  }
+  .theme-swatch:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(170,170,200,0.3); }
+  .theme-swatch.active { border-color: #fff; box-shadow: 0 0 22px rgba(255,255,255,0.35); }
+  .theme-swatch .dot {
+    width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 8px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+  }
+  .theme-swatch .name { font-size: 11.5px; color: #d8d8e4; letter-spacing: 0.5px; }
+  .custom-theme-row {
+    display: flex; gap: 8px; margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .custom-theme-row input[type="color"] {
+    width: 48px; height: 44px; padding: 4px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(20,20,26,0.7); cursor: pointer; margin: 0;
+  }
+  .custom-theme-row button {
+    flex: 1; padding: 10px; font-size: 13px; letter-spacing: 0.5px;
+    color: #e8e8f0; background: rgba(60,60,78,0.55);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+    cursor: pointer; font-family: inherit; transition: all 0.25s;
+  }
+  .custom-theme-row button:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px var(--accent-glow); }
+
+  /* ===== КОЛЕСО ===== */
+  .wheel-wrap { position: relative; width: 260px; height: 260px; margin: 0 auto 20px; }
+  .wheel-pointer {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 22px solid #ffd970;
+    z-index: 3;
+    filter: drop-shadow(0 0 8px rgba(255,215,0,0.6));
+  }
+  .wheel {
+    width: 100%; height: 100%; border-radius: 50%; position: relative;
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.16, 1);
+    background: conic-gradient(
+      #ff6b9d 0deg 45deg, #5b9dff 45deg 90deg, #4dd68a 90deg 135deg,
+      #b17aff 135deg 180deg, #ff5c6e 180deg 225deg, #ffd970 225deg 270deg,
+      #ff7ac4 270deg 315deg, #5fd4d4 315deg 360deg
+    );
+    border: 6px solid rgba(38,38,46,0.9);
+    box-shadow: 0 0 30px var(--accent-glow), inset 0 0 30px rgba(0,0,0,0.4);
+  }
+  .wheel-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 60px; height: 60px; border-radius: 50%;
+    background: rgba(38,38,46,0.95);
+    border: 2px solid #ffd970;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; z-index: 2;
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  }
+  .wheel-result {
+    text-align: center; font-size: 14px; color: #d8d8e4;
+    min-height: 60px; margin-bottom: 14px;
+  }
+  .wheel-result img {
+    width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+    margin: 8px auto; display: block;
+    border: 2px solid #ffd970;
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+    animation: popIn 0.4s ease;
+  }
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .spin-btn {
+    width: 100%; padding: 14px; font-size: 15px; letter-spacing: 1px;
+    color: #1a1a22; font-weight: 700;
+    background: linear-gradient(135deg, #ffd970, #ffb400);
+    border: none; border-radius: 12px; cursor: pointer;
+    transition: all 0.25s; font-family: inherit;
+  }
+  .spin-btn:hover { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
+  .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ===== АДМИНКА ===== */
+  .admin-user-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; background: rgba(30,30,40,0.5);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .admin-user-row img, .admin-user-row .mini-avatar {
+    width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+    background: linear-gradient(135deg, #2a2a34, #3a3a48);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #b0b0c4; flex-shrink: 0;
+  }
+  .admin-user-info { flex: 1; min-width: 130px; }
+  .admin-user-info strong { display: block; font-size: 14px; color: #f0f0f8; }
+  .admin-user-info small { font-size: 11.5px; color: #8a8a9c; }
+  .admin-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .admin-actions input[type="number"] {
+    width: 70px; padding: 6px 8px; font-size: 12.5px;
+    margin: 0; border-radius: 8px;
+    background: rgba(20,20,26,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #f0f0f8;
+  }
+  .admin-actions button {
+    padding: 6px 10px; font-size: 12px;
+    border-radius: 8px; cursor: pointer; font-family: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(60,60,78,0.55); color: #e8e8f0;
+    transition: all 0.25s;
+  }
+  .admin-actions button:hover { background: rgba(150,150,180,0.55); }
+  .admin-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
+  .admin-actions button.danger:hover { background: rgba(255,80,100,0.18); }
+  .admin-actions button.give { color: #ffd970; border-color: rgba(255,215,0,0.3); }
+  .admin-actions button.give:hover { background: rgba(255,215,0,0.15); }
+
   .brand-footer {
     position: fixed; bottom: 12px; left: 0; right: 0;
     text-align: center; font-size: 11px; letter-spacing: 5px;
@@ -341,6 +524,7 @@
     .contact-row { grid-template-columns: 100px 1fr; }
     .topbar { padding: 14px; }
     .profile-hero { flex-direction: column; text-align: center; }
+    .theme-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
@@ -394,6 +578,40 @@
     </div>
   </div>
 
+  <div class="modal" id="themeModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeTheme">✕</button>
+      <h2>Тема оформления</h2>
+      <div class="theme-grid" id="themeGrid"></div>
+      <div class="custom-theme-row">
+        <input type="color" id="customColor" value="#a0a0b8">
+        <button id="applyCustom">Своя тема</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="wheelModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeWheel">✕</button>
+      <h2>Колесо фортуны</h2>
+      <div class="wheel-wrap">
+        <div class="wheel-pointer"></div>
+        <div class="wheel" id="wheel"></div>
+        <div class="wheel-center">🎰</div>
+      </div>
+      <div class="wheel-result" id="wheelResult">Крути за 10 вайдиков</div>
+      <button class="spin-btn" id="spinBtn">Крутить · 10 🪙</button>
+    </div>
+  </div>
+
+  <div class="modal" id="adminModal">
+    <div class="modal-content wide">
+      <button class="modal-close" id="closeAdmin">✕</button>
+      <h2>Админ-панель</h2>
+      <div id="adminContent"></div>
+    </div>
+  </div>
+
   <div class="wall" id="wall"></div>
 </main>
 
@@ -412,9 +630,125 @@
   const myProfileModal = document.getElementById('myProfileModal');
   const myProfileContent = document.getElementById('myProfileContent');
   const closeMyProfile = document.getElementById('closeMyProfile');
+  const themeModal = document.getElementById('themeModal');
+  const closeTheme = document.getElementById('closeTheme');
+  const themeGrid = document.getElementById('themeGrid');
+  const customColor = document.getElementById('customColor');
+  const applyCustom = document.getElementById('applyCustom');
 
   const MY_ID_KEY = 'xivivide_my_id';
+  const THEME_KEY = 'xivivide_theme';
   let myLikes = new Set();
+
+  const THEMES = {
+    gray:   { name: 'Серая',   accent: '#a0a0b8', accentLight: '#e8e8f0', accentDark: '#6b6b85',
+              bg1: '#14141a', bg2: '#1c1c24', bg3: '#101014',
+              r1: 'rgba(120,120,140,0.25)', r2: 'rgba(90,90,110,0.28)', r3: 'rgba(140,140,160,0.15)',
+              f1: 'rgba(180,180,200,0.10)', f2: 'rgba(150,150,175,0.12)' },
+    blue:   { name: 'Синяя',   accent: '#5b9dff', accentLight: '#d6e6ff', accentDark: '#3a6fc4',
+              bg1: '#0d1420', bg2: '#122036', bg3: '#080d17',
+              r1: 'rgba(80,140,220,0.28)', r2: 'rgba(60,110,180,0.30)', r3: 'rgba(120,170,240,0.18)',
+              f1: 'rgba(120,180,255,0.12)', f2: 'rgba(90,150,230,0.14)' },
+    purple: { name: 'Фиолет',  accent: '#b17aff', accentLight: '#e8d9ff', accentDark: '#7a4fc4',
+              bg1: '#150d20', bg2: '#1f1233', bg3: '#0d0817',
+              r1: 'rgba(150,90,220,0.28)', r2: 'rgba(110,60,180,0.30)', r3: 'rgba(180,130,240,0.18)',
+              f1: 'rgba(180,130,255,0.12)', f2: 'rgba(150,100,230,0.14)' },
+    green:  { name: 'Зелёная', accent: '#4dd68a', accentLight: '#d4f7e3', accentDark: '#2a9a5e',
+              bg1: '#0d1f17', bg2: '#123026', bg3: '#081510',
+              r1: 'rgba(80,200,140,0.28)', r2: 'rgba(60,160,110,0.30)', r3: 'rgba(120,230,180,0.18)',
+              f1: 'rgba(120,240,180,0.12)', f2: 'rgba(90,200,150,0.14)' },
+    red:    { name: 'Красная', accent: '#ff5c6e', accentLight: '#ffd6da', accentDark: '#c4384a',
+              bg1: '#1f0d12', bg2: '#2e121a', bg3: '#150810',
+              r1: 'rgba(220,80,100,0.28)', r2: 'rgba(180,60,80,0.30)', r3: 'rgba(240,120,140,0.18)',
+              f1: 'rgba(255,120,140,0.12)', f2: 'rgba(220,90,110,0.14)' },
+    pink:   { name: 'Розовая', accent: '#ff7ac4', accentLight: '#ffd9ec', accentDark: '#c44a94',
+              bg1: '#1f0d1a', bg2: '#2e1226', bg3: '#150810',
+              r1: 'rgba(220,90,180,0.28)', r2: 'rgba(180,60,140,0.30)', r3: 'rgba(240,130,210,0.18)',
+              f1: 'rgba(255,130,200,0.12)', f2: 'rgba(220,100,170,0.14)' }
+  };
+
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  function lighten(hex, amount = 0.4) {
+    const h = hex.replace('#', '');
+    const r = Math.min(255, Math.round(parseInt(h.substring(0, 2), 16) + 255 * amount));
+    const g = Math.min(255, Math.round(parseInt(h.substring(2, 4), 16) + 255 * amount));
+    const b = Math.min(255, Math.round(parseInt(h.substring(4, 6), 16) + 255 * amount));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+  function darken(hex, amount = 0.3) {
+    const h = hex.replace('#', '');
+    const r = Math.max(0, Math.round(parseInt(h.substring(0, 2), 16) * (1 - amount)));
+    const g = Math.max(0, Math.round(parseInt(h.substring(2, 4), 16) * (1 - amount)));
+    const b = Math.max(0, Math.round(parseInt(h.substring(4, 6), 16) * (1 - amount)));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function applyTheme(themeKey) {
+    let theme;
+    if (THEMES[themeKey]) {
+      theme = THEMES[themeKey];
+    } else if (themeKey.startsWith('custom:')) {
+      const accent = themeKey.slice(7);
+      theme = {
+        name: 'Своя',
+        accent,
+        accentLight: lighten(accent, 0.45),
+        accentDark: darken(accent, 0.35),
+        bg1: darken(accent, 0.9),
+        bg2: darken(accent, 0.86),
+        bg3: darken(accent, 0.94),
+        r1: hexToRgba(accent, 0.22),
+        r2: hexToRgba(accent, 0.24),
+        r3: hexToRgba(accent, 0.14),
+        f1: hexToRgba(accent, 0.10),
+        f2: hexToRgba(accent, 0.12)
+      };
+    } else {
+      theme = THEMES.gray;
+    }
+    const root = document.documentElement;
+    root.style.setProperty('--accent', theme.accent);
+    root.style.setProperty('--accent-light', theme.accentLight);
+    root.style.setProperty('--accent-dark', theme.accentDark);
+    root.style.setProperty('--accent-glow', hexToRgba(theme.accent, 0.45));
+    root.style.setProperty('--bg-1', theme.bg1);
+    root.style.setProperty('--bg-2', theme.bg2);
+    root.style.setProperty('--bg-3', theme.bg3);
+    root.style.setProperty('--bg-radial-1', theme.r1);
+    root.style.setProperty('--bg-radial-2', theme.r2);
+    root.style.setProperty('--bg-radial-3', theme.r3);
+    root.style.setProperty('--float-1', theme.f1);
+    root.style.setProperty('--float-2', theme.f2);
+    localStorage.setItem(THEME_KEY, themeKey);
+    document.querySelectorAll('.theme-swatch').forEach(s => {
+      s.classList.toggle('active', s.dataset.key === themeKey);
+    });
+  }
+
+  function renderThemeGrid() {
+    themeGrid.innerHTML = '';
+    Object.entries(THEMES).forEach(([key, t]) => {
+      const el = document.createElement('div');
+      el.className = 'theme-swatch';
+      el.dataset.key = key;
+      el.innerHTML = `
+        <div class="dot" style="background: linear-gradient(135deg, ${t.accentLight}, ${t.accent}, ${t.accentDark})"></div>
+        <div class="name">${t.name}</div>
+      `;
+      el.addEventListener('click', () => applyTheme(key));
+      themeGrid.appendChild(el);
+    });
+    const saved = localStorage.getItem(THEME_KEY) || 'gray';
+    document.querySelectorAll('.theme-swatch').forEach(s => {
+      s.classList.toggle('active', s.dataset.key === saved);
+    });
+  }
 
   function getMyId() { return localStorage.getItem(MY_ID_KEY); }
   function setMyId(id) {
@@ -440,9 +774,7 @@
         myLikes = new Set(likedIds.map(String));
       }
       renderWall(profiles, myId);
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
   }
 
   function renderWall(profiles, myId) {
@@ -455,11 +787,9 @@
     const card = document.createElement('div');
     card.className = 'profile-card' + (String(p.id) === String(myId) ? ' mine' : '');
     card.dataset.id = p.id;
-
     const photoHTML = p.photo
       ? `<img class="profile-photo" src="${p.photo}" alt="" loading="lazy">`
       : `<div class="profile-photo-placeholder">✦</div>`;
-
     const date = new Date(p.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
 
     let contactHTML = '';
@@ -495,7 +825,6 @@
         <span class="profile-date">с ${date}</span>
       </div>
     `;
-
     if (!isMine) {
       card.querySelector('.like-btn').addEventListener('click', () => toggleLike(p.id));
     }
@@ -514,9 +843,7 @@
       if (result.liked) myLikes.add(String(targetId));
       else myLikes.delete(String(targetId));
       await loadWall();
-    } catch (err) {
-      alert(err.message);
-    }
+    } catch (err) { alert(err.message); }
   }
 
   function buildContactLink(type, value) {
@@ -528,9 +855,210 @@
   function contactLabel(type) { return type === 'telegram' ? 'Telegram' : 'Discord'; }
   function contactIcon(type) { return type === 'telegram' ? '✈️' : '🎮'; }
 
+  // ==================== ВАЙДИКИ / КОЛЕСО ====================
+  const wheelModal = document.getElementById('wheelModal');
+  const closeWheel = document.getElementById('closeWheel');
+  const wheel = document.getElementById('wheel');
+  const wheelResult = document.getElementById('wheelResult');
+  const spinBtn = document.getElementById('spinBtn');
+
+  const adminModal = document.getElementById('adminModal');
+  const closeAdmin = document.getElementById('closeAdmin');
+  const adminContent = document.getElementById('adminContent');
+
+  let currentBalance = 0;
+  let isSpinning = false;
+  let adminPassword = sessionStorage.getItem('xivivide_admin_pw') || '';
+
+  function openWheel() {
+    if (!getMyId()) { alert('Войди в профиль'); return; }
+    wheelModal.classList.add('show');
+    loadBalance();
+  }
+
+  async function loadBalance() {
+    const myId = getMyId();
+    if (!myId) return;
+    try {
+      const { vide } = await api('/vide/' + myId);
+      currentBalance = vide;
+      updateWheelUI();
+    } catch (err) { console.error(err); }
+  }
+
+  function updateWheelUI() {
+    spinBtn.textContent = `Крутить · 10 🪙 (у тебя ${currentBalance})`;
+    spinBtn.disabled = currentBalance < 10 || isSpinning;
+  }
+
+  spinBtn.addEventListener('click', async () => {
+    if (isSpinning) return;
+    const myId = getMyId();
+    if (!myId) return;
+    isSpinning = true;
+    spinBtn.disabled = true;
+    wheelResult.innerHTML = 'Крутим...';
+    const spins = 5 + Math.random() * 3;
+    const angle = spins * 360 + Math.random() * 360;
+    wheel.style.transform = `rotate(${angle}deg)`;
+    try {
+      const res = await api('/wheel/spin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: parseInt(myId) })
+      });
+      setTimeout(() => {
+        currentBalance = res.balance;
+        wheelResult.innerHTML = `
+          Тебе выпала <strong>${escapeHtml(res.spin.result_name)}</strong>!<br>
+          <img src="${res.spin.result_photo}" alt="">
+        `;
+        isSpinning = false;
+        wheel.style.transition = 'none';
+        wheel.style.transform = 'rotate(0deg)';
+        setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.16, 1)', 50);
+        updateWheelUI();
+        renderTopbar();
+      }, 4100);
+    } catch (err) {
+      wheelResult.textContent = err.message;
+      isSpinning = false;
+      wheel.style.transition = 'none';
+      wheel.style.transform = 'rotate(0deg)';
+      setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.16, 1)', 50);
+      updateWheelUI();
+    }
+  });
+
+  closeWheel.addEventListener('click', () => wheelModal.classList.remove('show'));
+  wheelModal.addEventListener('click', e => { if (e.target === wheelModal) wheelModal.classList.remove('show'); });
+
+  // ==================== АДМИНКА ====================
+  function openAdmin() {
+    adminModal.classList.add('show');
+    if (adminPassword) {
+      loadAdminUsers();
+    } else {
+      adminContent.innerHTML = `
+        <label>Пароль админа
+          <input type="password" id="adminPwInput" placeholder="Введи пароль">
+        </label>
+        <button class="submit-btn" id="adminLoginBtn">Войти</button>
+        <div class="form-status" id="adminStatus"></div>
+      `;
+      document.getElementById('adminLoginBtn').onclick = async () => {
+        const pw = document.getElementById('adminPwInput').value;
+        adminPassword = pw;
+        sessionStorage.setItem('xivivide_admin_pw', pw);
+        await loadAdminUsers();
+      };
+    }
+  }
+
+  async function loadAdminUsers() {
+    adminContent.innerHTML = '<div class="empty-small">Загрузка...</div>';
+    try {
+      const users = await api('/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: adminPassword })
+      });
+      renderAdminUsers(users);
+    } catch (err) {
+      adminContent.innerHTML = `<div class="form-status error">${escapeHtml(err.message)}</div>`;
+      adminPassword = '';
+      sessionStorage.removeItem('xivivide_admin_pw');
+    }
+  }
+
+  function renderAdminUsers(users) {
+    if (!users.length) {
+      adminContent.innerHTML = '<div class="empty-small">Нет пользователей</div>';
+      return;
+    }
+    adminContent.innerHTML = users.map(u => {
+      const av = u.photo ? `<img src="${u.photo}" alt="">` : `<div class="mini-avatar">✦</div>`;
+      return `
+        <div class="admin-user-row">
+          ${av}
+          <div class="admin-user-info">
+            <strong>${escapeHtml(u.name)}, ${u.age} ${u.is_admin ? '👑' : ''}</strong>
+            <small>ID: ${u.id} · 🪙 ${u.vide} · ♥ ${u.likes}</small>
+          </div>
+          <div class="admin-actions">
+            <input type="number" placeholder="+100" id="amt_${u.id}" value="100">
+            <button class="give" data-action="give" data-id="${u.id}">Дать 🪙</button>
+            <button class="danger" data-action="del" data-id="${u.id}">Удалить</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    adminContent.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
+        if (action === 'give') {
+          const amt = document.getElementById('amt_' + id).value;
+          try {
+            await api('/admin/give-vide', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password: adminPassword, userId: parseInt(id), amount: parseInt(amt) })
+            });
+            await loadAdminUsers();
+          } catch (err) { alert(err.message); }
+        } else if (action === 'del') {
+          if (!confirm('Удалить анкету навсегда?')) return;
+          try {
+            await api('/admin/delete-user', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password: adminPassword, userId: parseInt(id) })
+            });
+            await loadAdminUsers();
+            await renderAll();
+          } catch (err) { alert(err.message); }
+        }
+      });
+    });
+  }
+
+  closeAdmin.addEventListener('click', () => adminModal.classList.remove('show'));
+  adminModal.addEventListener('click', e => { if (e.target === adminModal) adminModal.classList.remove('show'); });
+
+  // ==================== ШАПКА ====================
   async function renderTopbar() {
     const myId = getMyId();
     topbarRight.innerHTML = '';
+
+    const themeBtn = document.createElement('button');
+    themeBtn.className = 'theme-btn';
+    themeBtn.title = 'Сменить тему';
+    themeBtn.textContent = '🎨';
+    themeBtn.addEventListener('click', () => themeModal.classList.add('show'));
+    topbarRight.appendChild(themeBtn);
+
+    if (myId) {
+      try {
+        const { vide } = await api('/vide/' + myId);
+        currentBalance = vide;
+        const videBtn = document.createElement('button');
+        videBtn.className = 'vide-badge';
+        videBtn.title = 'Колесо фортуны';
+        videBtn.innerHTML = `🪙 ${vide}`;
+        videBtn.addEventListener('click', openWheel);
+        topbarRight.appendChild(videBtn);
+      } catch {}
+    }
+
+    const adminBtn = document.createElement('button');
+    adminBtn.className = 'theme-btn';
+    adminBtn.title = 'Админ-панель';
+    adminBtn.textContent = '👑';
+    adminBtn.addEventListener('click', openAdmin);
+    topbarRight.appendChild(adminBtn);
+
     if (!myId) {
       const loginBtn = document.createElement('button');
       loginBtn.className = 'login-btn';
@@ -544,7 +1072,6 @@
       const profiles = await api('/profiles');
       const me = profiles.find(p => String(p.id) === String(myId));
       if (!me) { setMyId(null); renderTopbar(); return; }
-
       const chip = document.createElement('div');
       chip.className = 'user-chip';
       chip.innerHTML = (me.photo
@@ -560,7 +1087,6 @@
         setMyId(null);
         renderAll();
       });
-
       topbarRight.appendChild(chip);
       topbarRight.appendChild(logoutBtn);
       openBtn.style.display = 'none';
@@ -597,7 +1123,6 @@
   function renderMyProfile(me, likedBy) {
     const avatarHTML = me.photo ? `<img src="${me.photo}" alt="">` : `<div class="big-avatar">✦</div>`;
     const contactLink = me.contact_value ? buildContactLink(me.contact_type, me.contact_value) : null;
-
     myProfileContent.innerHTML = `
       <div class="profile-hero">
         ${avatarHTML}
@@ -611,6 +1136,7 @@
       </div>
       <div class="stat-row">
         <div class="stat-box"><div class="num">${me.likes || 0}</div><div class="label">Всего ♥</div></div>
+        <div class="stat-box"><div class="num">${me.vide || 0}</div><div class="label">Вайдики</div></div>
         <div class="stat-box"><div class="num">${likedBy.length}</div><div class="label">Кто лайкнул</div></div>
       </div>
       <div class="section-title">Кто тебя лайкнул</div>
@@ -636,7 +1162,6 @@
         <button id="deleteMyBtn" class="danger">Удалить анкету</button>
       </div>
     `;
-
     document.getElementById('editMyBtn').onclick = () => {
       myProfileModal.classList.remove('show');
       openEditForm(me);
@@ -679,6 +1204,9 @@
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
   closeMyProfile.addEventListener('click', () => myProfileModal.classList.remove('show'));
   myProfileModal.addEventListener('click', e => { if (e.target === myProfileModal) myProfileModal.classList.remove('show'); });
+  closeTheme.addEventListener('click', () => themeModal.classList.remove('show'));
+  themeModal.addEventListener('click', e => { if (e.target === themeModal) themeModal.classList.remove('show'); });
+  applyCustom.addEventListener('click', () => { applyTheme('custom:' + customColor.value); });
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -686,11 +1214,9 @@
     submitBtn.disabled = true;
     statusEl.textContent = 'Сохраняем...';
     statusEl.className = 'form-status';
-
     try {
       const fd = new FormData(form);
       if (!fd.get('name') || !fd.get('age')) throw new Error('Имя и возраст обязательны');
-
       let saved;
       if (editingId) {
         saved = await api('/profiles/' + editingId, { method: 'PUT', body: fd });
@@ -720,6 +1246,8 @@
     await loadWall();
   }
 
+  renderThemeGrid();
+  applyTheme(localStorage.getItem(THEME_KEY) || 'gray');
   renderAll();
 </script>
 </body>
