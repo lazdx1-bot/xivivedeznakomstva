@@ -38,8 +38,11 @@ async function initDB() {
         is_admin INTEGER DEFAULT 0,
         is_premium INTEGER DEFAULT 0,
         card_color TEXT DEFAULT '',
+        card_bg TEXT DEFAULT '',
         card_rgb INTEGER DEFAULT 0,
         card_pinned INTEGER DEFAULT 0,
+        theme_web INTEGER DEFAULT 0,
+        theme_glass INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -70,12 +73,27 @@ async function initDB() {
         obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS market (
+        id SERIAL PRIMARY KEY,
+        seller_id INTEGER NOT NULL,
+        skin_id INTEGER NOT NULL,
+        price INTEGER NOT NULL,
+        is_sold INTEGER DEFAULT 0,
+        buyer_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    // безопасные миграции
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS vide INTEGER DEFAULT 100;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_admin INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_premium INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS card_color TEXT DEFAULT '';`);
+    await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS card_bg TEXT DEFAULT '';`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS card_rgb INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS card_pinned INTEGER DEFAULT 0;`);
+    await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS theme_web INTEGER DEFAULT 0;`);
+    await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS theme_glass INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE wheel_spins ADD COLUMN IF NOT EXISTS result_skin_id INTEGER;`);
     console.log('✅ Таблицы готовы');
   } catch (err) {
@@ -104,7 +122,6 @@ const upload = multer({
   }
 });
 
-// ==================== СКИНЫ ====================
 const SKINS = [
   { id: 0, name: 'Кролик',   rarity: 'common',    photo: 'https://res.cloudinary.com/qr9qdjxn/image/upload/f_auto,q_auto/8f150db30f01cc675e70ca4ac6f360bc' },
   { id: 1, name: 'Мадонна',  rarity: 'rare',      photo: 'https://res.cloudinary.com/qr9qdjxn/image/upload/f_auto,q_auto/8eaaed0977626bc105e1125bbfe22a37' },
@@ -113,11 +130,9 @@ const SKINS = [
 ];
 
 const RARITY_CHANCE = { common: 60, rare: 28, epic: 10, legendary: 2 };
-
 function rollSkin() {
   const roll = Math.random() * 100;
-  let acc = 0;
-  let pickedRarity = 'common';
+  let acc = 0, pickedRarity = 'common';
   for (const r of ['legendary', 'epic', 'rare', 'common']) {
     acc += RARITY_CHANCE[r];
     if (roll < acc) { pickedRarity = r; break; }
@@ -125,6 +140,7 @@ function rollSkin() {
   const pool = SKINS.filter(s => s.rarity === pickedRarity);
   return pool[Math.floor(Math.random() * pool.length)] || SKINS[0];
 }
+function skinById(id) { return SKINS.find(s => s.id === parseInt(id)); }
 
 // ==================== ПРОФИЛИ ====================
 app.get('/api/profiles', async (req, res) => {
@@ -181,24 +197,31 @@ app.put('/api/profiles/:id', upload.single('photo'), async (req, res) => {
   }
 });
 
+// премиум-оформление
 app.post('/api/profiles/:id/appearance', async (req, res) => {
   try {
     const { id } = req.params;
-    const { cardColor, cardRgb, cardPinned } = req.body;
+    const { cardColor, cardBg, cardRgb, cardPinned, themeWeb, themeGlass } = req.body;
     const existing = await pool.query('SELECT * FROM profiles WHERE id = $1', [id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'Не найдено' });
     if (!existing.rows[0].is_premium) return res.status(403).json({ error: 'Только для Premium' });
 
     await pool.query(`
       UPDATE profiles
-      SET card_color = COALESCE($1, card_color),
-          card_rgb   = COALESCE($2, card_rgb),
-          card_pinned = COALESCE($3, card_pinned)
-      WHERE id = $4
+      SET card_color  = COALESCE($1, card_color),
+          card_bg     = COALESCE($2, card_bg),
+          card_rgb    = COALESCE($3, card_rgb),
+          card_pinned = COALESCE($4, card_pinned),
+          theme_web   = COALESCE($5, theme_web),
+          theme_glass = COALESCE($6, theme_glass)
+      WHERE id = $7
     `, [
       cardColor !== undefined ? cardColor : null,
+      cardBg !== undefined ? cardBg : null,
       cardRgb !== undefined ? (cardRgb ? 1 : 0) : null,
       cardPinned !== undefined ? (cardPinned ? 1 : 0) : null,
+      themeWeb !== undefined ? (themeWeb ? 1 : 0) : null,
+      themeGlass !== undefined ? (themeGlass ? 1 : 0) : null,
       id
     ]);
     const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [id]);
@@ -221,6 +244,7 @@ app.delete('/api/profiles/:id', async (req, res) => {
     await pool.query('DELETE FROM likes WHERE target_id=$1 OR liker_id=$1', [req.params.id]);
     await pool.query('DELETE FROM wheel_spins WHERE user_id=$1', [req.params.id]);
     await pool.query('DELETE FROM inventory WHERE user_id=$1', [req.params.id]);
+    await pool.query('DELETE FROM market WHERE seller_id=$1 OR buyer_id=$1', [req.params.id]);
     await pool.query('DELETE FROM profiles WHERE id=$1', [req.params.id]);
     res.json({ ok: true });
   } catch (err) {
@@ -235,10 +259,7 @@ app.post('/api/like', async (req, res) => {
     const { likerId, targetId } = req.body;
     if (!likerId || !targetId) return res.status(400).json({ error: 'Нужны likerId и targetId' });
     if (likerId === targetId) return res.status(400).json({ error: 'Нельзя лайкнуть себя' });
-    const existing = await pool.query(
-      'SELECT * FROM likes WHERE liker_id=$1 AND target_id=$2',
-      [likerId, targetId]
-    );
+    const existing = await pool.query('SELECT * FROM likes WHERE liker_id=$1 AND target_id=$2', [likerId, targetId]);
     if (existing.rows.length) {
       await pool.query('DELETE FROM likes WHERE liker_id=$1 AND target_id=$2', [likerId, targetId]);
       res.json({ liked: false });
@@ -332,7 +353,7 @@ app.post('/api/wheel/spin', async (req, res) => {
       INSERT INTO wheel_spins (user_id, result_name, result_photo, result_skin_id)
       VALUES ($1, $2, $3, $4) RETURNING *
     `, [userId, skin.name, skin.photo, skin.id]);
-    await pool.query(`INSERT INTO inventory (user_id, skin_id) VALUES ($1, $2)`, [userId, skin.id]);
+    await pool.query('INSERT INTO inventory (user_id, skin_id) VALUES ($1, $2)', [userId, skin.id]);
 
     res.json({ spin: spin.rows[0], skin, balance: balance - COST });
   } catch (err) {
@@ -363,6 +384,139 @@ app.get('/api/inventory/:userId', async (req, res) => {
 
 app.get('/api/skins', (req, res) => { res.json(SKINS); });
 
+// ==================== РЫНОК ====================
+// Все активные лоты
+app.get('/api/market', async (req, res) => {
+  try {
+    const rows = await pool.query(`
+      SELECT m.*, p.name AS seller_name, p.photo AS seller_photo
+      FROM market m
+      JOIN profiles p ON p.id = m.seller_id
+      WHERE m.is_sold = 0
+      ORDER BY m.created_at DESC
+    `);
+    const lots = rows.rows.map(r => ({
+      ...r,
+      skin: skinById(r.skin_id)
+    }));
+    res.json(lots);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка рынка' });
+  }
+});
+
+// Выставить лот
+app.post('/api/market/list', async (req, res) => {
+  try {
+    const { userId, skinId, price } = req.body;
+    if (!userId || skinId === undefined || !price) {
+      return res.status(400).json({ error: 'Нужны userId, skinId, price' });
+    }
+    const p = parseInt(price);
+    if (p < 1 || p > 100000) return res.status(400).json({ error: 'Некорректная цена' });
+
+    // проверяем, что у юзера есть этот скин
+    const inv = await pool.query(`
+      SELECT id FROM inventory WHERE user_id=$1 AND skin_id=$2 LIMIT 1
+    `, [userId, skinId]);
+    if (!inv.rows.length) return res.status(400).json({ error: 'У тебя нет этого скина' });
+
+    // удаляем один экземпляр из инвентаря
+    await pool.query('DELETE FROM inventory WHERE id=$1', [inv.rows[0].id]);
+
+    const r = await pool.query(`
+      INSERT INTO market (seller_id, skin_id, price) VALUES ($1, $2, $3) RETURNING *
+    `, [userId, skinId, p]);
+    res.json(r.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка выставления' });
+  }
+});
+
+// Купить лот
+app.post('/api/market/buy', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { userId, lotId } = req.body;
+    if (!userId || !lotId) return res.status(400).json({ error: 'Нужны userId и lotId' });
+
+    await client.query('BEGIN');
+
+    const lotRes = await client.query('SELECT * FROM market WHERE id=$1 AND is_sold=0 FOR UPDATE', [lotId]);
+    if (!lotRes.rows.length) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Лот уже продан или не найден' });
+    }
+    const lot = lotRes.rows[0];
+    if (lot.seller_id === userId) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'Нельзя купить свой лот' });
+    }
+
+    const buyer = await client.query('SELECT * FROM profiles WHERE id=$1 FOR UPDATE', [userId]);
+    if (!buyer.rows.length) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Покупатель не найден' });
+    }
+    if ((buyer.rows[0].vide || 0) < lot.price) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'Недостаточно вайдиков' });
+    }
+
+    // списываем у покупателя, начисляем продавцу
+    await client.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [lot.price, userId]);
+    await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [lot.price, lot.seller_id]);
+    // помечаем лот проданным
+    await client.query('UPDATE market SET is_sold=1, buyer_id=$1 WHERE id=$2', [userId, lotId]);
+    // добавляем скин покупателю
+    await client.query('INSERT INTO inventory (user_id, skin_id) VALUES ($1, $2)', [userId, lot.skin_id]);
+
+    await client.query('COMMIT');
+
+    const newBalance = await pool.query('SELECT vide FROM profiles WHERE id=$1', [userId]);
+    res.json({ ok: true, balance: newBalance.rows[0].vide });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка покупки' });
+  } finally {
+    client.release();
+  }
+});
+
+// Снять свой лот (вернуть скин)
+app.post('/api/market/cancel', async (req, res) => {
+  try {
+    const { userId, lotId } = req.body;
+    if (!userId || !lotId) return res.status(400).json({ error: 'Нужны userId и lotId' });
+    const lot = await pool.query('SELECT * FROM market WHERE id=$1 AND is_sold=0', [lotId]);
+    if (!lot.rows.length) return res.status(404).json({ error: 'Лот не найден' });
+    if (lot.rows[0].seller_id !== userId) return res.status(403).json({ error: 'Не твой лот' });
+
+    await pool.query('DELETE FROM market WHERE id=$1', [lotId]);
+    await pool.query('INSERT INTO inventory (user_id, skin_id) VALUES ($1, $2)', [userId, lot.rows[0].skin_id]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+// Мои лоты
+app.get('/api/market/my/:userId', async (req, res) => {
+  try {
+    const rows = await pool.query(`
+      SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC
+    `, [req.params.userId]);
+    res.json(rows.rows.map(r => ({ ...r, skin: skinById(r.skin_id) })));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
 // ==================== АДМИНКА ====================
 function checkAdmin(password) { return password === ADMIN_PASSWORD; }
 
@@ -371,7 +525,8 @@ app.post('/api/admin/users', async (req, res) => {
     const { password } = req.body;
     if (!checkAdmin(password)) return res.status(403).json({ error: 'Неверный пароль' });
     const result = await pool.query(`
-      SELECT id, name, age, photo, vide, is_admin, is_premium, card_color, card_rgb, card_pinned, created_at,
+      SELECT id, name, age, photo, vide, is_admin, is_premium, card_color, card_bg, card_rgb, card_pinned,
+        theme_web, theme_glass, created_at,
         (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
       FROM profiles ORDER BY id DESC
     `);
@@ -406,7 +561,7 @@ app.post('/api/admin/toggle-premium', async (req, res) => {
     const newVal = existing.rows[0].is_premium ? 0 : 1;
     await pool.query('UPDATE profiles SET is_premium=$1 WHERE id=$2', [newVal, userId]);
     if (!newVal) {
-      await pool.query(`UPDATE profiles SET card_color='', card_rgb=0, card_pinned=0 WHERE id=$1`, [userId]);
+      await pool.query(`UPDATE profiles SET card_color='', card_bg='', card_rgb=0, card_pinned=0, theme_web=0, theme_glass=0 WHERE id=$1`, [userId]);
     }
     const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [userId]);
     res.json(r.rows[0]);
@@ -430,6 +585,7 @@ app.post('/api/admin/delete-user', async (req, res) => {
     await pool.query('DELETE FROM likes WHERE target_id=$1 OR liker_id=$1', [userId]);
     await pool.query('DELETE FROM wheel_spins WHERE user_id=$1', [userId]);
     await pool.query('DELETE FROM inventory WHERE user_id=$1', [userId]);
+    await pool.query('DELETE FROM market WHERE seller_id=$1 OR buyer_id=$1', [userId]);
     await pool.query('DELETE FROM profiles WHERE id=$1', [userId]);
     res.json({ ok: true });
   } catch (err) {
