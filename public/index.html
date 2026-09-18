@@ -59,34 +59,120 @@
     100% { transform: translate(-5%,5%) scale(1.03); }
   }
 
-  body.theme-web { background: #050508; background-image: none; animation: none; }
-  body.theme-web::before {
-    background-color: #050508;
+  /* === ФОН: ПАУТИНА НА ВСЮ СТРАНИЦУ === */
+  body.fx-web {
+    background: #050508;
     background-image:
+      repeating-linear-gradient(60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(-60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px),
       radial-gradient(circle at 20% 15%, rgba(120,120,140,0.08), transparent 40%),
       radial-gradient(circle at 80% 85%, rgba(90,90,110,0.10), transparent 45%);
     animation: none;
   }
+  body.fx-web::before {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(200,200,220,0.02) 0px, rgba(200,200,220,0.02) 1px, transparent 1px, transparent 90px),
+      repeating-linear-gradient(90deg, rgba(200,200,220,0.02) 0px, rgba(200,200,220,0.02) 1px, transparent 1px, transparent 90px);
+    animation: none;
+  }
   .web-corner {
-    position: fixed; width: 300px; height: 300px;
-    pointer-events: none; z-index: 0;
+    position: fixed; width: 340px; height: 340px;
+    pointer-events: none; z-index: 1;
     opacity: 0; transition: opacity 0.6s ease;
     background-size: contain; background-repeat: no-repeat;
   }
-  body.theme-web .web-corner { opacity: 0.35; }
+  body.fx-web .web-corner { opacity: 0.45; }
   .web-corner.tl { top: 0; left: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.tr { top: 0; right: 0; transform: scaleX(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.bl { bottom: 0; left: 0; transform: scaleY(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.br { bottom: 0; right: 0; transform: scale(-1,-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
 
+  /* === СТЕКЛО === */
+  body.fx-glass {
+    background: #0a0a10;
+  }
+  body.fx-glass .topbar,
+  body.fx-glass .profile-card,
+  body.fx-glass .modal-content,
+  body.fx-glass .liker-row,
+  body.fx-glass .stat-box,
+  body.fx-glass .profile-hero,
+  body.fx-glass .admin-user-row {
+    background: rgba(255,255,255,0.06) !important;
+    backdrop-filter: blur(22px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+  }
+  body.fx-glass .profile-card:hover {
+    background: rgba(255,255,255,0.10) !important;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.1) !important;
+  }
+  body.fx-glass .contact-badge,
+  body.fx-glass .like-btn,
+  body.fx-glass .login-btn,
+  body.fx-glass .logout-btn,
+  body.fx-glass .theme-btn,
+  body.fx-glass .vide-badge {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+  }
+
+  /* === СНЕГ === */
+  .snow-layer {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 2;
+    display: none;
+  }
+  body.fx-snow .snow-layer { display: block; }
+  .snowflake {
+    position: absolute; top: -10px;
+    color: #fff; font-size: 14px;
+    opacity: 0.7;
+    animation: fall linear infinite;
+    text-shadow: 0 0 6px rgba(255,255,255,0.6);
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-10vh) translateX(0) rotate(0deg); }
+    100% { transform: translateY(110vh) translateX(40px) rotate(360deg); }
+  }
+
+  /* === ЗВЁЗДЫ === */
+  .stars-layer {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    display: none;
+  }
+  body.fx-stars .stars-layer { display: block; }
+  .star {
+    position: absolute; width: 2px; height: 2px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 0 6px #fff;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50%      { opacity: 1;   transform: scale(1.3); }
+  }
+
+  /* === МЕРЦАНИЕ / NEON === */
+  body.fx-neon .profile-card.mine,
+  body.fx-neon .profile-card.premium {
+    animation: neonPulse 2s ease-in-out infinite;
+  }
+  @keyframes neonPulse {
+    0%, 100% { filter: brightness(1); }
+    50%      { filter: brightness(1.25); }
+  }
+
   .topbar {
-    position: relative; z-index: 5; padding: 20px;
+    position: relative; z-index: 5; padding: 16px 20px;
     display: flex; justify-content: space-between; align-items: center;
     gap: 14px;
     background: linear-gradient(180deg, rgba(60,60,72,0.5), rgba(30,30,38,0.1));
     border-bottom: 1px solid rgba(255,255,255,0.06);
     backdrop-filter: blur(14px); flex-wrap: wrap;
   }
+  .brand-wrap { display: flex; align-items: center; gap: 10px; }
   .brand {
     font-size: 24px; letter-spacing: 4px;
     background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light));
@@ -98,6 +184,13 @@
   @keyframes shimmer {
     0%   { background-position: -200% 0; }
     100% { background-position: 200% 0; }
+  }
+  .brand-gif {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 0 12px var(--accent-glow);
+    border: 1px solid rgba(255,255,255,0.15);
   }
 
   .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -453,6 +546,36 @@
   }
   .custom-theme-row button:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px var(--accent-glow); }
 
+  /* FX-переключатели */
+  .fx-list {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .fx-list h4 {
+    font-size: 11.5px; letter-spacing: 2px; color: #b8b8cc;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .fx-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .fx-row:last-child { border-bottom: none; }
+  .fx-row .fx-label { font-size: 13.5px; color: #d8d8e4; display:flex; align-items:center; gap:8px; }
+  .switch {
+    position: relative; width: 46px; height: 26px;
+    background: rgba(60,60,78,0.7); border-radius: 13px; cursor: pointer;
+    transition: all 0.25s; border: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+  .switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #b0b0c4; transition: all 0.25s;
+  }
+  .switch.on { background: rgba(255,215,0,0.35); border-color: rgba(255,215,0,0.6); }
+  .switch.on::after { left: 22px; background: #ffd970; box-shadow: 0 0 10px rgba(255,215,0,0.7); }
+
   .wheel-wrap { position: relative; width: 260px; height: 260px; margin: 0 auto 20px; }
   .wheel-pointer {
     position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
@@ -511,7 +634,7 @@
 
   .inv-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 10px;
   }
   .inv-item {
@@ -537,6 +660,59 @@
   .inv-item.rarity-rare      { border-color: rgba(90,150,255,0.5); }
   .inv-item.rarity-epic      { border-color: rgba(180,120,255,0.6); }
   .inv-item.rarity-legendary { border-color: rgba(255,215,0,0.7); box-shadow: 0 0 18px rgba(255,215,0,0.3); }
+  .inv-sell-btn {
+    margin-top: 6px; width: 100%;
+    padding: 6px 8px; font-size: 11.5px;
+    border-radius: 8px; cursor: pointer; font-family: inherit;
+    background: rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.4);
+    color: #ffd970;
+    transition: all 0.25s;
+  }
+  .inv-sell-btn:hover { background: rgba(255,215,0,0.3); }
+
+  .market-lot {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; background: rgba(30,30,40,0.5);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; margin-bottom: 8px;
+  }
+  .market-lot img {
+    width: 48px; height: 48px; border-radius: 8px;
+    object-fit: cover; flex-shrink: 0;
+  }
+  .market-lot .lot-info { flex: 1; min-width: 0; }
+  .market-lot .lot-info strong { display: block; font-size: 14px; color: #f0f0f8; }
+  .market-lot .lot-info small { font-size: 11.5px; color: #8a8a9c; }
+  .market-lot .lot-price {
+    font-size: 14px; color: #ffd970; font-weight: 700;
+    white-space: nowrap;
+  }
+  .market-lot .lot-actions { display: flex; gap: 6px; }
+  .market-lot button {
+    padding: 7px 12px; font-size: 12px;
+    border-radius: 8px; cursor: pointer; font-family: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(60,60,78,0.55); color: #e8e8f0;
+    transition: all 0.25s;
+  }
+  .market-lot button.buy { color: #ffd970; border-color: rgba(255,215,0,0.4); }
+  .market-lot button.buy:hover { background: rgba(255,215,0,0.15); }
+  .market-lot button.cancel { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
+  .market-lot button.cancel:hover { background: rgba(255,80,100,0.18); }
+  .market-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .market-tabs button {
+    flex: 1; padding: 10px; font-size: 13px;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(60,60,78,0.4); color: #d8d8e4;
+    transition: all 0.25s;
+  }
+  .market-tabs button.active {
+    background: rgba(255,215,0,0.15);
+    border-color: rgba(255,215,0,0.5);
+    color: #ffd970;
+  }
 
   .premium-preview {
     margin-bottom: 16px; padding: 12px;
@@ -556,23 +732,6 @@
     background: rgba(20,20,26,0.7); cursor: pointer;
   }
   .color-row label { margin: 0; font-size: 12.5px; color: #b8b8cc; }
-  .toggle-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  .toggle-row label { margin: 0; font-size: 13px; color: #d8d8e4; }
-  .switch {
-    position: relative; width: 46px; height: 26px;
-    background: rgba(60,60,78,0.7); border-radius: 13px; cursor: pointer;
-    transition: all 0.25s; border: 1px solid rgba(255,255,255,0.1);
-  }
-  .switch::after {
-    content: ''; position: absolute; top: 2px; left: 2px;
-    width: 20px; height: 20px; border-radius: 50%;
-    background: #b0b0c4; transition: all 0.25s;
-  }
-  .switch.on { background: rgba(255,215,0,0.35); border-color: rgba(255,215,0,0.6); }
-  .switch.on::after { left: 22px; background: #ffd970; box-shadow: 0 0 10px rgba(255,215,0,0.7); }
 
   .admin-user-row {
     display: flex; align-items: center; gap: 12px;
@@ -620,6 +779,7 @@
 
   @media (max-width: 480px) {
     .brand { font-size: 20px; letter-spacing: 3px; }
+    .brand-gif { width: 28px; height: 28px; }
     .wall { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
     .profile-info h3 { font-size: 16px; }
     .contact-row { grid-template-columns: 100px 1fr; }
@@ -635,9 +795,14 @@
 <div class="web-corner tr"></div>
 <div class="web-corner bl"></div>
 <div class="web-corner br"></div>
+<div class="snow-layer" id="snowLayer"></div>
+<div class="stars-layer" id="starsLayer"></div>
 
 <header class="topbar">
-  <div class="brand">XIVIVIDE</div>
+  <div class="brand-wrap">
+    <img class="brand-gif" src="https://res.cloudinary.com/qr9qdjxn/image/upload/v1789727106/a_22dec9f014cefe6ec09b03fc315f5d25.gif" alt="">
+    <div class="brand">XIVIVIDE</div>
+  </div>
   <div class="topbar-right" id="topbarRight"></div>
 </header>
 
@@ -693,13 +858,36 @@
   </div>
 
   <div class="modal" id="themeModal">
-    <div class="modal-content">
+    <div class="modal-content wide">
       <button class="modal-close" id="closeTheme">✕</button>
-      <h2>Тема оформления</h2>
+      <h2>Тема и эффекты</h2>
       <div class="theme-grid" id="themeGrid"></div>
       <div class="custom-theme-row">
         <input type="color" id="customColor" value="#a0a0b8">
         <button id="applyCustom">Своя тема</button>
+      </div>
+      <div class="fx-list">
+        <h4>Эффекты</h4>
+        <div class="fx-row">
+          <div class="fx-label">🕸 Паутина на всю тему</div>
+          <div class="switch" id="fxWeb"></div>
+        </div>
+        <div class="fx-row">
+          <div class="fx-label">🪟 Стеклянный интерфейс</div>
+          <div class="switch" id="fxGlass"></div>
+        </div>
+        <div class="fx-row">
+          <div class="fx-label">❄️ Снег</div>
+          <div class="switch" id="fxSnow"></div>
+        </div>
+        <div class="fx-row">
+          <div class="fx-label">✨ Звёзды</div>
+          <div class="switch" id="fxStars"></div>
+        </div>
+        <div class="fx-row">
+          <div class="fx-label">💡 Неоновое мерцание</div>
+          <div class="switch" id="fxNeon"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -723,6 +911,18 @@
       <button class="modal-close" id="closeInv">✕</button>
       <h2>Инвентарь</h2>
       <div id="invContent"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="marketModal">
+    <div class="modal-content wide">
+      <button class="modal-close" id="closeMarket">✕</button>
+      <h2>Рынок скинов</h2>
+      <div class="market-tabs">
+        <button id="tabAll" class="active">Все лоты</button>
+        <button id="tabMy">Мои лоты</button>
+      </div>
+      <div id="marketContent"></div>
     </div>
   </div>
 
@@ -760,9 +960,12 @@
   const themeGrid = document.getElementById('themeGrid');
   const customColor = document.getElementById('customColor');
   const applyCustom = document.getElementById('applyCustom');
+  const snowLayer = document.getElementById('snowLayer');
+  const starsLayer = document.getElementById('starsLayer');
 
   const MY_ID_KEY = 'xivivide_my_id';
   const THEME_KEY = 'xivivide_theme';
+  const FX_KEY = 'xivivide_fx';
   let myLikes = new Set();
 
   const THEMES = {
@@ -790,14 +993,27 @@
               bg1: '#1f0d1a', bg2: '#2e1226', bg3: '#150810',
               r1: 'rgba(220,90,180,0.28)', r2: 'rgba(180,60,140,0.30)', r3: 'rgba(240,130,210,0.18)',
               f1: 'rgba(255,130,200,0.12)', f2: 'rgba(220,100,170,0.14)' },
-    web:    { name: 'Паутина',  accent: '#c0c0d8', accentLight: '#f0f0ff', accentDark: '#505068',
+    web:    { name: 'Паутина', accent: '#c0c0d8', accentLight: '#f0f0ff', accentDark: '#505068',
               bg1: '#050508', bg2: '#0a0a10', bg3: '#020204',
               r1: 'rgba(120,120,140,0.06)', r2: 'rgba(90,90,110,0.08)', r3: 'rgba(140,140,160,0.05)',
               f1: 'rgba(180,180,200,0.05)', f2: 'rgba(150,150,175,0.06)',
-              special: 'web' }
+              special: 'web' },
+    matrix: { name: 'Матрица', accent: '#4dd68a', accentLight: '#c8ffdc', accentDark: '#1a7a44',
+              bg1: '#000800', bg2: '#001505', bg3: '#000300',
+              r1: 'rgba(40,220,120,0.15)', r2: 'rgba(20,180,80,0.20)', r3: 'rgba(100,255,150,0.10)',
+              f1: 'rgba(60,255,140,0.08)', f2: 'rgba(40,200,100,0.10)' },
+    night:  { name: 'Ночь',   accent: '#8a8aff', accentLight: '#dadaff', accentDark: '#4a4ad4',
+              bg1: '#050510', bg2: '#0a0a20', bg3: '#020208',
+              r1: 'rgba(90,90,200,0.22)', r2: 'rgba(60,60,160,0.25)', r3: 'rgba(140,140,240,0.14)',
+              f1: 'rgba(120,120,255,0.10)', f2: 'rgba(90,90,220,0.12)' },
+    sunset: { name: 'Закат',  accent: '#ff9a5c', accentLight: '#ffe0c4', accentDark: '#c45a1a',
+              bg1: '#1f0d05', bg2: '#2e1408', bg3: '#150802',
+              r1: 'rgba(220,120,60,0.28)', r2: 'rgba(180,80,40,0.30)', r3: 'rgba(255,160,100,0.18)',
+              f1: 'rgba(255,160,100,0.12)', f2: 'rgba(220,120,70,0.14)' }
   };
 
   function hexToRgba(hex, alpha) {
+    if (!hex) return 'rgba(0,0,0,0)';
     const h = hex.replace('#', '');
     const r = parseInt(h.substring(0, 2), 16);
     const g = parseInt(h.substring(2, 4), 16);
@@ -853,7 +1069,8 @@
     root.style.setProperty('--float-1', theme.f1);
     root.style.setProperty('--float-2', theme.f2);
 
-    document.body.classList.toggle('theme-web', theme.special === 'web');
+    if (theme.special === 'web') setFx('web', true);
+
     localStorage.setItem(THEME_KEY, themeKey);
     document.querySelectorAll('.theme-swatch').forEach(s => {
       s.classList.toggle('active', s.dataset.key === themeKey);
@@ -882,6 +1099,79 @@
       s.classList.toggle('active', s.dataset.key === saved);
     });
   }
+
+  // === FX-переключатели ===
+  function getFx() {
+    try { return JSON.parse(localStorage.getItem(FX_KEY)) || {}; }
+    catch { return {}; }
+  }
+  function saveFx(fx) { localStorage.setItem(FX_KEY, JSON.stringify(fx)); }
+
+  function setFx(name, value) {
+    const fx = getFx();
+    fx[name] = value;
+    saveFx(fx);
+    applyFx(fx);
+  }
+
+  function applyFx(fx) {
+    document.body.classList.toggle('fx-web', !!fx.web);
+    document.body.classList.toggle('fx-glass', !!fx.glass);
+    document.body.classList.toggle('fx-snow', !!fx.snow);
+    document.body.classList.toggle('fx-stars', !!fx.stars);
+    document.body.classList.toggle('fx-neon', !!fx.neon);
+
+    const switches = {
+      fxWeb: !!fx.web,
+      fxGlass: !!fx.glass,
+      fxSnow: !!fx.snow,
+      fxStars: !!fx.stars,
+      fxNeon: !!fx.neon
+    };
+    Object.entries(switches).forEach(([id, on]) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('on', on);
+    });
+
+    if (fx.snow) spawnSnow(); else snowLayer.innerHTML = '';
+    if (fx.stars) spawnStars(); else starsLayer.innerHTML = '';
+  }
+
+  function spawnSnow() {
+    snowLayer.innerHTML = '';
+    const flakes = ['❄','❅','❆','*','·'];
+    for (let i = 0; i < 40; i++) {
+      const el = document.createElement('div');
+      el.className = 'snowflake';
+      el.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+      el.style.left = Math.random() * 100 + '%';
+      el.style.fontSize = (8 + Math.random() * 14) + 'px';
+      el.style.animationDuration = (6 + Math.random() * 10) + 's';
+      el.style.animationDelay = (-Math.random() * 10) + 's';
+      snowLayer.appendChild(el);
+    }
+  }
+  function spawnStars() {
+    starsLayer.innerHTML = '';
+    for (let i = 0; i < 80; i++) {
+      const el = document.createElement('div');
+      el.className = 'star';
+      el.style.left = Math.random() * 100 + '%';
+      el.style.top = Math.random() * 100 + '%';
+      el.style.animationDelay = (-Math.random() * 3) + 's';
+      el.style.opacity = Math.random() * 0.7 + 0.3;
+      starsLayer.appendChild(el);
+    }
+  }
+
+  // кнопки FX
+  ['fxWeb','fxGlass','fxSnow','fxStars','fxNeon'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => {
+      const fx = getFx();
+      const key = id.replace('fx','').toLowerCase();
+      setFx(key, !fx[key]);
+    });
+  });
 
   function getMyId() { return localStorage.getItem(MY_ID_KEY); }
   function setMyId(id) {
@@ -925,9 +1215,16 @@
     card.className = cls;
     card.dataset.id = p.id;
 
-    if (p.is_premium && p.card_color && !p.card_rgb) {
-      card.style.borderColor = p.card_color;
-      card.style.boxShadow = `0 12px 30px rgba(0,0,0,0.5), 0 0 22px ${hexToRgba(p.card_color, 0.55)}`;
+    // премиум-оформление: цвет рамки и/или фон карточки
+    if (p.is_premium) {
+      if (p.card_color && !p.card_rgb) {
+        card.style.borderColor = p.card_color;
+        card.style.boxShadow = `0 12px 30px rgba(0,0,0,0.5), 0 0 22px ${hexToRgba(p.card_color, 0.55)}`;
+      }
+      if (p.card_bg) {
+        card.style.background = p.card_bg;
+        card.style.backdropFilter = 'blur(16px)';
+      }
     }
 
     const photoHTML = p.photo
@@ -1008,6 +1305,11 @@
   const invModal = document.getElementById('invModal');
   const closeInv = document.getElementById('closeInv');
   const invContent = document.getElementById('invContent');
+  const marketModal = document.getElementById('marketModal');
+  const closeMarket = document.getElementById('closeMarket');
+  const marketContent = document.getElementById('marketContent');
+  const tabAll = document.getElementById('tabAll');
+  const tabMy = document.getElementById('tabMy');
   const adminModal = document.getElementById('adminModal');
   const closeAdmin = document.getElementById('closeAdmin');
   const adminContent = document.getElementById('adminContent');
@@ -1015,6 +1317,7 @@
   let currentBalance = 0;
   let isSpinning = false;
   let adminPassword = sessionStorage.getItem('xivivide_admin_pw') || '';
+  let marketTab = 'all';
 
   function openWheel() {
     if (!getMyId()) { alert('Войди в профиль'); return; }
@@ -1097,23 +1400,128 @@
             <img src="${it.photo}" alt="">
             <div class="inv-name">${escapeHtml(it.name)}</div>
             <div class="inv-count">×${it.count}</div>
+            <button class="inv-sell-btn" data-skin="${it.id}">Продать</button>
           </div>
         `).join('')
       }</div>`;
+      invContent.querySelectorAll('.inv-sell-btn').forEach(btn => {
+        btn.addEventListener('click', () => sellDialog(parseInt(btn.dataset.skin)));
+      });
     } catch (err) { invContent.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
   }
   closeInv.addEventListener('click', () => invModal.classList.remove('show'));
   invModal.addEventListener('click', e => { if (e.target === invModal) invModal.classList.remove('show'); });
 
-  // === ПРЕМИУМ-ОФОРМЛЕНИЕ ===
-  let appearanceMe = null;
+  async function sellDialog(skinId) {
+    const myId = getMyId();
+    const price = prompt('За сколько вайдиков выставить лот?', '50');
+    if (!price) return;
+    const p = parseInt(price);
+    if (!p || p < 1) { alert('Некорректная цена'); return; }
+    try {
+      await api('/market/list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: parseInt(myId), skinId, price: p })
+      });
+      alert('Лот выставлен на рынок!');
+      await openInventory();
+    } catch (err) { alert(err.message); }
+  }
 
+  // === РЫНОК ===
+  function openMarket() {
+    if (!getMyId()) { alert('Войди в профиль'); return; }
+    marketModal.classList.add('show');
+    renderMarket();
+  }
+
+  tabAll.addEventListener('click', () => { marketTab = 'all'; tabAll.classList.add('active'); tabMy.classList.remove('active'); renderMarket(); });
+  tabMy.addEventListener('click', () => { marketTab = 'my'; tabMy.classList.add('active'); tabAll.classList.remove('active'); renderMarket(); });
+
+  async function renderMarket() {
+    const myId = getMyId();
+    marketContent.innerHTML = '<div class="empty-small">Загрузка...</div>';
+    try {
+      if (marketTab === 'all') {
+        const lots = await api('/market');
+        if (!lots.length) {
+          marketContent.innerHTML = '<div class="empty-small">Пока нет лотов. Выставь свой из инвентаря!</div>';
+          return;
+        }
+        marketContent.innerHTML = lots.map(l => `
+          <div class="market-lot">
+            <img src="${l.skin ? l.skin.photo : ''}" alt="">
+            <div class="lot-info">
+              <strong>${escapeHtml(l.skin ? l.skin.name : '—')} <span style="opacity:0.6;font-size:11px;">${l.skin ? l.skin.rarity : ''}</span></strong>
+              <small>Продавец: ${escapeHtml(l.seller_name)}</small>
+            </div>
+            <div class="lot-price">${l.price} 🪙</div>
+            <div class="lot-actions">
+              ${String(l.seller_id) === String(myId)
+                ? `<button class="cancel" data-action="cancel" data-id="${l.id}">Снять</button>`
+                : `<button class="buy" data-action="buy" data-id="${l.id}">Купить</button>`}
+            </div>
+          </div>
+        `).join('');
+      } else {
+        const lots = await api('/market/my/' + myId);
+        if (!lots.length) {
+          marketContent.innerHTML = '<div class="empty-small">Ты ничего не продаёшь.</div>';
+          return;
+        }
+        marketContent.innerHTML = lots.map(l => `
+          <div class="market-lot">
+            <img src="${l.skin ? l.skin.photo : ''}" alt="">
+            <div class="lot-info">
+              <strong>${escapeHtml(l.skin ? l.skin.name : '—')}</strong>
+              <small>Ждёт покупателя</small>
+            </div>
+            <div class="lot-price">${l.price} 🪙</div>
+            <div class="lot-actions">
+              <button class="cancel" data-action="cancel" data-id="${l.id}">Снять</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      marketContent.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = parseInt(btn.dataset.id);
+          const action = btn.dataset.action;
+          try {
+            if (action === 'buy') {
+              if (!confirm('Купить этот скин?')) return;
+              const res = await api('/market/buy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: parseInt(getMyId()), lotId: id })
+              });
+              alert('Куплено! Баланс: ' + res.balance + ' 🪙');
+            } else if (action === 'cancel') {
+              await api('/market/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: parseInt(getMyId()), lotId: id })
+              });
+            }
+            await renderMarket();
+            await renderTopbar();
+          } catch (err) { alert(err.message); }
+        });
+      });
+    } catch (err) { marketContent.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
+  }
+
+  closeMarket.addEventListener('click', () => marketModal.classList.remove('show'));
+  marketModal.addEventListener('click', e => { if (e.target === marketModal) marketModal.classList.remove('show'); });
+
+  // === ПРЕМИУМ-ОФОРМЛЕНИЕ ===
   function openAppearance(me) {
     if (!me.is_premium) {
       alert('Это доступно только для Premium. Попроси админа выдать.');
       return;
     }
-    appearanceMe = me;
     renderAppearanceForm(me);
     appearanceModal.classList.add('show');
   }
@@ -1125,7 +1533,7 @@
         <div style="display:flex; gap:10px; align-items:center;">
           <div id="previewCard" style="
             width:60px;height:60px;border-radius:12px;
-            background: rgba(38,38,46,0.7);
+            background: ${me.card_bg || 'rgba(38,38,46,0.7)'};
             border:2px solid ${me.card_color || 'transparent'};
             box-shadow: ${me.card_color && !me.card_rgb ? `0 0 18px ${hexToRgba(me.card_color, 0.6)}` : 'none'};
             display:flex;align-items:center;justify-content:center;font-size:24px;
@@ -1143,13 +1551,23 @@
         <label>Цвет рамки</label>
       </div>
 
-      <div class="toggle-row">
-        <label>RGB-подсветка</label>
+      <div class="color-row">
+        <input type="color" id="cardBgInput" value="${me.card_bg ? (me.card_bg.startsWith('#') ? me.card_bg : '#2a2a34') : '#2a2a34'}">
+        <label>Цвет всей карточки</label>
+      </div>
+
+      <div class="fx-row">
+        <div class="fx-label">Использовать цвет карточки</div>
+        <div class="switch ${me.card_bg ? 'on' : ''}" id="useBgSwitch"></div>
+      </div>
+
+      <div class="fx-row">
+        <div class="fx-label">RGB-подсветка</div>
         <div class="switch ${me.card_rgb ? 'on' : ''}" id="rgbSwitch"></div>
       </div>
 
-      <div class="toggle-row">
-        <label>Закрепить анкету сверху</label>
+      <div class="fx-row">
+        <div class="fx-label">Закрепить анкету сверху</div>
         <div class="switch ${me.card_pinned ? 'on' : ''}" id="pinSwitch"></div>
       </div>
 
@@ -1158,18 +1576,23 @@
     `;
 
     const colorInput = document.getElementById('cardColorInput');
+    const bgInput = document.getElementById('cardBgInput');
+    const useBgSwitch = document.getElementById('useBgSwitch');
     const rgbSwitch = document.getElementById('rgbSwitch');
     const pinSwitch = document.getElementById('pinSwitch');
     const previewCard = document.getElementById('previewCard');
 
     let state = {
       cardColor: me.card_color || '',
+      cardBg: me.card_bg || '',
       cardRgb: !!me.card_rgb,
-      cardPinned: !!me.card_pinned
+      cardPinned: !!me.card_pinned,
+      useBg: !!me.card_bg
     };
 
     function updatePreview() {
       previewCard.style.borderColor = state.cardColor || 'transparent';
+      previewCard.style.background = state.useBg ? state.cardBg : 'rgba(38,38,46,0.7)';
       previewCard.style.animation = state.cardRgb ? 'rgbGlow 4s linear infinite' : 'none';
       if (!state.cardRgb) {
         previewCard.style.boxShadow = state.cardColor ? `0 0 18px ${hexToRgba(state.cardColor, 0.6)}` : 'none';
@@ -1179,8 +1602,14 @@
       previewCard.textContent = state.cardPinned ? '📌' : '✦';
     }
 
-    colorInput.addEventListener('input', () => {
-      state.cardColor = colorInput.value;
+    colorInput.addEventListener('input', () => { state.cardColor = colorInput.value; updatePreview(); });
+    bgInput.addEventListener('input', () => {
+      state.cardBg = bgInput.value;
+      if (state.useBg) updatePreview();
+    });
+    useBgSwitch.addEventListener('click', () => {
+      state.useBg = !state.useBg;
+      useBgSwitch.classList.toggle('on', state.useBg);
       updatePreview();
     });
     rgbSwitch.addEventListener('click', () => {
@@ -1204,6 +1633,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             cardColor: state.cardColor,
+            cardBg: state.useBg ? state.cardBg : '',
             cardRgb: state.cardRgb,
             cardPinned: state.cardPinned
           })
@@ -1329,7 +1759,7 @@
 
     const themeBtn = document.createElement('button');
     themeBtn.className = 'theme-btn';
-    themeBtn.title = 'Сменить тему';
+    themeBtn.title = 'Тема и эффекты';
     themeBtn.textContent = '🎨';
     themeBtn.addEventListener('click', () => themeModal.classList.add('show'));
     topbarRight.appendChild(themeBtn);
@@ -1351,6 +1781,13 @@
         invBtn.textContent = '🎒';
         invBtn.addEventListener('click', openInventory);
         topbarRight.appendChild(invBtn);
+
+        const marketBtn = document.createElement('button');
+        marketBtn.className = 'theme-btn';
+        marketBtn.title = 'Рынок';
+        marketBtn.textContent = '🏪';
+        marketBtn.addEventListener('click', openMarket);
+        topbarRight.appendChild(marketBtn);
       } catch {}
     }
 
@@ -1555,6 +1992,7 @@
 
   renderThemeGrid();
   applyTheme(localStorage.getItem(THEME_KEY) || 'gray');
+  applyFx(getFx());
   renderAll();
 </script>
 </body>
