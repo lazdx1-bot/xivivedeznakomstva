@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XIVIVIDE — знакомства</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+  body {
+    min-height: 100vh;
+    background: #0d0d10;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(120,120,140,0.25), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(90,90,110,0.28), transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(140,140,160,0.15), transparent 60%),
+      linear-gradient(135deg, #14141a 0%, #1c1c24 50%, #101014 100%);
+    background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
+    animation: bgShift 18s ease-in-out infinite;
+    color: #e8e8f0;
+    overflow-x: hidden;
+    padding-bottom: 60px;
+  }
+  @keyframes bgShift {
+    0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0 0; }
+    50%  { background-position: 100% 50%, 0% 50%, 20% 80%, 0 0; }
+    100% { background-position: 0% 0%, 100% 100%, 50% 50%, 0 0; }
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -20%; left: -20%;
+    width: 140%; height: 140%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(180,180,200,0.10), transparent 40%),
+      radial-gradient(circle at 70% 70%, rgba(150,150,175,0.12), transparent 45%);
+    animation: floatGlow 22s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes floatGlow {
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(6%,-4%) scale(1.08); }
+    100% { transform: translate(-5%,5%) scale(1.03); }
+  }
+
+  .topbar {
+    position: relative;
+    z-index: 5;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(180deg, rgba(60,60,72,0.5), rgba(30,30,38,0.1));
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-size: 24px;
+    letter-spacing: 4px;
+    background: linear-gradient(90deg, #e8e8f0, #a0a0b8, #e8e8f0);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 5s linear infinite;
+    font-weight: 700;
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 14px 6px 6px;
+    background: rgba(60,60,78,0.55);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 30px; cursor: pointer; transition: all 0.25s;
+  }
+  .user-chip:hover { background: rgba(90,90,115,0.65); box-shadow: 0 0 18px rgba(170,170,200,0.3); }
+  .user-chip img, .user-chip .avatar-placeholder {
+    width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+    background: linear-gradient(135deg, #2a2a34, #3a3a48);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: #b0b0c4; flex-shrink: 0;
+  }
+  .user-chip span { font-size: 13.5px; color: #e8e8f5; }
+
+  .login-btn, .logout-btn {
+    padding: 9px 18px; font-size: 13px; letter-spacing: 0.5px;
+    color: #e8e8f0; background: rgba(60,60,78,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit;
+  }
+  .login-btn:hover, .logout-btn:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px rgba(170,170,200,0.35); }
+  .logout-btn { color: #ff9aa7; }
+  .logout-btn:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.4); }
+
+  .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+  .add-btn {
+    display: block; margin: 0 auto 30px; padding: 14px 32px;
+    font-size: 15px; letter-spacing: 1px; color: #e8e8f0;
+    background: linear-gradient(135deg, rgba(110,110,135,0.55), rgba(70,70,90,0.55));
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 30px; cursor: pointer; backdrop-filter: blur(12px);
+    transition: all 0.3s; font-family: inherit;
+  }
+  .add-btn:hover {
+    background: linear-gradient(135deg, rgba(150,150,180,0.7), rgba(95,95,120,0.7));
+    box-shadow: 0 0 28px rgba(170,170,200,0.45); transform: translateY(-2px);
+  }
+
+  .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+
+  .profile-card {
+    position: relative; border-radius: 18px; overflow: hidden;
+    background: rgba(38,38,46,0.55); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: cardIn 0.4s ease;
+    display: flex; flex-direction: column;
+  }
+  .profile-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px rgba(170,170,200,0.25); }
+  .profile-card.mine { border-color: rgba(170,170,200,0.4); box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px rgba(170,170,200,0.25); }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+  .mine-badge {
+    position: absolute; top: 10px; left: 10px;
+    padding: 5px 12px; font-size: 11px; letter-spacing: 1px;
+    background: rgba(20,20,26,0.8);
+    border: 1px solid rgba(170,170,200,0.5);
+    border-radius: 14px; color: #d8d8e4;
+    text-transform: uppercase; z-index: 2; backdrop-filter: blur(8px);
+  }
+
+  .profile-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; background: #1a1a22; }
+  .profile-photo-placeholder {
+    width: 100%; aspect-ratio: 4/5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 46px; color: rgba(200,200,220,0.3);
+    background: linear-gradient(135deg, #22222c, #2e2e3a);
+  }
+
+  .profile-info { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+  .profile-info h3 { font-size: 18px; font-weight: 600; color: #f0f0f8; letter-spacing: 0.3px; }
+  .profile-info h3 .age { font-weight: 300; opacity: 0.7; font-size: 15px; }
+  .profile-info p { font-size: 13.5px; color: #b8b8cc; margin-top: 8px; line-height: 1.45; word-break: break-word; }
+  .profile-date { display: block; margin-top: 10px; font-size: 11px; color: #7a7a8c; letter-spacing: 0.5px; }
+
+  .contact-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 7px 12px; font-size: 12.5px;
+    color: #e8e8f5; background: rgba(90,90,115,0.45);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px; text-decoration: none; word-break: break-all;
+    transition: all 0.25s; align-self: flex-start; max-width: 100%;
+  }
+  .contact-badge:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px rgba(170,170,200,0.35); }
+
+  .like-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .like-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px; font-size: 13px; color: #d8d8e4;
+    background: rgba(60,60,78,0.55);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit;
+  }
+  .like-btn:hover { background: rgba(255,90,110,0.15); border-color: rgba(255,90,110,0.4); color: #ff8a99; }
+  .like-btn .heart { font-size: 15px; transition: transform 0.25s; display: inline-block; }
+  .like-btn.liked { background: rgba(255,90,110,0.2); border-color: rgba(255,90,110,0.55); color: #ff8a99; }
+  .like-btn.liked .heart { transform: scale(1.2); filter: drop-shadow(0 0 6px rgba(255,90,110,0.7)); }
+  .like-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(10,10,14,0.75); backdrop-filter: blur(8px);
+    display: none; justify-content: center; align-items: center;
+    z-index: 100; padding: 20px; animation: fadeIn 0.25s ease;
+  }
+  .modal.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-content {
+    position: relative; width: 100%; max-width: 420px;
+    max-height: 90vh; overflow-y: auto;
+    padding: 28px 24px; border-radius: 22px;
+    background: rgba(38,38,46,0.9);
+    backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 25px 70px rgba(0,0,0,0.7);
+    animation: modalIn 0.3s ease;
+  }
+  .modal-content.wide { max-width: 500px; }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .modal-content h2 {
+    font-size: 20px; letter-spacing: 2px; margin-bottom: 20px;
+    color: #e8e8f5; text-align: center; text-transform: uppercase; font-weight: 500;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 16px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #c8c8d6; font-size: 16px; cursor: pointer;
+    transition: all 0.25s; z-index: 2;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.14); color: #fff; }
+
+  form label { display: block; font-size: 13px; color: #b0b0c4; margin-bottom: 14px; letter-spacing: 0.5px; }
+  form input, form textarea, form select {
+    width: 100%; margin-top: 6px; padding: 11px 14px;
+    font-size: 14px; color: #f0f0f8;
+    background: rgba(20,20,26,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; outline: none; transition: all 0.25s;
+    resize: vertical; font-family: inherit;
+  }
+  form input:focus, form textarea:focus, form select:focus {
+    border-color: rgba(170,170,200,0.6);
+    box-shadow: 0 0 0 3px rgba(170,170,200,0.15);
+  }
+  form input[type="file"] { padding: 8px; font-size: 12.5px; color: #b0b0c4; }
+  form input[type="file"]::file-selector-button {
+    background: rgba(110,110,135,0.5); color: #e8e8f0;
+    border: none; padding: 8px 14px; border-radius: 8px;
+    margin-right: 10px; cursor: pointer; font-family: inherit;
+  }
+
+  .contact-row { display: grid; grid-template-columns: 110px 1fr; gap: 8px; }
+
+  .submit-btn {
+    width: 100%; padding: 14px; margin-top: 8px;
+    font-size: 15px; letter-spacing: 1px;
+    color: #f0f0f8;
+    background: linear-gradient(135deg, rgba(110,110,135,0.7), rgba(70,70,90,0.7));
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px; cursor: pointer; transition: all 0.3s; font-family: inherit;
+  }
+  .submit-btn:hover { background: linear-gradient(135deg, rgba(150,150,180,0.8), rgba(95,95,120,0.8)); box-shadow: 0 0 24px rgba(170,170,200,0.5); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .form-status { margin-top: 12px; text-align: center; font-size: 13px; min-height: 18px; color: #a8a8c0; }
+  .form-status.error { color: #ff7a88; }
+
+  .profile-hero {
+    display: flex; gap: 18px; align-items: center;
+    padding: 16px; background: rgba(30,30,40,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; margin-bottom: 22px;
+  }
+  .profile-hero img, .profile-hero .big-avatar {
+    width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
+    background: linear-gradient(135deg, #2a2a34, #3a3a48);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; color: #b0b0c4; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .profile-hero-info h3 { font-size: 22px; color: #f0f0f8; margin-bottom: 4px; }
+  .profile-hero-info h3 .age { font-weight: 300; opacity: 0.7; font-size: 17px; }
+  .profile-hero-info p { font-size: 13.5px; color: #b8b8cc; line-height: 1.45; margin-bottom: 8px; }
+
+  .stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  .stat-box {
+    flex: 1; text-align: center; padding: 14px 10px;
+    background: rgba(30,30,40,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+  }
+  .stat-box .num { font-size: 24px; font-weight: 600; color: #e8e8f5; }
+  .stat-box .label { font-size: 11.5px; color: #8a8a9c; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
+
+  .section-title {
+    font-size: 13px; letter-spacing: 2px; color: #b8b8cc;
+    text-transform: uppercase; margin: 20px 0 12px; font-weight: 500;
+  }
+
+  .liker-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; background: rgba(30,30,40,0.5);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; margin-bottom: 8px;
+  }
+  .liker-row img, .liker-row .mini-avatar {
+    width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
+    background: linear-gradient(135deg, #2a2a34, #3a3a48);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #b0b0c4; flex-shrink: 0;
+  }
+  .liker-row .liker-info { flex: 1; min-width: 0; }
+  .liker-row .liker-info strong { display: block; font-size: 14.5px; color: #f0f0f8; font-weight: 600; }
+  .liker-row .liker-info small { font-size: 12px; color: #8a8a9c; }
+  .liker-row .liker-contact {
+    font-size: 12.5px; color: #e8e8f5;
+    background: rgba(90,90,115,0.45);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px; padding: 6px 11px;
+    text-decoration: none; white-space: nowrap; transition: all 0.25s;
+  }
+  .liker-row .liker-contact:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 14px rgba(170,170,200,0.3); }
+
+  .empty-small {
+    text-align: center; padding: 20px; font-size: 13.5px; color: #7a7a8c;
+    background: rgba(30,30,40,0.4);
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .modal-actions button {
+    flex: 1; padding: 12px; font-size: 13.5px; letter-spacing: 0.5px;
+    border-radius: 12px; cursor: pointer; font-family: inherit;
+    transition: all 0.25s;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(60,60,78,0.55); color: #e8e8f0;
+  }
+  .modal-actions button:hover { background: rgba(150,150,180,0.55); }
+  .modal-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
+  .modal-actions button.danger:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.55); }
+
+  .brand-footer {
+    position: fixed; bottom: 12px; left: 0; right: 0;
+    text-align: center; font-size: 11px; letter-spacing: 5px;
+    color: rgba(200,200,220,0.22); z-index: 0; pointer-events: none;
+  }
+
+  @media (max-width: 480px) {
+    .brand { font-size: 20px; letter-spacing: 3px; }
+    .wall { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+    .profile-info h3 { font-size: 16px; }
+    .contact-row { grid-template-columns: 100px 1fr; }
+    .topbar { padding: 14px; }
+    .profile-hero { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">XIVIVIDE</div>
+  <div class="topbar-right" id="topbarRight"></div>
+</header>
+
+<main class="container">
+  <button class="add-btn" id="openForm">+ Добавить свою анкету</button>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeForm">✕</button>
+      <h2>Твоя анкета</h2>
+      <form id="profileForm">
+        <label>Имя
+          <input type="text" name="name" required maxlength="40" placeholder="Как тебя зовут?">
+        </label>
+        <label>Возраст
+          <input type="number" name="age" required min="16" max="99" placeholder="18">
+        </label>
+        <label>О себе
+          <textarea name="bio" maxlength="200" rows="3" placeholder="Пара слов о себе..."></textarea>
+        </label>
+        <label>Контакт для связи
+          <div class="contact-row">
+            <select name="contactType">
+              <option value="telegram">Telegram</option>
+              <option value="discord">Discord</option>
+            </select>
+            <input type="text" name="contactValue" maxlength="60" placeholder="@username">
+          </div>
+        </label>
+        <label>Фото
+          <input type="file" name="photo" accept="image/*">
+        </label>
+        <button type="submit" class="submit-btn">Опубликовать</button>
+        <div class="form-status" id="formStatus"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="myProfileModal">
+    <div class="modal-content wide">
+      <button class="modal-close" id="closeMyProfile">✕</button>
+      <h2>Мой профиль</h2>
+      <div id="myProfileContent"></div>
+    </div>
+  </div>
+
+  <div class="wall" id="wall"></div>
+</main>
+
+<footer class="brand-footer">X I V I V I D E</footer>
+
+<script>
+  const API = '/api';
+
+  const wallEl = document.getElementById('wall');
+  const topbarRight = document.getElementById('topbarRight');
+  const modal = document.getElementById('modal');
+  const openBtn = document.getElementById('openForm');
+  const closeBtn = document.getElementById('closeForm');
+  const form = document.getElementById('profileForm');
+  const statusEl = document.getElementById('formStatus');
+  const myProfileModal = document.getElementById('myProfileModal');
+  const myProfileContent = document.getElementById('myProfileContent');
+  const closeMyProfile = document.getElementById('closeMyProfile');
+
+  const MY_ID_KEY = 'xivivide_my_id';
+  let myLikes = new Set();
+
+  function getMyId() { return localStorage.getItem(MY_ID_KEY); }
+  function setMyId(id) {
+    if (id) localStorage.setItem(MY_ID_KEY, id);
+    else localStorage.removeItem(MY_ID_KEY);
+  }
+
+  async function api(url, options) {
+    const res = await fetch(API + url, options);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Ошибка' }));
+      throw new Error(err.error || 'Ошибка');
+    }
+    return res.json();
+  }
+
+  async function loadWall() {
+    try {
+      const profiles = await api('/profiles');
+      const myId = getMyId();
+      if (myId) {
+        const likedIds = await api('/likes/' + myId);
+        myLikes = new Set(likedIds.map(String));
+      }
+      renderWall(profiles, myId);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function renderWall(profiles, myId) {
+    wallEl.innerHTML = '';
+    if (!profiles.length) return;
+    profiles.forEach(p => wallEl.appendChild(createCard(p, myId)));
+  }
+
+  function createCard(p, myId) {
+    const card = document.createElement('div');
+    card.className = 'profile-card' + (String(p.id) === String(myId) ? ' mine' : '');
+    card.dataset.id = p.id;
+
+    const photoHTML = p.photo
+      ? `<img class="profile-photo" src="${p.photo}" alt="" loading="lazy">`
+      : `<div class="profile-photo-placeholder">✦</div>`;
+
+    const date = new Date(p.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
+
+    let contactHTML = '';
+    if (p.contact_value) {
+      const link = buildContactLink(p.contact_type, p.contact_value);
+      const label = contactLabel(p.contact_type);
+      const icon = contactIcon(p.contact_type);
+      const display = p.contact_type === 'telegram'
+        ? (p.contact_value.startsWith('@') ? p.contact_value : '@' + p.contact_value)
+        : p.contact_value;
+      contactHTML = link
+        ? `<a class="contact-badge" href="${link}" target="_blank" rel="noopener">${icon} ${label}: ${escapeHtml(display)}</a>`
+        : `<span class="contact-badge">${icon} ${label}: ${escapeHtml(display)}</span>`;
+    }
+
+    const liked = myLikes.has(String(p.id));
+    const likeCount = p.likes || 0;
+    const isMine = String(p.id) === String(myId);
+
+    card.innerHTML = `
+      ${isMine ? '<div class="mine-badge">★ Это ты</div>' : ''}
+      ${photoHTML}
+      <div class="profile-info">
+        <h3>${escapeHtml(p.name)} <span class="age">${p.age}</span></h3>
+        ${p.bio ? `<p>${escapeHtml(p.bio)}</p>` : ''}
+        ${contactHTML}
+        <div class="like-row">
+          <button class="like-btn ${liked ? 'liked' : ''}" ${isMine ? 'disabled title="Нельзя лайкнуть себя"' : ''}>
+            <span class="heart">${liked ? '❤️' : '🤍'}</span>
+            <span class="like-count">${likeCount}</span>
+          </button>
+        </div>
+        <span class="profile-date">с ${date}</span>
+      </div>
+    `;
+
+    if (!isMine) {
+      card.querySelector('.like-btn').addEventListener('click', () => toggleLike(p.id));
+    }
+    return card;
+  }
+
+  async function toggleLike(targetId) {
+    const myId = getMyId();
+    if (!myId) { alert('Сначала создай свою анкету!'); return; }
+    try {
+      const result = await api('/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ likerId: parseInt(myId), targetId: parseInt(targetId) })
+      });
+      if (result.liked) myLikes.add(String(targetId));
+      else myLikes.delete(String(targetId));
+      await loadWall();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  function buildContactLink(type, value) {
+    const clean = String(value).trim().replace(/^@/, '');
+    if (type === 'telegram') return 'https://t.me/' + encodeURIComponent(clean);
+    if (type === 'discord') return 'https://discord.com/users/' + encodeURIComponent(clean);
+    return null;
+  }
+  function contactLabel(type) { return type === 'telegram' ? 'Telegram' : 'Discord'; }
+  function contactIcon(type) { return type === 'telegram' ? '✈️' : '🎮'; }
+
+  async function renderTopbar() {
+    const myId = getMyId();
+    topbarRight.innerHTML = '';
+    if (!myId) {
+      const loginBtn = document.createElement('button');
+      loginBtn.className = 'login-btn';
+      loginBtn.textContent = 'Войти';
+      loginBtn.addEventListener('click', openLoginPicker);
+      topbarRight.appendChild(loginBtn);
+      openBtn.style.display = 'block';
+      return;
+    }
+    try {
+      const profiles = await api('/profiles');
+      const me = profiles.find(p => String(p.id) === String(myId));
+      if (!me) { setMyId(null); renderTopbar(); return; }
+
+      const chip = document.createElement('div');
+      chip.className = 'user-chip';
+      chip.innerHTML = (me.photo
+        ? `<img src="${me.photo}" alt="">`
+        : `<div class="avatar-placeholder">✦</div>`) + `<span>${escapeHtml(me.name)}</span>`;
+      chip.addEventListener('click', openMyProfile);
+
+      const logoutBtn = document.createElement('button');
+      logoutBtn.className = 'logout-btn';
+      logoutBtn.textContent = 'Выйти';
+      logoutBtn.addEventListener('click', () => {
+        if (!confirm('Выйти из профиля?')) return;
+        setMyId(null);
+        renderAll();
+      });
+
+      topbarRight.appendChild(chip);
+      topbarRight.appendChild(logoutBtn);
+      openBtn.style.display = 'none';
+    } catch (err) { console.error(err); }
+  }
+
+  async function openLoginPicker() {
+    const name = prompt('Введи имя своей анкеты:');
+    if (!name) return;
+    try {
+      const profile = await api('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      setMyId(profile.id);
+      renderAll();
+    } catch (err) { alert(err.message); }
+  }
+
+  async function openMyProfile() {
+    const myId = getMyId();
+    if (!myId) return;
+    try {
+      const profiles = await api('/profiles');
+      const me = profiles.find(p => String(p.id) === String(myId));
+      if (!me) return;
+      const likedBy = await api('/liked-by/' + myId);
+      renderMyProfile(me, likedBy);
+      myProfileModal.classList.add('show');
+    } catch (err) { console.error(err); }
+  }
+
+  function renderMyProfile(me, likedBy) {
+    const avatarHTML = me.photo ? `<img src="${me.photo}" alt="">` : `<div class="big-avatar">✦</div>`;
+    const contactLink = me.contact_value ? buildContactLink(me.contact_type, me.contact_value) : null;
+
+    myProfileContent.innerHTML = `
+      <div class="profile-hero">
+        ${avatarHTML}
+        <div class="profile-hero-info">
+          <h3>${escapeHtml(me.name)} <span class="age">${me.age}</span></h3>
+          ${me.bio ? `<p>${escapeHtml(me.bio)}</p>` : ''}
+          ${me.contact_value ? `<a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>
+            ${contactIcon(me.contact_type)} ${contactLabel(me.contact_type)}: ${escapeHtml(me.contact_value)}
+          </a>` : ''}
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="num">${me.likes || 0}</div><div class="label">Всего ♥</div></div>
+        <div class="stat-box"><div class="num">${likedBy.length}</div><div class="label">Кто лайкнул</div></div>
+      </div>
+      <div class="section-title">Кто тебя лайкнул</div>
+      ${likedBy.length === 0
+        ? '<div class="empty-small">Пока никто не лайкнул. Загляни позже!</div>'
+        : likedBy.map(p => {
+            const link = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
+            const av = p.photo ? `<img src="${p.photo}" alt="">` : `<div class="mini-avatar">✦</div>`;
+            const c = p.contact_value
+              ? (link
+                  ? `<a class="liker-contact" href="${link}" target="_blank" rel="noopener">${contactIcon(p.contact_type)} ${escapeHtml(p.contact_value)}</a>`
+                  : `<span class="liker-contact">${contactIcon(p.contact_type)} ${escapeHtml(p.contact_value)}</span>`)
+              : '';
+            return `<div class="liker-row">${av}
+              <div class="liker-info">
+                <strong>${escapeHtml(p.name)}, ${p.age}</strong>
+                <small>${escapeHtml((p.bio || '').slice(0,40))}${p.bio && p.bio.length > 40 ? '…' : ''}</small>
+              </div>${c}</div>`;
+          }).join('')
+      }
+      <div class="modal-actions">
+        <button id="editMyBtn">Редактировать</button>
+        <button id="deleteMyBtn" class="danger">Удалить анкету</button>
+      </div>
+    `;
+
+    document.getElementById('editMyBtn').onclick = () => {
+      myProfileModal.classList.remove('show');
+      openEditForm(me);
+    };
+    document.getElementById('deleteMyBtn').onclick = async () => {
+      if (!confirm('Точно удалить свою анкету?')) return;
+      try {
+        await api('/profiles/' + me.id, { method: 'DELETE' });
+        setMyId(null);
+        myProfileModal.classList.remove('show');
+        renderAll();
+      } catch (err) { alert(err.message); }
+    };
+  }
+
+  let editingId = null;
+
+  function openEditForm(profile) {
+    editingId = profile.id;
+    form.reset();
+    form.name.value = profile.name;
+    form.age.value = profile.age;
+    form.bio.value = profile.bio || '';
+    form.contactType.value = profile.contact_type || 'telegram';
+    form.contactValue.value = profile.contact_value || '';
+    document.querySelector('#modal h2').textContent = 'Редактировать анкету';
+    form.querySelector('.submit-btn').textContent = 'Сохранить изменения';
+    modal.classList.add('show');
+  }
+  function openCreateForm() {
+    editingId = null;
+    form.reset();
+    document.querySelector('#modal h2').textContent = 'Твоя анкета';
+    form.querySelector('.submit-btn').textContent = 'Опубликовать';
+    modal.classList.add('show');
+  }
+
+  openBtn.addEventListener('click', openCreateForm);
+  closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+  closeMyProfile.addEventListener('click', () => myProfileModal.classList.remove('show'));
+  myProfileModal.addEventListener('click', e => { if (e.target === myProfileModal) myProfileModal.classList.remove('show'); });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const submitBtn = form.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Сохраняем...';
+    statusEl.className = 'form-status';
+
+    try {
+      const fd = new FormData(form);
+      if (!fd.get('name') || !fd.get('age')) throw new Error('Имя и возраст обязательны');
+
+      let saved;
+      if (editingId) {
+        saved = await api('/profiles/' + editingId, { method: 'PUT', body: fd });
+      } else {
+        saved = await api('/profiles', { method: 'POST', body: fd });
+        setMyId(saved.id);
+      }
+      statusEl.textContent = 'Готово!';
+      form.reset();
+      setTimeout(() => { modal.classList.remove('show'); renderAll(); }, 600);
+    } catch (err) {
+      statusEl.textContent = err.message;
+      statusEl.className = 'form-status error';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, s => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[s]));
+  }
+
+  async function renderAll() {
+    await renderTopbar();
+    await loadWall();
+  }
+
+  renderAll();
+</script>
+</body>
+</html>
