@@ -35,7 +35,6 @@
     color: #e8e8f0;
     overflow-x: hidden;
     padding-bottom: 60px;
-    transition: background-color 0.4s ease;
   }
   @keyframes bgShift {
     0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0 0; }
@@ -53,7 +52,6 @@
     animation: floatGlow 22s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 0;
-    transition: background 0.4s ease;
   }
   @keyframes floatGlow {
     0%   { transform: translate(0,0) scale(1); }
@@ -61,29 +59,41 @@
     100% { transform: translate(-5%,5%) scale(1.03); }
   }
 
+  body.theme-web { background: #050508; background-image: none; animation: none; }
+  body.theme-web::before {
+    background-color: #050508;
+    background-image:
+      radial-gradient(circle at 20% 15%, rgba(120,120,140,0.08), transparent 40%),
+      radial-gradient(circle at 80% 85%, rgba(90,90,110,0.10), transparent 45%);
+    animation: none;
+  }
+  .web-corner {
+    position: fixed; width: 300px; height: 300px;
+    pointer-events: none; z-index: 0;
+    opacity: 0; transition: opacity 0.6s ease;
+    background-size: contain; background-repeat: no-repeat;
+  }
+  body.theme-web .web-corner { opacity: 0.35; }
+  .web-corner.tl { top: 0; left: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
+  .web-corner.tr { top: 0; right: 0; transform: scaleX(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
+  .web-corner.bl { bottom: 0; left: 0; transform: scaleY(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
+  .web-corner.br { bottom: 0; right: 0; transform: scale(-1,-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
+
   .topbar {
-    position: relative;
-    z-index: 5;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    position: relative; z-index: 5; padding: 20px;
+    display: flex; justify-content: space-between; align-items: center;
     gap: 14px;
     background: linear-gradient(180deg, rgba(60,60,72,0.5), rgba(30,30,38,0.1));
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(14px);
-    flex-wrap: wrap;
+    backdrop-filter: blur(14px); flex-wrap: wrap;
   }
   .brand {
-    font-size: 24px;
-    letter-spacing: 4px;
+    font-size: 24px; letter-spacing: 4px;
     background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light));
     background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
+    -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shimmer 5s linear infinite;
-    font-weight: 700;
+    animation: shimmer 5s linear infinite; font-weight: 700;
   }
   @keyframes shimmer {
     0%   { background-position: -200% 0; }
@@ -121,6 +131,7 @@
     font-size: 15px; color: #b0b0c4; flex-shrink: 0;
   }
   .user-chip span { font-size: 13.5px; color: #e8e8f5; }
+  .user-chip.premium { border-color: rgba(255,215,0,0.5); box-shadow: 0 0 14px rgba(255,215,0,0.35); }
 
   .login-btn, .logout-btn {
     padding: 9px 18px; font-size: 13px; letter-spacing: 0.5px;
@@ -137,12 +148,8 @@
     padding: 6px 12px; font-size: 13px;
     background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,180,0,0.15));
     border: 1px solid rgba(255,215,0,0.4);
-    border-radius: 20px;
-    color: #ffd970;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s;
-    font-family: inherit;
+    border-radius: 20px; color: #ffd970; font-weight: 600;
+    cursor: pointer; transition: all 0.25s; font-family: inherit;
   }
   .vide-badge:hover {
     background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25));
@@ -182,6 +189,20 @@
     border-color: color-mix(in srgb, var(--accent) 60%, transparent);
     box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px var(--accent-glow);
   }
+  .profile-card.premium { box-shadow: 0 0 24px rgba(255,215,0,0.35), 0 12px 30px rgba(0,0,0,0.5); }
+  .profile-card.premium::before {
+    content: '★'; position: absolute; top: 10px; right: 10px;
+    z-index: 3; font-size: 18px; color: #ffd970;
+    text-shadow: 0 0 12px rgba(255,215,0,0.9);
+  }
+  .profile-card.rgb { animation: rgbGlow 4s linear infinite; }
+  @keyframes rgbGlow {
+    0%   { box-shadow: 0 0 25px rgba(255,0,80,0.6),  0 12px 30px rgba(0,0,0,0.5); }
+    25%  { box-shadow: 0 0 25px rgba(255,180,0,0.6), 0 12px 30px rgba(0,0,0,0.5); }
+    50%  { box-shadow: 0 0 25px rgba(0,220,80,0.6),  0 12px 30px rgba(0,0,0,0.5); }
+    75%  { box-shadow: 0 0 25px rgba(0,140,255,0.6), 0 12px 30px rgba(0,0,0,0.5); }
+    100% { box-shadow: 0 0 25px rgba(255,0,80,0.6),  0 12px 30px rgba(0,0,0,0.5); }
+  }
   @keyframes cardIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
   .mine-badge {
@@ -192,6 +213,15 @@
     border-radius: 14px; color: #d8d8e4;
     text-transform: uppercase; z-index: 2; backdrop-filter: blur(8px);
   }
+  .pin-badge {
+    position: absolute; top: 10px; right: 10px;
+    padding: 5px 10px; font-size: 12px;
+    background: rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.5);
+    border-radius: 14px; color: #ffd970;
+    z-index: 2;
+  }
+  .profile-card.premium .pin-badge { right: 44px; }
 
   .profile-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; background: #1a1a22; }
   .profile-photo-placeholder {
@@ -298,8 +328,7 @@
 
   .submit-btn {
     width: 100%; padding: 14px; margin-top: 8px;
-    font-size: 15px; letter-spacing: 1px;
-    color: #f0f0f8;
+    font-size: 15px; letter-spacing: 1px; color: #f0f0f8;
     background: linear-gradient(135deg,
       color-mix(in srgb, var(--accent) 70%, transparent),
       color-mix(in srgb, var(--accent-dark) 70%, transparent));
@@ -311,6 +340,7 @@
 
   .form-status { margin-top: 12px; text-align: center; font-size: 13px; min-height: 18px; color: #a8a8c0; }
   .form-status.error { color: #ff7a88; }
+  .form-status.success { color: #9fe0b0; }
 
   .profile-hero {
     display: flex; gap: 18px; align-items: center;
@@ -389,8 +419,9 @@
   .modal-actions button:hover { background: rgba(150,150,180,0.55); }
   .modal-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .modal-actions button.danger:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.55); }
+  .modal-actions button.premium { color: #ffd970; border-color: rgba(255,215,0,0.35); }
+  .modal-actions button.premium:hover { background: rgba(255,215,0,0.15); }
 
-  /* ===== ТЕМЫ ===== */
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
   .theme-swatch {
     position: relative; padding: 14px 8px; border-radius: 14px; cursor: pointer;
@@ -402,6 +433,7 @@
   .theme-swatch .dot {
     width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 8px;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
   }
   .theme-swatch .name { font-size: 11.5px; color: #d8d8e4; letter-spacing: 0.5px; }
   .custom-theme-row {
@@ -421,7 +453,6 @@
   }
   .custom-theme-row button:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px var(--accent-glow); }
 
-  /* ===== КОЛЕСО ===== */
   .wheel-wrap { position: relative; width: 260px; height: 260px; margin: 0 auto 20px; }
   .wheel-pointer {
     position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
@@ -457,11 +488,15 @@
     min-height: 60px; margin-bottom: 14px;
   }
   .wheel-result img {
-    width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+    width: 100px; height: 100px; border-radius: 12px; object-fit: cover;
     margin: 8px auto; display: block;
     border: 2px solid #ffd970;
     box-shadow: 0 0 20px rgba(255,215,0,0.5);
     animation: popIn 0.4s ease;
+  }
+  .wheel-result .rarity {
+    display: block; font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 4px; opacity: 0.75;
   }
   @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .spin-btn {
@@ -474,7 +509,71 @@
   .spin-btn:hover { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
   .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  /* ===== АДМИНКА ===== */
+  .inv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  .inv-item {
+    position: relative;
+    background: rgba(30,30,40,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 8px; text-align: center;
+  }
+  .inv-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+  .inv-item .inv-name {
+    font-size: 11.5px; color: #d8d8e4; margin-top: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .inv-item .inv-count {
+    position: absolute; top: 4px; right: 4px;
+    min-width: 20px; height: 20px; padding: 0 5px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px; font-size: 11px; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 600;
+  }
+  .inv-item.rarity-common    { border-color: rgba(150,150,150,0.4); }
+  .inv-item.rarity-rare      { border-color: rgba(90,150,255,0.5); }
+  .inv-item.rarity-epic      { border-color: rgba(180,120,255,0.6); }
+  .inv-item.rarity-legendary { border-color: rgba(255,215,0,0.7); box-shadow: 0 0 18px rgba(255,215,0,0.3); }
+
+  .premium-preview {
+    margin-bottom: 16px; padding: 12px;
+    background: rgba(20,20,26,0.6);
+    border-radius: 14px; border: 1px dashed rgba(255,215,0,0.4);
+  }
+  .premium-preview h4 {
+    font-size: 11.5px; letter-spacing: 1px; color: #ffd970;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .color-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .color-row input[type="color"] {
+    width: 44px; height: 40px; padding: 3px; margin: 0;
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(20,20,26,0.7); cursor: pointer;
+  }
+  .color-row label { margin: 0; font-size: 12.5px; color: #b8b8cc; }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .toggle-row label { margin: 0; font-size: 13px; color: #d8d8e4; }
+  .switch {
+    position: relative; width: 46px; height: 26px;
+    background: rgba(60,60,78,0.7); border-radius: 13px; cursor: pointer;
+    transition: all 0.25s; border: 1px solid rgba(255,255,255,0.1);
+  }
+  .switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #b0b0c4; transition: all 0.25s;
+  }
+  .switch.on { background: rgba(255,215,0,0.35); border-color: rgba(255,215,0,0.6); }
+  .switch.on::after { left: 22px; background: #ffd970; box-shadow: 0 0 10px rgba(255,215,0,0.7); }
+
   .admin-user-row {
     display: flex; align-items: center; gap: 12px;
     padding: 10px 12px; background: rgba(30,30,40,0.5);
@@ -510,6 +609,8 @@
   .admin-actions button.danger:hover { background: rgba(255,80,100,0.18); }
   .admin-actions button.give { color: #ffd970; border-color: rgba(255,215,0,0.3); }
   .admin-actions button.give:hover { background: rgba(255,215,0,0.15); }
+  .admin-actions button.premium { color: #b17aff; border-color: rgba(177,122,255,0.4); }
+  .admin-actions button.premium:hover { background: rgba(177,122,255,0.15); }
 
   .brand-footer {
     position: fixed; bottom: 12px; left: 0; right: 0;
@@ -529,6 +630,11 @@
 </style>
 </head>
 <body>
+
+<div class="web-corner tl"></div>
+<div class="web-corner tr"></div>
+<div class="web-corner bl"></div>
+<div class="web-corner br"></div>
 
 <header class="topbar">
   <div class="brand">XIVIVIDE</div>
@@ -578,6 +684,14 @@
     </div>
   </div>
 
+  <div class="modal" id="appearanceModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeAppearance">✕</button>
+      <h2>Оформление анкеты</h2>
+      <div id="appearanceContent"></div>
+    </div>
+  </div>
+
   <div class="modal" id="themeModal">
     <div class="modal-content">
       <button class="modal-close" id="closeTheme">✕</button>
@@ -601,6 +715,14 @@
       </div>
       <div class="wheel-result" id="wheelResult">Крути за 10 вайдиков</div>
       <button class="spin-btn" id="spinBtn">Крутить · 10 🪙</button>
+    </div>
+  </div>
+
+  <div class="modal" id="invModal">
+    <div class="modal-content wide">
+      <button class="modal-close" id="closeInv">✕</button>
+      <h2>Инвентарь</h2>
+      <div id="invContent"></div>
     </div>
   </div>
 
@@ -630,6 +752,9 @@
   const myProfileModal = document.getElementById('myProfileModal');
   const myProfileContent = document.getElementById('myProfileContent');
   const closeMyProfile = document.getElementById('closeMyProfile');
+  const appearanceModal = document.getElementById('appearanceModal');
+  const appearanceContent = document.getElementById('appearanceContent');
+  const closeAppearance = document.getElementById('closeAppearance');
   const themeModal = document.getElementById('themeModal');
   const closeTheme = document.getElementById('closeTheme');
   const themeGrid = document.getElementById('themeGrid');
@@ -664,7 +789,12 @@
     pink:   { name: 'Розовая', accent: '#ff7ac4', accentLight: '#ffd9ec', accentDark: '#c44a94',
               bg1: '#1f0d1a', bg2: '#2e1226', bg3: '#150810',
               r1: 'rgba(220,90,180,0.28)', r2: 'rgba(180,60,140,0.30)', r3: 'rgba(240,130,210,0.18)',
-              f1: 'rgba(255,130,200,0.12)', f2: 'rgba(220,100,170,0.14)' }
+              f1: 'rgba(255,130,200,0.12)', f2: 'rgba(220,100,170,0.14)' },
+    web:    { name: 'Паутина',  accent: '#c0c0d8', accentLight: '#f0f0ff', accentDark: '#505068',
+              bg1: '#050508', bg2: '#0a0a10', bg3: '#020204',
+              r1: 'rgba(120,120,140,0.06)', r2: 'rgba(90,90,110,0.08)', r3: 'rgba(140,140,160,0.05)',
+              f1: 'rgba(180,180,200,0.05)', f2: 'rgba(150,150,175,0.06)',
+              special: 'web' }
   };
 
   function hexToRgba(hex, alpha) {
@@ -691,13 +821,11 @@
 
   function applyTheme(themeKey) {
     let theme;
-    if (THEMES[themeKey]) {
-      theme = THEMES[themeKey];
-    } else if (themeKey.startsWith('custom:')) {
+    if (THEMES[themeKey]) theme = THEMES[themeKey];
+    else if (themeKey.startsWith('custom:')) {
       const accent = themeKey.slice(7);
       theme = {
-        name: 'Своя',
-        accent,
+        name: 'Своя', accent,
         accentLight: lighten(accent, 0.45),
         accentDark: darken(accent, 0.35),
         bg1: darken(accent, 0.9),
@@ -709,9 +837,8 @@
         f1: hexToRgba(accent, 0.10),
         f2: hexToRgba(accent, 0.12)
       };
-    } else {
-      theme = THEMES.gray;
-    }
+    } else theme = THEMES.gray;
+
     const root = document.documentElement;
     root.style.setProperty('--accent', theme.accent);
     root.style.setProperty('--accent-light', theme.accentLight);
@@ -725,6 +852,8 @@
     root.style.setProperty('--bg-radial-3', theme.r3);
     root.style.setProperty('--float-1', theme.f1);
     root.style.setProperty('--float-2', theme.f2);
+
+    document.body.classList.toggle('theme-web', theme.special === 'web');
     localStorage.setItem(THEME_KEY, themeKey);
     document.querySelectorAll('.theme-swatch').forEach(s => {
       s.classList.toggle('active', s.dataset.key === themeKey);
@@ -737,8 +866,12 @@
       const el = document.createElement('div');
       el.className = 'theme-swatch';
       el.dataset.key = key;
+      const dotStyle = key === 'web'
+        ? `background: #050508; border: 1px solid rgba(255,255,255,0.3);`
+        : `background: linear-gradient(135deg, ${t.accentLight}, ${t.accent}, ${t.accentDark})`;
+      const dotContent = key === 'web' ? '🕷' : '';
       el.innerHTML = `
-        <div class="dot" style="background: linear-gradient(135deg, ${t.accentLight}, ${t.accent}, ${t.accentDark})"></div>
+        <div class="dot" style="${dotStyle}">${dotContent}</div>
         <div class="name">${t.name}</div>
       `;
       el.addEventListener('click', () => applyTheme(key));
@@ -785,8 +918,18 @@
 
   function createCard(p, myId) {
     const card = document.createElement('div');
-    card.className = 'profile-card' + (String(p.id) === String(myId) ? ' mine' : '');
+    let cls = 'profile-card';
+    if (String(p.id) === String(myId)) cls += ' mine';
+    if (p.is_premium) cls += ' premium';
+    if (p.is_premium && p.card_rgb) cls += ' rgb';
+    card.className = cls;
     card.dataset.id = p.id;
+
+    if (p.is_premium && p.card_color && !p.card_rgb) {
+      card.style.borderColor = p.card_color;
+      card.style.boxShadow = `0 12px 30px rgba(0,0,0,0.5), 0 0 22px ${hexToRgba(p.card_color, 0.55)}`;
+    }
+
     const photoHTML = p.photo
       ? `<img class="profile-photo" src="${p.photo}" alt="" loading="lazy">`
       : `<div class="profile-photo-placeholder">✦</div>`;
@@ -811,6 +954,7 @@
 
     card.innerHTML = `
       ${isMine ? '<div class="mine-badge">★ Это ты</div>' : ''}
+      ${p.card_pinned ? '<div class="pin-badge">📌</div>' : ''}
       ${photoHTML}
       <div class="profile-info">
         <h3>${escapeHtml(p.name)} <span class="age">${p.age}</span></h3>
@@ -855,13 +999,15 @@
   function contactLabel(type) { return type === 'telegram' ? 'Telegram' : 'Discord'; }
   function contactIcon(type) { return type === 'telegram' ? '✈️' : '🎮'; }
 
-  // ==================== ВАЙДИКИ / КОЛЕСО ====================
+  // === ВАЙДИКИ / КОЛЕСО ===
   const wheelModal = document.getElementById('wheelModal');
   const closeWheel = document.getElementById('closeWheel');
   const wheel = document.getElementById('wheel');
   const wheelResult = document.getElementById('wheelResult');
   const spinBtn = document.getElementById('spinBtn');
-
+  const invModal = document.getElementById('invModal');
+  const closeInv = document.getElementById('closeInv');
+  const invContent = document.getElementById('invContent');
   const adminModal = document.getElementById('adminModal');
   const closeAdmin = document.getElementById('closeAdmin');
   const adminContent = document.getElementById('adminContent');
@@ -898,8 +1044,7 @@
     isSpinning = true;
     spinBtn.disabled = true;
     wheelResult.innerHTML = 'Крутим...';
-    const spins = 5 + Math.random() * 3;
-    const angle = spins * 360 + Math.random() * 360;
+    const angle = (5 + Math.random() * 3) * 360 + Math.random() * 360;
     wheel.style.transform = `rotate(${angle}deg)`;
     try {
       const res = await api('/wheel/spin', {
@@ -910,8 +1055,9 @@
       setTimeout(() => {
         currentBalance = res.balance;
         wheelResult.innerHTML = `
-          Тебе выпала <strong>${escapeHtml(res.spin.result_name)}</strong>!<br>
-          <img src="${res.spin.result_photo}" alt="">
+          Тебе выпал <strong>${escapeHtml(res.skin.name)}</strong>!<br>
+          <img src="${res.skin.photo}" alt="">
+          <span class="rarity">${res.skin.rarity}</span>
         `;
         isSpinning = false;
         wheel.style.transition = 'none';
@@ -933,7 +1079,152 @@
   closeWheel.addEventListener('click', () => wheelModal.classList.remove('show'));
   wheelModal.addEventListener('click', e => { if (e.target === wheelModal) wheelModal.classList.remove('show'); });
 
-  // ==================== АДМИНКА ====================
+  // === ИНВЕНТАРЬ ===
+  async function openInventory() {
+    const myId = getMyId();
+    if (!myId) { alert('Войди в профиль'); return; }
+    invModal.classList.add('show');
+    invContent.innerHTML = '<div class="empty-small">Загрузка...</div>';
+    try {
+      const items = await api('/inventory/' + myId);
+      if (!items.length) {
+        invContent.innerHTML = '<div class="empty-small">Инвентарь пуст. Крути колесо!</div>';
+        return;
+      }
+      invContent.innerHTML = `<div class="inv-grid">${
+        items.map(it => `
+          <div class="inv-item rarity-${it.rarity}">
+            <img src="${it.photo}" alt="">
+            <div class="inv-name">${escapeHtml(it.name)}</div>
+            <div class="inv-count">×${it.count}</div>
+          </div>
+        `).join('')
+      }</div>`;
+    } catch (err) { invContent.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
+  }
+  closeInv.addEventListener('click', () => invModal.classList.remove('show'));
+  invModal.addEventListener('click', e => { if (e.target === invModal) invModal.classList.remove('show'); });
+
+  // === ПРЕМИУМ-ОФОРМЛЕНИЕ ===
+  let appearanceMe = null;
+
+  function openAppearance(me) {
+    if (!me.is_premium) {
+      alert('Это доступно только для Premium. Попроси админа выдать.');
+      return;
+    }
+    appearanceMe = me;
+    renderAppearanceForm(me);
+    appearanceModal.classList.add('show');
+  }
+
+  function renderAppearanceForm(me) {
+    appearanceContent.innerHTML = `
+      <div class="premium-preview">
+        <h4>Предпросмотр</h4>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div id="previewCard" style="
+            width:60px;height:60px;border-radius:12px;
+            background: rgba(38,38,46,0.7);
+            border:2px solid ${me.card_color || 'transparent'};
+            box-shadow: ${me.card_color && !me.card_rgb ? `0 0 18px ${hexToRgba(me.card_color, 0.6)}` : 'none'};
+            display:flex;align-items:center;justify-content:center;font-size:24px;
+            ${me.card_rgb ? 'animation: rgbGlow 4s linear infinite;' : ''}
+          ">${me.card_pinned ? '📌' : '✦'}</div>
+          <div>
+            <div style="color:#f0f0f8;font-weight:600;">${escapeHtml(me.name)}, ${me.age}</div>
+            <div style="font-size:12px;color:#8a8a9c;">${me.card_rgb ? 'RGB-подсветка вкл' : 'RGB выкл'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="color-row">
+        <input type="color" id="cardColorInput" value="${me.card_color || '#a0a0b8'}">
+        <label>Цвет рамки</label>
+      </div>
+
+      <div class="toggle-row">
+        <label>RGB-подсветка</label>
+        <div class="switch ${me.card_rgb ? 'on' : ''}" id="rgbSwitch"></div>
+      </div>
+
+      <div class="toggle-row">
+        <label>Закрепить анкету сверху</label>
+        <div class="switch ${me.card_pinned ? 'on' : ''}" id="pinSwitch"></div>
+      </div>
+
+      <button class="submit-btn" id="saveAppearanceBtn" style="margin-top:18px;">Сохранить</button>
+      <div class="form-status" id="appearanceStatus"></div>
+    `;
+
+    const colorInput = document.getElementById('cardColorInput');
+    const rgbSwitch = document.getElementById('rgbSwitch');
+    const pinSwitch = document.getElementById('pinSwitch');
+    const previewCard = document.getElementById('previewCard');
+
+    let state = {
+      cardColor: me.card_color || '',
+      cardRgb: !!me.card_rgb,
+      cardPinned: !!me.card_pinned
+    };
+
+    function updatePreview() {
+      previewCard.style.borderColor = state.cardColor || 'transparent';
+      previewCard.style.animation = state.cardRgb ? 'rgbGlow 4s linear infinite' : 'none';
+      if (!state.cardRgb) {
+        previewCard.style.boxShadow = state.cardColor ? `0 0 18px ${hexToRgba(state.cardColor, 0.6)}` : 'none';
+      } else {
+        previewCard.style.boxShadow = '';
+      }
+      previewCard.textContent = state.cardPinned ? '📌' : '✦';
+    }
+
+    colorInput.addEventListener('input', () => {
+      state.cardColor = colorInput.value;
+      updatePreview();
+    });
+    rgbSwitch.addEventListener('click', () => {
+      state.cardRgb = !state.cardRgb;
+      rgbSwitch.classList.toggle('on', state.cardRgb);
+      updatePreview();
+    });
+    pinSwitch.addEventListener('click', () => {
+      state.cardPinned = !state.cardPinned;
+      pinSwitch.classList.toggle('on', state.cardPinned);
+      updatePreview();
+    });
+
+    document.getElementById('saveAppearanceBtn').addEventListener('click', async () => {
+      const st = document.getElementById('appearanceStatus');
+      st.textContent = 'Сохраняем...';
+      st.className = 'form-status';
+      try {
+        await api('/profiles/' + me.id + '/appearance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cardColor: state.cardColor,
+            cardRgb: state.cardRgb,
+            cardPinned: state.cardPinned
+          })
+        });
+        st.textContent = 'Сохранено!';
+        st.className = 'form-status success';
+        setTimeout(() => {
+          appearanceModal.classList.remove('show');
+          renderAll();
+        }, 700);
+      } catch (err) {
+        st.textContent = err.message;
+        st.className = 'form-status error';
+      }
+    });
+  }
+
+  closeAppearance.addEventListener('click', () => appearanceModal.classList.remove('show'));
+  appearanceModal.addEventListener('click', e => { if (e.target === appearanceModal) appearanceModal.classList.remove('show'); });
+
+  // === АДМИНКА ===
   function openAdmin() {
     adminModal.classList.add('show');
     if (adminPassword) {
@@ -982,12 +1273,13 @@
         <div class="admin-user-row">
           ${av}
           <div class="admin-user-info">
-            <strong>${escapeHtml(u.name)}, ${u.age} ${u.is_admin ? '👑' : ''}</strong>
+            <strong>${escapeHtml(u.name)}, ${u.age} ${u.is_admin ? '👑' : ''} ${u.is_premium ? '⭐' : ''}</strong>
             <small>ID: ${u.id} · 🪙 ${u.vide} · ♥ ${u.likes}</small>
           </div>
           <div class="admin-actions">
             <input type="number" placeholder="+100" id="amt_${u.id}" value="100">
             <button class="give" data-action="give" data-id="${u.id}">Дать 🪙</button>
+            <button class="premium" data-action="premium" data-id="${u.id}">${u.is_premium ? 'Снять ⭐' : 'Дать ⭐'}</button>
             <button class="danger" data-action="del" data-id="${u.id}">Удалить</button>
           </div>
         </div>
@@ -998,28 +1290,31 @@
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
         const action = btn.dataset.action;
-        if (action === 'give') {
-          const amt = document.getElementById('amt_' + id).value;
-          try {
+        try {
+          if (action === 'give') {
+            const amt = document.getElementById('amt_' + id).value;
             await api('/admin/give-vide', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ password: adminPassword, userId: parseInt(id), amount: parseInt(amt) })
             });
-            await loadAdminUsers();
-          } catch (err) { alert(err.message); }
-        } else if (action === 'del') {
-          if (!confirm('Удалить анкету навсегда?')) return;
-          try {
+          } else if (action === 'premium') {
+            await api('/admin/toggle-premium', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password: adminPassword, userId: parseInt(id) })
+            });
+          } else if (action === 'del') {
+            if (!confirm('Удалить анкету навсегда?')) return;
             await api('/admin/delete-user', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ password: adminPassword, userId: parseInt(id) })
             });
-            await loadAdminUsers();
-            await renderAll();
-          } catch (err) { alert(err.message); }
-        }
+          }
+          await loadAdminUsers();
+          await renderAll();
+        } catch (err) { alert(err.message); }
       });
     });
   }
@@ -1027,7 +1322,7 @@
   closeAdmin.addEventListener('click', () => adminModal.classList.remove('show'));
   adminModal.addEventListener('click', e => { if (e.target === adminModal) adminModal.classList.remove('show'); });
 
-  // ==================== ШАПКА ====================
+  // === ШАПКА ===
   async function renderTopbar() {
     const myId = getMyId();
     topbarRight.innerHTML = '';
@@ -1049,6 +1344,13 @@
         videBtn.innerHTML = `🪙 ${vide}`;
         videBtn.addEventListener('click', openWheel);
         topbarRight.appendChild(videBtn);
+
+        const invBtn = document.createElement('button');
+        invBtn.className = 'theme-btn';
+        invBtn.title = 'Инвентарь';
+        invBtn.textContent = '🎒';
+        invBtn.addEventListener('click', openInventory);
+        topbarRight.appendChild(invBtn);
       } catch {}
     }
 
@@ -1073,12 +1375,11 @@
       const me = profiles.find(p => String(p.id) === String(myId));
       if (!me) { setMyId(null); renderTopbar(); return; }
       const chip = document.createElement('div');
-      chip.className = 'user-chip';
+      chip.className = 'user-chip' + (me.is_premium ? ' premium' : '');
       chip.innerHTML = (me.photo
         ? `<img src="${me.photo}" alt="">`
-        : `<div class="avatar-placeholder">✦</div>`) + `<span>${escapeHtml(me.name)}</span>`;
+        : `<div class="avatar-placeholder">✦</div>`) + `<span>${escapeHtml(me.name)}${me.is_premium ? ' ⭐' : ''}</span>`;
       chip.addEventListener('click', openMyProfile);
-
       const logoutBtn = document.createElement('button');
       logoutBtn.className = 'logout-btn';
       logoutBtn.textContent = 'Выйти';
@@ -1127,7 +1428,7 @@
       <div class="profile-hero">
         ${avatarHTML}
         <div class="profile-hero-info">
-          <h3>${escapeHtml(me.name)} <span class="age">${me.age}</span></h3>
+          <h3>${escapeHtml(me.name)} <span class="age">${me.age}</span> ${me.is_premium ? '⭐' : ''}</h3>
           ${me.bio ? `<p>${escapeHtml(me.bio)}</p>` : ''}
           ${me.contact_value ? `<a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>
             ${contactIcon(me.contact_type)} ${contactLabel(me.contact_type)}: ${escapeHtml(me.contact_value)}
@@ -1159,12 +1460,18 @@
       }
       <div class="modal-actions">
         <button id="editMyBtn">Редактировать</button>
+        ${me.is_premium ? '<button class="premium" id="appearanceBtn">⭐ Оформление</button>' : ''}
         <button id="deleteMyBtn" class="danger">Удалить анкету</button>
       </div>
     `;
     document.getElementById('editMyBtn').onclick = () => {
       myProfileModal.classList.remove('show');
       openEditForm(me);
+    };
+    const appBtn = document.getElementById('appearanceBtn');
+    if (appBtn) appBtn.onclick = () => {
+      myProfileModal.classList.remove('show');
+      openAppearance(me);
     };
     document.getElementById('deleteMyBtn').onclick = async () => {
       if (!confirm('Точно удалить свою анкету?')) return;
