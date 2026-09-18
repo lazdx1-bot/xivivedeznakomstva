@@ -95,16 +95,11 @@
     border: 1px solid rgba(255,255,255,0.14) !important;
   }
 
-  .snow-layer {
-    position: fixed; inset: 0;
-    pointer-events: none; z-index: 2;
-    display: none;
-  }
+  .snow-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2; display: none; }
   body.fx-snow .snow-layer { display: block; }
   .snowflake {
     position: absolute; top: -10px;
-    color: #fff; font-size: 14px;
-    opacity: 0.7;
+    color: #fff; font-size: 14px; opacity: 0.7;
     animation: fall linear infinite;
     text-shadow: 0 0 6px rgba(255,255,255,0.6);
   }
@@ -113,11 +108,7 @@
     100% { transform: translateY(110vh) translateX(40px) rotate(360deg); }
   }
 
-  .stars-layer {
-    position: fixed; inset: 0;
-    pointer-events: none; z-index: 0;
-    display: none;
-  }
+  .stars-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; display: none; }
   body.fx-stars .stars-layer { display: block; }
   .star {
     position: absolute; width: 2px; height: 2px;
@@ -131,13 +122,8 @@
   }
 
   body.fx-neon .profile-card.mine,
-  body.fx-neon .profile-card.premium {
-    animation: neonPulse 2s ease-in-out infinite;
-  }
-  @keyframes neonPulse {
-    0%, 100% { filter: brightness(1); }
-    50%      { filter: brightness(1.25); }
-  }
+  body.fx-neon .profile-card.premium { animation: neonPulse 2s ease-in-out infinite; }
+  @keyframes neonPulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
 
   .topbar {
     position: relative; z-index: 5; padding: 16px 20px;
@@ -156,14 +142,9 @@
     -webkit-text-fill-color: transparent;
     animation: shimmer 5s linear infinite; font-weight: 700;
   }
-  @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
   .brand-gif {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    object-fit: cover;
+    width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
     box-shadow: 0 0 12px var(--accent-glow);
     border: 1px solid rgba(255,255,255,0.15);
   }
@@ -178,11 +159,7 @@
     transition: all 0.25s;
     display: flex; align-items: center; justify-content: center;
   }
-  .theme-btn:hover {
-    background: rgba(150,150,180,0.5);
-    box-shadow: 0 0 18px var(--accent-glow);
-    transform: rotate(15deg);
-  }
+  .theme-btn:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: rotate(15deg); }
 
   .user-chip {
     display: flex; align-items: center; gap: 10px;
@@ -219,10 +196,7 @@
     border-radius: 20px; color: #ffd970; font-weight: 600;
     cursor: pointer; transition: all 0.25s; font-family: inherit;
   }
-  .vide-badge:hover {
-    background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25));
-    box-shadow: 0 0 18px rgba(255,215,0,0.4);
-  }
+  .vide-badge:hover { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25)); box-shadow: 0 0 18px rgba(255,215,0,0.4); }
 
   .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
 
@@ -249,14 +223,8 @@
     animation: cardIn 0.4s ease;
     display: flex; flex-direction: column;
   }
-  .profile-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px var(--accent-glow);
-  }
-  .profile-card.mine {
-    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px var(--accent-glow);
-  }
+  .profile-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px var(--accent-glow); }
+  .profile-card.mine { border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px var(--accent-glow); }
   .profile-card.premium { box-shadow: 0 0 24px rgba(255,215,0,0.35), 0 12px 30px rgba(0,0,0,0.5); }
   .profile-card.premium::before {
     content: '★'; position: absolute; top: 10px; right: 10px;
@@ -314,10 +282,7 @@
     border-radius: 20px; text-decoration: none; word-break: break-all;
     transition: all 0.25s; align-self: flex-start; max-width: 100%;
   }
-  .contact-badge:hover {
-    background: color-mix(in srgb, var(--accent) 45%, transparent);
-    box-shadow: 0 0 18px var(--accent-glow);
-  }
+  .contact-badge:hover { background: color-mix(in srgb, var(--accent) 45%, transparent); box-shadow: 0 0 18px var(--accent-glow); }
 
   .like-row {
     display: flex; align-items: center; gap: 8px;
@@ -406,15 +371,6 @@
   .submit-btn:hover { box-shadow: 0 0 24px var(--accent-glow); }
   .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .ghost-btn {
-    width: 100%; padding: 12px; margin-top: 10px;
-    font-size: 13.5px; color: #d8d8e4;
-    background: rgba(60,60,78,0.35);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px; cursor: pointer; transition: all 0.25s; font-family: inherit;
-  }
-  .ghost-btn:hover { background: rgba(150,150,180,0.4); }
-
   .form-status { margin-top: 12px; text-align: center; font-size: 13px; min-height: 18px; color: #a8a8c0; }
   .form-status.error { color: #ff7a88; }
   .form-status.success { color: #9fe0b0; }
@@ -473,10 +429,7 @@
     border-radius: 16px; padding: 6px 11px;
     text-decoration: none; white-space: nowrap; transition: all 0.25s;
   }
-  .liker-row .liker-contact:hover {
-    background: color-mix(in srgb, var(--accent) 45%, transparent);
-    box-shadow: 0 0 14px var(--accent-glow);
-  }
+  .liker-row .liker-contact:hover { background: color-mix(in srgb, var(--accent) 45%, transparent); box-shadow: 0 0 14px var(--accent-glow); }
 
   .empty-small {
     text-align: center; padding: 20px; font-size: 13.5px; color: #7a7a8c;
@@ -612,11 +565,7 @@
   .spin-btn:hover { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
   .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  .inv-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 10px;
-  }
+  .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
   .inv-item {
     position: relative;
     background: rgba(30,30,40,0.6);
@@ -657,17 +606,11 @@
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 12px; margin-bottom: 8px;
   }
-  .market-lot img {
-    width: 48px; height: 48px; border-radius: 8px;
-    object-fit: cover; flex-shrink: 0;
-  }
+  .market-lot img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
   .market-lot .lot-info { flex: 1; min-width: 0; }
   .market-lot .lot-info strong { display: block; font-size: 14px; color: #f0f0f8; }
   .market-lot .lot-info small { font-size: 11.5px; color: #8a8a9c; }
-  .market-lot .lot-price {
-    font-size: 14px; color: #ffd970; font-weight: 700;
-    white-space: nowrap;
-  }
+  .market-lot .lot-price { font-size: 14px; color: #ffd970; font-weight: 700; white-space: nowrap; }
   .market-lot .lot-actions { display: flex; gap: 6px; }
   .market-lot button {
     padding: 7px 12px; font-size: 12px;
@@ -688,11 +631,7 @@
     background: rgba(60,60,78,0.4); color: #d8d8e4;
     transition: all 0.25s;
   }
-  .market-tabs button.active {
-    background: rgba(255,215,0,0.15);
-    border-color: rgba(255,215,0,0.5);
-    color: #ffd970;
-  }
+  .market-tabs button.active { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.5); color: #ffd970; }
 
   .premium-preview {
     margin-bottom: 16px; padding: 12px;
@@ -703,9 +642,7 @@
     font-size: 11.5px; letter-spacing: 1px; color: #ffd970;
     text-transform: uppercase; margin-bottom: 10px;
   }
-  .color-row {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-  }
+  .color-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .color-row input[type="color"] {
     width: 44px; height: 40px; padding: 3px; margin: 0;
     border-radius: 10px; border: 1px solid rgba(255,255,255,0.12);
@@ -789,7 +726,6 @@
 <main class="container">
   <button class="add-btn" id="openForm">+ Создать анкету</button>
 
-  <!-- РЕГИСТРАЦИЯ -->
   <div class="modal" id="registerModal">
     <div class="modal-content">
       <button class="modal-close" id="closeRegister">✕</button>
@@ -825,7 +761,6 @@
     </div>
   </div>
 
-  <!-- ВХОД -->
   <div class="modal" id="loginModal">
     <div class="modal-content">
       <button class="modal-close" id="closeLogin">✕</button>
@@ -843,7 +778,6 @@
     </div>
   </div>
 
-  <!-- МОЙ ПРОФИЛЬ -->
   <div class="modal" id="myProfileModal">
     <div class="modal-content wide">
       <button class="modal-close" id="closeMyProfile">✕</button>
@@ -852,7 +786,6 @@
     </div>
   </div>
 
-  <!-- СМЕНА ПАРОЛЯ -->
   <div class="modal" id="pwModal">
     <div class="modal-content">
       <button class="modal-close" id="closePw">✕</button>
@@ -870,7 +803,6 @@
     </div>
   </div>
 
-  <!-- РЕДАКТИРОВАНИЕ -->
   <div class="modal" id="editModal">
     <div class="modal-content">
       <button class="modal-close" id="closeEdit">✕</button>
@@ -903,7 +835,6 @@
     </div>
   </div>
 
-  <!-- ОФОРМЛЕНИЕ (премиум) -->
   <div class="modal" id="appearanceModal">
     <div class="modal-content">
       <button class="modal-close" id="closeAppearance">✕</button>
@@ -912,7 +843,6 @@
     </div>
   </div>
 
-  <!-- ТЕМА И ЭФФЕКТЫ -->
   <div class="modal" id="themeModal">
     <div class="modal-content wide">
       <button class="modal-close" id="closeTheme">✕</button>
@@ -948,7 +878,6 @@
     </div>
   </div>
 
-  <!-- КОЛЕСО -->
   <div class="modal" id="wheelModal">
     <div class="modal-content">
       <button class="modal-close" id="closeWheel">✕</button>
@@ -963,7 +892,6 @@
     </div>
   </div>
 
-  <!-- ИНВЕНТАРЬ -->
   <div class="modal" id="invModal">
     <div class="modal-content wide">
       <button class="modal-close" id="closeInv">✕</button>
@@ -972,7 +900,6 @@
     </div>
   </div>
 
-  <!-- РЫНОК -->
   <div class="modal" id="marketModal">
     <div class="modal-content wide">
       <button class="modal-close" id="closeMarket">✕</button>
@@ -985,7 +912,6 @@
     </div>
   </div>
 
-  <!-- АДМИНКА -->
   <div class="modal" id="adminModal">
     <div class="modal-content wide">
       <button class="modal-close" id="closeAdmin">✕</button>
@@ -1006,7 +932,7 @@
   const FX_KEY = 'xivivide_fx';
   const ADMIN_TOKEN_KEY = 'xivivide_admin_token';
 
-  let myProfile = null;         // данные текущего пользователя
+  let myProfile = null;
   let myLikes = new Set();
 
   const wallEl = document.getElementById('wall');
@@ -1025,11 +951,9 @@
   const adminModal = document.getElementById('adminModal');
 
   const openForm = document.getElementById('openForm');
-
   const snowLayer = document.getElementById('snowLayer');
   const starsLayer = document.getElementById('starsLayer');
 
-  // === ТОКЕН ===
   function getToken() { return localStorage.getItem(TOKEN_KEY); }
   function setToken(t) {
     if (t) localStorage.setItem(TOKEN_KEY, t);
@@ -1041,7 +965,6 @@
     else sessionStorage.removeItem(ADMIN_TOKEN_KEY);
   }
 
-  // === API ===
   async function api(url, options = {}) {
     options.headers = options.headers || {};
     const token = getToken();
@@ -1068,7 +991,6 @@
     return data;
   }
 
-  // === ТЕМА И ЭФФЕКТЫ ===
   const THEMES = {
     gray:   { name: 'Серая',   accent: '#a0a0b8', accentLight: '#e8e8f0', accentDark: '#6b6b85',
               bg1: '#14141a', bg2: '#1c1c24', bg3: '#101014',
@@ -1206,7 +1128,6 @@
     catch { return {}; }
   }
   function saveFx(fx) { localStorage.setItem(FX_KEY, JSON.stringify(fx)); }
-
   function setFx(name, value) {
     const fx = getFx();
     fx[name] = value;
@@ -1262,7 +1183,6 @@
     });
   });
 
-  // === ХЕЛПЕРЫ ===
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, s => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -1277,7 +1197,6 @@
   function contactLabel(type) { return type === 'telegram' ? 'Telegram' : 'Discord'; }
   function contactIcon(type) { return type === 'telegram' ? '✈️' : '🎮'; }
 
-  // === СТЕНА ===
   async function loadWall() {
     try {
       const profiles = await api('/profiles');
@@ -1366,17 +1285,13 @@
   async function toggleLike(targetId) {
     if (!myProfile) { alert('Войди, чтобы лайкать'); return; }
     try {
-      const r = await api('/like', {
-        method: 'POST',
-        body: JSON.stringify({ targetId: parseInt(targetId) })
-      });
+      const r = await api('/like', { method: 'POST', body: JSON.stringify({ targetId: parseInt(targetId) }) });
       if (r.liked) myLikes.add(String(targetId));
       else myLikes.delete(String(targetId));
       await loadWall();
     } catch (err) { alert(err.message); }
   }
 
-  // === РЕГИСТРАЦИЯ / ВХОД ===
   document.getElementById('registerForm').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -1403,9 +1318,7 @@
     } catch (err) {
       status.textContent = err.message;
       status.className = 'form-status error';
-    } finally {
-      btn.disabled = false;
-    }
+    } finally { btn.disabled = false; }
   });
 
   document.getElementById('loginForm').addEventListener('submit', async e => {
@@ -1418,13 +1331,9 @@
     status.className = 'form-status';
     try {
       const fd = new FormData(form);
-      const body = {
-        name: fd.get('name'),
-        password: fd.get('password')
-      };
       const data = await api('/login', {
         method: 'POST',
-        body: JSON.stringify(body)
+        body: JSON.stringify({ name: fd.get('name'), password: fd.get('password') })
       });
       setToken(data.token);
       myProfile = data.profile;
@@ -1439,9 +1348,7 @@
     } catch (err) {
       status.textContent = err.message;
       status.className = 'form-status error';
-    } finally {
-      btn.disabled = false;
-    }
+    } finally { btn.disabled = false; }
   });
 
   function logout() {
@@ -1453,7 +1360,6 @@
     loadWall();
   }
 
-  // === ШАПКА ===
   function renderTopbar() {
     topbarRight.innerHTML = '';
 
@@ -1481,7 +1387,6 @@
       return;
     }
 
-    // если вошёл — кнопки
     const videBtn = document.createElement('button');
     videBtn.className = 'vide-badge';
     videBtn.title = 'Колесо фортуны';
@@ -1520,7 +1425,6 @@
     openForm.style.display = 'none';
   }
 
-  // === МОЙ ПРОФИЛЬ ===
   async function openMyProfile() {
     if (!myProfile) return;
     try {
@@ -1600,7 +1504,6 @@
     };
   }
 
-  // === СМЕНА ПАРОЛЯ ===
   document.getElementById('pwForm').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -1612,24 +1515,17 @@
       const fd = new FormData(form);
       await api('/change-password', {
         method: 'POST',
-        body: JSON.stringify({
-          oldPassword: fd.get('oldPassword'),
-          newPassword: fd.get('newPassword')
-        })
+        body: JSON.stringify({ oldPassword: fd.get('oldPassword'), newPassword: fd.get('newPassword') })
       });
       status.textContent = 'Пароль изменён!';
       status.className = 'form-status success';
-      setTimeout(() => {
-        pwModal.classList.remove('show');
-        form.reset();
-      }, 700);
+      setTimeout(() => { pwModal.classList.remove('show'); form.reset(); }, 700);
     } catch (err) {
       status.textContent = err.message;
       status.className = 'form-status error';
     } finally { btn.disabled = false; }
   });
 
-  // === РЕДАКТИРОВАНИЕ ===
   function openEditForm(me) {
     const form = document.getElementById('editForm');
     form.name.value = me.name;
@@ -1671,7 +1567,6 @@
     } finally { btn.disabled = false; }
   });
 
-  // === ОФОРМЛЕНИЕ (ПРЕМИУМ) ===
   function openAppearance(me) {
     if (!me.is_premium) { alert('Только для Premium'); return; }
     renderAppearanceForm(me);
@@ -1762,10 +1657,7 @@
         myProfile = { ...myProfile, ...updated };
         st.textContent = 'Сохранено';
         st.className = 'form-status success';
-        setTimeout(() => {
-          appearanceModal.classList.remove('show');
-          loadWall();
-        }, 500);
+        setTimeout(() => { appearanceModal.classList.remove('show'); loadWall(); }, 500);
       } catch (err) {
         st.textContent = err.message;
         st.className = 'form-status error';
@@ -1773,7 +1665,6 @@
     });
   }
 
-  // === КОЛЕСО ===
   let isSpinning = false;
   function openWheel() {
     if (!myProfile) return;
@@ -1820,7 +1711,6 @@
     }
   });
 
-  // === ИНВЕНТАРЬ ===
   async function openInventory() {
     if (!myProfile) return;
     invModal.classList.add('show');
@@ -1853,16 +1743,12 @@
     const p = parseInt(price);
     if (!p || p < 1) { alert('Некорректная цена'); return; }
     try {
-      await api('/market/list', {
-        method: 'POST',
-        body: JSON.stringify({ skinId, price: p })
-      });
+      await api('/market/list', { method: 'POST', body: JSON.stringify({ skinId, price: p }) });
       alert('Лот выставлен!');
       await openInventory();
     } catch (err) { alert(err.message); }
   }
 
-  // === РЫНОК ===
   let marketTab = 'all';
   function openMarket() {
     if (!myProfile) return;
@@ -1928,7 +1814,6 @@
     } catch (err) { content.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
   }
 
-  // === АДМИНКА ===
   async function openAdmin() {
     adminModal.classList.add('show');
     if (getAdminToken()) {
@@ -1947,10 +1832,7 @@
         const st = document.getElementById('adminStatus');
         st.textContent = 'Проверяем...';
         try {
-          const r = await api('/admin/login', {
-            method: 'POST',
-            body: JSON.stringify({ password: pw })
-          });
+          const r = await api('/admin/login', { method: 'POST', body: JSON.stringify({ password: pw }) });
           setAdminToken(r.token);
           loadAdmin();
         } catch (err) {
@@ -1960,12 +1842,25 @@
       };
     }
   }
+
   async function loadAdmin() {
     const content = document.getElementById('adminContent');
     content.innerHTML = '<div class="empty-small">Загрузка...</div>';
     try {
       const users = await apiAdmin('/admin/users', { method: 'POST', body: JSON.stringify({}) });
-      content.innerHTML = users.map(u => {
+
+      const header = `
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <button id="purgeNoPassBtn" style="flex:1;padding:10px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(255,80,100,0.15);border:1px solid rgba(255,90,110,0.5);color:#ff9aa7;transition:all 0.25s;">
+            🗑 Удалить все анкеты без паролей
+          </button>
+          <button id="refreshAdminBtn" style="flex:1;padding:10px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(60,60,78,0.55);border:1px solid rgba(255,255,255,0.12);color:#e8e8f0;transition:all 0.25s;">
+            🔄 Обновить
+          </button>
+        </div>
+      `;
+
+      const rows = users.map(u => {
         const av = u.photo ? `<img src="${u.photo}" alt="">` : `<div class="mini-avatar">✦</div>`;
         return `
           <div class="admin-user-row">
@@ -1983,6 +1878,28 @@
           </div>
         `;
       }).join('');
+
+      content.innerHTML = header + rows;
+
+      document.getElementById('purgeNoPassBtn').addEventListener('click', async () => {
+        if (!confirm('Удалить ВСЕ анкеты без паролей? Это старые и вредительские аккаунты. Действие необратимо.')) return;
+        const btn = document.getElementById('purgeNoPassBtn');
+        btn.disabled = true;
+        btn.textContent = 'Удаляем...';
+        try {
+          const r = await apiAdmin('/admin/purge-nopass', { method: 'POST', body: JSON.stringify({}) });
+          alert(`Удалено анкет: ${r.deleted}`);
+          await loadAdmin();
+          await loadWall();
+        } catch (err) {
+          alert(err.message);
+          btn.disabled = false;
+          btn.textContent = '🗑 Удалить все анкеты без паролей';
+        }
+      });
+
+      document.getElementById('refreshAdminBtn').addEventListener('click', () => loadAdmin());
+
       content.querySelectorAll('button[data-action]').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = parseInt(btn.dataset.id);
@@ -2008,16 +1925,11 @@
     }
   }
 
-  // === ОТКРЫТИЕ ФОРМ ===
   openForm.addEventListener('click', () => {
-    if (myProfile) {
-      alert('Ты уже вошёл. Выйди сначала.');
-      return;
-    }
+    if (myProfile) { alert('Ты уже вошёл. Выйди сначала.'); return; }
     registerModal.classList.add('show');
   });
 
-  // закрытие модалок
   document.querySelectorAll('.modal').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
   });
@@ -2037,7 +1949,6 @@
     applyTheme('custom:' + document.getElementById('customColor').value);
   });
 
-  // === СТАРТ ===
   async function init() {
     renderThemeGrid();
     applyTheme(localStorage.getItem(THEME_KEY) || 'gray');
@@ -2045,12 +1956,8 @@
 
     const token = getToken();
     if (token) {
-      try {
-        myProfile = await api('/me');
-      } catch {
-        setToken(null);
-        myProfile = null;
-      }
+      try { myProfile = await api('/me'); }
+      catch { setToken(null); myProfile = null; }
     }
     renderTopbar();
     loadWall();
