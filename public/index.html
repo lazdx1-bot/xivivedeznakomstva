@@ -8,18 +8,11 @@
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
   :root {
-    --accent: #a0a0b8;
-    --accent-light: #e8e8f0;
-    --accent-dark: #6b6b85;
+    --accent: #a0a0b8; --accent-light: #e8e8f0; --accent-dark: #6b6b85;
     --accent-glow: rgba(170,170,200,0.45);
-    --bg-1: #14141a;
-    --bg-2: #1c1c24;
-    --bg-3: #101014;
-    --bg-radial-1: rgba(120,120,140,0.25);
-    --bg-radial-2: rgba(90,90,110,0.28);
-    --bg-radial-3: rgba(140,140,160,0.15);
-    --float-1: rgba(180,180,200,0.10);
-    --float-2: rgba(150,150,175,0.12);
+    --bg-1: #14141a; --bg-2: #1c1c24; --bg-3: #101014;
+    --bg-radial-1: rgba(120,120,140,0.25); --bg-radial-2: rgba(90,90,110,0.28); --bg-radial-3: rgba(140,140,160,0.15);
+    --float-1: rgba(180,180,200,0.10); --float-2: rgba(150,150,175,0.12);
   }
 
   body {
@@ -32,420 +25,153 @@
       linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
     background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
     animation: bgShift 18s ease-in-out infinite;
-    color: #e8e8f0;
-    overflow-x: hidden;
-    padding-bottom: 60px;
+    color: #e8e8f0; overflow-x: hidden; padding-bottom: 60px;
   }
-  @keyframes bgShift {
-    0%   { background-position: 0% 0%, 100% 100%, 50% 50%, 0 0; }
-    50%  { background-position: 100% 50%, 0% 50%, 20% 80%, 0 0; }
-    100% { background-position: 0% 0%, 100% 100%, 50% 50%, 0 0; }
-  }
+  @keyframes bgShift { 0%{background-position:0% 0%,100% 100%,50% 50%,0 0}50%{background-position:100% 50%,0% 50%,20% 80%,0 0}100%{background-position:0% 0%,100% 100%,50% 50%,0 0} }
   body::before {
-    content: '';
-    position: fixed;
-    top: -20%; left: -20%;
-    width: 140%; height: 140%;
-    background:
-      radial-gradient(circle at 30% 30%, var(--float-1), transparent 40%),
-      radial-gradient(circle at 70% 70%, var(--float-2), transparent 45%);
+    content: ''; position: fixed; top:-20%; left:-20%; width:140%; height:140%;
+    background: radial-gradient(circle at 30% 30%, var(--float-1), transparent 40%),
+                radial-gradient(circle at 70% 70%, var(--float-2), transparent 45%);
     animation: floatGlow 22s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
-  @keyframes floatGlow {
-    0%   { transform: translate(0,0) scale(1); }
-    50%  { transform: translate(6%,-4%) scale(1.08); }
-    100% { transform: translate(-5%,5%) scale(1.03); }
-  }
+  @keyframes floatGlow { 0%{transform:translate(0,0) scale(1)}50%{transform:translate(6%,-4%) scale(1.08)}100%{transform:translate(-5%,5%) scale(1.03)} }
 
-  body.fx-web {
-    background: #050508;
-    background-image:
-      repeating-linear-gradient(60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px),
-      repeating-linear-gradient(-60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px),
-      radial-gradient(circle at 20% 15%, rgba(120,120,140,0.08), transparent 40%),
-      radial-gradient(circle at 80% 85%, rgba(90,90,110,0.10), transparent 45%);
-    animation: none;
-  }
+  body.fx-web { background:#050508; background-image: repeating-linear-gradient(60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px), repeating-linear-gradient(-60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px), radial-gradient(circle at 20% 15%, rgba(120,120,140,0.08), transparent 40%), radial-gradient(circle at 80% 85%, rgba(90,90,110,0.10), transparent 45%); animation: none; }
   body.fx-web::before { animation: none; }
-  .web-corner {
-    position: fixed; width: 340px; height: 340px;
-    pointer-events: none; z-index: 1;
-    opacity: 0; transition: opacity 0.6s ease;
-    background-size: contain; background-repeat: no-repeat;
-  }
+  .web-corner { position: fixed; width: 340px; height: 340px; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 0.6s ease; background-size: contain; background-repeat: no-repeat; }
   body.fx-web .web-corner { opacity: 0.45; }
   .web-corner.tl { top: 0; left: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.tr { top: 0; right: 0; transform: scaleX(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.bl { bottom: 0; left: 0; transform: scaleY(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.br { bottom: 0; right: 0; transform: scale(-1,-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
-
   body.fx-glass { background: #0a0a10; }
-  body.fx-glass .topbar,
-  body.fx-glass .profile-card,
-  body.fx-glass .modal-content,
-  body.fx-glass .liker-row,
-  body.fx-glass .stat-box,
-  body.fx-glass .profile-hero,
+  body.fx-glass .topbar, body.fx-glass .profile-card, body.fx-glass .modal-content,
+  body.fx-glass .liker-row, body.fx-glass .stat-box, body.fx-glass .profile-hero,
   body.fx-glass .admin-user-row {
     background: rgba(255,255,255,0.06) !important;
     backdrop-filter: blur(22px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
     border: 1px solid rgba(255,255,255,0.14) !important;
   }
-
   .snow-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2; display: none; }
   body.fx-snow .snow-layer { display: block; }
-  .snowflake {
-    position: absolute; top: -10px;
-    color: #fff; font-size: 14px; opacity: 0.7;
-    animation: fall linear infinite;
-    text-shadow: 0 0 6px rgba(255,255,255,0.6);
-  }
-  @keyframes fall {
-    0%   { transform: translateY(-10vh) translateX(0) rotate(0deg); }
-    100% { transform: translateY(110vh) translateX(40px) rotate(360deg); }
-  }
-
+  .snowflake { position: absolute; top: -10px; color: #fff; font-size: 14px; opacity: 0.7; animation: fall linear infinite; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+  @keyframes fall { 0%{transform:translateY(-10vh) translateX(0) rotate(0deg)}100%{transform:translateY(110vh) translateX(40px) rotate(360deg)} }
   .stars-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; display: none; }
   body.fx-stars .stars-layer { display: block; }
-  .star {
-    position: absolute; width: 2px; height: 2px;
-    background: #fff; border-radius: 50%;
-    box-shadow: 0 0 6px #fff;
-    animation: twinkle 3s ease-in-out infinite;
-  }
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.2; transform: scale(0.8); }
-    50%      { opacity: 1;   transform: scale(1.3); }
-  }
+  .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; box-shadow: 0 0 6px #fff; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.3)} }
+  body.fx-neon .profile-card.mine, body.fx-neon .profile-card.premium { animation: neonPulse 2s ease-in-out infinite; }
+  @keyframes neonPulse { 0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)} }
 
-  body.fx-neon .profile-card.mine,
-  body.fx-neon .profile-card.premium { animation: neonPulse 2s ease-in-out infinite; }
-  @keyframes neonPulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
-
-  .topbar {
-    position: relative; z-index: 5; padding: 16px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 14px;
-    background: linear-gradient(180deg, rgba(60,60,72,0.5), rgba(30,30,38,0.1));
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(14px); flex-wrap: wrap;
-  }
+  .topbar { position: relative; z-index: 5; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 14px; background: linear-gradient(180deg, rgba(60,60,72,0.5), rgba(30,30,38,0.1)); border-bottom: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(14px); flex-wrap: wrap; }
   .brand-wrap { display: flex; align-items: center; gap: 10px; }
-  .brand {
-    font-size: 24px; letter-spacing: 4px;
-    background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light));
-    background-size: 200% 100%;
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 5s linear infinite; font-weight: 700;
-  }
-  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-  .brand-gif {
-    width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
-    box-shadow: 0 0 12px var(--accent-glow);
-    border: 1px solid rgba(255,255,255,0.15);
-  }
+  .brand { font-size: 24px; letter-spacing: 4px; background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light)); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 5s linear infinite; font-weight: 700; }
+  @keyframes shimmer { 0%{background-position:-200% 0}100%{background-position:200% 0} }
+  .brand-gif { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; box-shadow: 0 0 12px var(--accent-glow); border: 1px solid rgba(255,255,255,0.15); }
 
   .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-
-  .theme-btn {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(60,60,78,0.55);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #e8e8f0; font-size: 18px; cursor: pointer;
-    transition: all 0.25s;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .theme-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; font-size: 18px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; }
   .theme-btn:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: rotate(15deg); }
-
-  .user-chip {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 14px 6px 6px;
-    background: rgba(60,60,78,0.55);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 30px; cursor: pointer; transition: all 0.25s;
-  }
+  .user-chip { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; cursor: pointer; transition: all 0.25s; }
   .user-chip:hover { background: rgba(90,90,115,0.65); box-shadow: 0 0 18px var(--accent-glow); }
-  .user-chip img, .user-chip .avatar-placeholder {
-    width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
-    background: linear-gradient(135deg, #2a2a34, #3a3a48);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; color: #b0b0c4; flex-shrink: 0;
-  }
+  .user-chip img, .user-chip .avatar-placeholder { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 15px; color: #b0b0c4; flex-shrink: 0; }
   .user-chip span { font-size: 13.5px; color: #e8e8f5; }
   .user-chip.premium { border-color: rgba(255,215,0,0.5); box-shadow: 0 0 14px rgba(255,215,0,0.35); }
-
-  .login-btn, .logout-btn {
-    padding: 9px 18px; font-size: 13px; letter-spacing: 0.5px;
-    color: #e8e8f0; background: rgba(60,60,78,0.55);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit;
-  }
+  .login-btn, .logout-btn { padding: 9px 18px; font-size: 13px; letter-spacing: 0.5px; color: #e8e8f0; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit; }
   .login-btn:hover, .logout-btn:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px var(--accent-glow); }
   .logout-btn { color: #ff9aa7; }
   .logout-btn:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.4); box-shadow: none; }
-
-  .vide-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 12px; font-size: 13px;
-    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,180,0,0.15));
-    border: 1px solid rgba(255,215,0,0.4);
-    border-radius: 20px; color: #ffd970; font-weight: 600;
-    cursor: pointer; transition: all 0.25s; font-family: inherit;
-  }
+  .vide-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 13px; background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,180,0,0.15)); border: 1px solid rgba(255,215,0,0.4); border-radius: 20px; color: #ffd970; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: inherit; }
   .vide-badge:hover { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25)); box-shadow: 0 0 18px rgba(255,215,0,0.4); }
 
   .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
-
-  .add-btn {
-    display: block; margin: 0 auto 30px; padding: 14px 32px;
-    font-size: 15px; letter-spacing: 1px; color: #e8e8f0;
-    background: linear-gradient(135deg,
-      color-mix(in srgb, var(--accent) 55%, transparent),
-      color-mix(in srgb, var(--accent-dark) 55%, transparent));
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 30px; cursor: pointer; backdrop-filter: blur(12px);
-    transition: all 0.3s; font-family: inherit;
-  }
+  .add-btn { display: block; margin: 0 auto 30px; padding: 14px 32px; font-size: 15px; letter-spacing: 1px; color: #e8e8f0; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--accent-dark) 55%, transparent)); border: 1px solid rgba(255,255,255,0.12); border-radius: 30px; cursor: pointer; backdrop-filter: blur(12px); transition: all 0.3s; font-family: inherit; }
   .add-btn:hover { box-shadow: 0 0 28px var(--accent-glow); transform: translateY(-2px); }
 
   .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 
-  .profile-card {
-    position: relative; border-radius: 18px; overflow: hidden;
-    background: rgba(38,38,46,0.55); backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-    transition: transform 0.3s, box-shadow 0.3s, border-color 0.4s;
-    animation: cardIn 0.4s ease;
-    display: flex; flex-direction: column;
-  }
+  .profile-card { position: relative; border-radius: 18px; overflow: hidden; background: rgba(38,38,46,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 12px 30px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s, border-color 0.4s; animation: cardIn 0.4s ease; display: flex; flex-direction: column; }
   .profile-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px var(--accent-glow); }
   .profile-card.mine { border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 22px var(--accent-glow); }
   .profile-card.premium { box-shadow: 0 0 24px rgba(255,215,0,0.35), 0 12px 30px rgba(0,0,0,0.5); }
-  .profile-card.premium::before {
-    content: '★'; position: absolute; top: 10px; right: 10px;
-    z-index: 3; font-size: 18px; color: #ffd970;
-    text-shadow: 0 0 12px rgba(255,215,0,0.9);
-  }
+  .profile-card.premium::before { content: '★'; position: absolute; top: 10px; right: 10px; z-index: 3; font-size: 18px; color: #ffd970; text-shadow: 0 0 12px rgba(255,215,0,0.9); }
   .profile-card.rgb { animation: rgbGlow 4s linear infinite; }
-  @keyframes rgbGlow {
-    0%   { box-shadow: 0 0 25px rgba(255,0,80,0.6),  0 12px 30px rgba(0,0,0,0.5); }
-    25%  { box-shadow: 0 0 25px rgba(255,180,0,0.6), 0 12px 30px rgba(0,0,0,0.5); }
-    50%  { box-shadow: 0 0 25px rgba(0,220,80,0.6),  0 12px 30px rgba(0,0,0,0.5); }
-    75%  { box-shadow: 0 0 25px rgba(0,140,255,0.6), 0 12px 30px rgba(0,0,0,0.5); }
-    100% { box-shadow: 0 0 25px rgba(255,0,80,0.6),  0 12px 30px rgba(0,0,0,0.5); }
-  }
-  @keyframes cardIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes rgbGlow { 0%{box-shadow:0 0 25px rgba(255,0,80,0.6),0 12px 30px rgba(0,0,0,0.5)}25%{box-shadow:0 0 25px rgba(255,180,0,0.6),0 12px 30px rgba(0,0,0,0.5)}50%{box-shadow:0 0 25px rgba(0,220,80,0.6),0 12px 30px rgba(0,0,0,0.5)}75%{box-shadow:0 0 25px rgba(0,140,255,0.6),0 12px 30px rgba(0,0,0,0.5)}100%{box-shadow:0 0 25px rgba(255,0,80,0.6),0 12px 30px rgba(0,0,0,0.5)} }
+  @keyframes cardIn { from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)} }
 
-  .mine-badge {
-    position: absolute; top: 10px; left: 10px;
-    padding: 5px 12px; font-size: 11px; letter-spacing: 1px;
-    background: rgba(20,20,26,0.8);
-    border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
-    border-radius: 14px; color: #d8d8e4;
-    text-transform: uppercase; z-index: 2; backdrop-filter: blur(8px);
-  }
-  .pin-badge {
-    position: absolute; top: 10px; right: 10px;
-    padding: 5px 10px; font-size: 12px;
-    background: rgba(255,215,0,0.15);
-    border: 1px solid rgba(255,215,0,0.5);
-    border-radius: 14px; color: #ffd970;
-    z-index: 2;
-  }
+  .mine-badge { position: absolute; top: 10px; left: 10px; padding: 5px 12px; font-size: 11px; letter-spacing: 1px; background: rgba(20,20,26,0.8); border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent); border-radius: 14px; color: #d8d8e4; text-transform: uppercase; z-index: 2; backdrop-filter: blur(8px); }
+  .pin-badge { position: absolute; top: 10px; right: 10px; padding: 5px 10px; font-size: 12px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.5); border-radius: 14px; color: #ffd970; z-index: 2; }
   .profile-card.premium .pin-badge { right: 44px; }
-
   .profile-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; background: #1a1a22; }
-  .profile-photo-placeholder {
-    width: 100%; aspect-ratio: 4/5;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 46px; color: rgba(200,200,220,0.3);
-    background: linear-gradient(135deg, #22222c, #2e2e3a);
-  }
-
+  .profile-photo-placeholder { width: 100%; aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center; font-size: 46px; color: rgba(200,200,220,0.3); background: linear-gradient(135deg, #22222c, #2e2e3a); }
   .profile-info { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
   .profile-info h3 { font-size: 18px; font-weight: 600; color: #f0f0f8; letter-spacing: 0.3px; }
   .profile-info h3 .age { font-weight: 300; opacity: 0.7; font-size: 15px; }
   .profile-info p { font-size: 13.5px; color: #b8b8cc; margin-top: 8px; line-height: 1.45; word-break: break-word; }
   .profile-date { display: block; margin-top: 10px; font-size: 11px; color: #7a7a8c; letter-spacing: 0.5px; }
 
-  .contact-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 10px; padding: 7px 12px; font-size: 12.5px;
-    color: #e8e8f5;
-    background: color-mix(in srgb, var(--accent) 25%, transparent);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 20px; text-decoration: none; word-break: break-all;
-    transition: all 0.25s; align-self: flex-start; max-width: 100%;
-  }
+  .contact-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 7px 12px; font-size: 12.5px; color: #e8e8f5; background: color-mix(in srgb, var(--accent) 25%, transparent); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; text-decoration: none; word-break: break-all; transition: all 0.25s; align-self: flex-start; max-width: 100%; }
   .contact-badge:hover { background: color-mix(in srgb, var(--accent) 45%, transparent); box-shadow: 0 0 18px var(--accent-glow); }
 
-  .like-row {
-    display: flex; align-items: center; gap: 8px;
-    margin-top: 12px; padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  .like-btn {
-    display: flex; align-items: center; gap: 7px;
-    padding: 8px 14px; font-size: 13px; color: #d8d8e4;
-    background: rgba(60,60,78,0.55);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit;
-  }
+  .like-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .like-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; font-size: 13px; color: #d8d8e4; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; cursor: pointer; transition: all 0.25s; font-family: inherit; }
   .like-btn:hover { background: rgba(255,90,110,0.15); border-color: rgba(255,90,110,0.4); color: #ff8a99; }
   .like-btn .heart { font-size: 15px; transition: transform 0.25s; display: inline-block; }
   .like-btn.liked { background: rgba(255,90,110,0.2); border-color: rgba(255,90,110,0.55); color: #ff8a99; }
   .like-btn.liked .heart { transform: scale(1.2); filter: drop-shadow(0 0 6px rgba(255,90,110,0.7)); }
   .like-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .modal {
-    position: fixed; inset: 0;
-    background: rgba(10,10,14,0.75); backdrop-filter: blur(8px);
-    display: none; justify-content: center; align-items: center;
-    z-index: 100; padding: 20px; animation: fadeIn 0.25s ease;
-  }
+  .modal { position: fixed; inset: 0; background: rgba(10,10,14,0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; animation: fadeIn 0.25s ease; }
   .modal.show { display: flex; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  .modal-content {
-    position: relative; width: 100%; max-width: 420px;
-    max-height: 90vh; overflow-y: auto;
-    padding: 28px 24px; border-radius: 22px;
-    background: rgba(38,38,46,0.9);
-    backdrop-filter: blur(24px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 25px 70px rgba(0,0,0,0.7);
-    animation: modalIn 0.3s ease;
-  }
+  @keyframes fadeIn { from{opacity:0}to{opacity:1} }
+  .modal-content { position: relative; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; padding: 28px 24px; border-radius: 22px; background: rgba(38,38,46,0.9); backdrop-filter: blur(24px) saturate(140%); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 70px rgba(0,0,0,0.7); animation: modalIn 0.3s ease; }
   .modal-content.wide { max-width: 600px; }
-  @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  .modal-content h2 {
-    font-size: 20px; letter-spacing: 2px; margin-bottom: 20px;
-    color: #e8e8f5; text-align: center; text-transform: uppercase; font-weight: 500;
-  }
-  .modal-close {
-    position: absolute; top: 14px; right: 16px;
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #c8c8d6; font-size: 16px; cursor: pointer;
-    transition: all 0.25s; z-index: 2;
-  }
+  @keyframes modalIn { from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)} }
+  .modal-content h2 { font-size: 20px; letter-spacing: 2px; margin-bottom: 20px; color: #e8e8f5; text-align: center; text-transform: uppercase; font-weight: 500; }
+  .modal-close { position: absolute; top: 14px; right: 16px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #c8c8d6; font-size: 16px; cursor: pointer; transition: all 0.25s; z-index: 2; }
   .modal-close:hover { background: rgba(255,255,255,0.14); color: #fff; }
 
   form label { display: block; font-size: 13px; color: #b0b0c4; margin-bottom: 14px; letter-spacing: 0.5px; }
-  form input, form textarea, form select {
-    width: 100%; margin-top: 6px; padding: 11px 14px;
-    font-size: 14px; color: #f0f0f8;
-    background: rgba(20,20,26,0.7);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px; outline: none; transition: all 0.25s;
-    resize: vertical; font-family: inherit;
-  }
-  form input:focus, form textarea:focus, form select:focus {
-    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
+  form input, form textarea, form select { width: 100%; margin-top: 6px; padding: 11px 14px; font-size: 14px; color: #f0f0f8; background: rgba(20,20,26,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; outline: none; transition: all 0.25s; resize: vertical; font-family: inherit; }
+  form input:focus, form textarea:focus, form select:focus { border-color: color-mix(in srgb, var(--accent) 70%, transparent); box-shadow: 0 0 0 3px var(--accent-glow); }
   form input[type="file"] { padding: 8px; font-size: 12.5px; color: #b0b0c4; }
-  form input[type="file"]::file-selector-button {
-    background: rgba(110,110,135,0.5); color: #e8e8f0;
-    border: none; padding: 8px 14px; border-radius: 8px;
-    margin-right: 10px; cursor: pointer; font-family: inherit;
-  }
-
+  form input[type="file"]::file-selector-button { background: rgba(110,110,135,0.5); color: #e8e8f0; border: none; padding: 8px 14px; border-radius: 8px; margin-right: 10px; cursor: pointer; font-family: inherit; }
   .contact-row { display: grid; grid-template-columns: 110px 1fr; gap: 8px; }
 
-  .submit-btn {
-    width: 100%; padding: 14px; margin-top: 8px;
-    font-size: 15px; letter-spacing: 1px; color: #f0f0f8;
-    background: linear-gradient(135deg,
-      color-mix(in srgb, var(--accent) 70%, transparent),
-      color-mix(in srgb, var(--accent-dark) 70%, transparent));
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 12px; cursor: pointer; transition: all 0.3s; font-family: inherit;
-  }
+  .submit-btn { width: 100%; padding: 14px; margin-top: 8px; font-size: 15px; letter-spacing: 1px; color: #f0f0f8; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 70%, transparent), color-mix(in srgb, var(--accent-dark) 70%, transparent)); border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; cursor: pointer; transition: all 0.3s; font-family: inherit; }
   .submit-btn:hover { box-shadow: 0 0 24px var(--accent-glow); }
   .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
   .form-status { margin-top: 12px; text-align: center; font-size: 13px; min-height: 18px; color: #a8a8c0; }
   .form-status.error { color: #ff7a88; }
   .form-status.success { color: #9fe0b0; }
 
-  .profile-hero {
-    display: flex; gap: 18px; align-items: center;
-    padding: 16px; background: rgba(30,30,40,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; margin-bottom: 22px;
-  }
-  .profile-hero img, .profile-hero .big-avatar {
-    width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
-    background: linear-gradient(135deg, #2a2a34, #3a3a48);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 34px; color: #b0b0c4; flex-shrink: 0;
-    border: 2px solid rgba(255,255,255,0.1);
-  }
+  .profile-hero { display: flex; gap: 18px; align-items: center; padding: 16px; background: rgba(30,30,40,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; margin-bottom: 22px; }
+  .profile-hero img, .profile-hero .big-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 34px; color: #b0b0c4; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.1); }
   .profile-hero-info h3 { font-size: 22px; color: #f0f0f8; margin-bottom: 4px; }
   .profile-hero-info h3 .age { font-weight: 300; opacity: 0.7; font-size: 17px; }
   .profile-hero-info p { font-size: 13.5px; color: #b8b8cc; line-height: 1.45; margin-bottom: 8px; }
 
   .stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
-  .stat-box {
-    flex: 1; text-align: center; padding: 14px 10px;
-    background: rgba(30,30,40,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-  }
+  .stat-box { flex: 1; text-align: center; padding: 14px 10px; background: rgba(30,30,40,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; }
   .stat-box .num { font-size: 24px; font-weight: 600; color: #e8e8f5; }
   .stat-box .label { font-size: 11.5px; color: #8a8a9c; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
 
-  .section-title {
-    font-size: 13px; letter-spacing: 2px; color: #b8b8cc;
-    text-transform: uppercase; margin: 20px 0 12px; font-weight: 500;
-  }
+  .section-title { font-size: 13px; letter-spacing: 2px; color: #b8b8cc; text-transform: uppercase; margin: 20px 0 12px; font-weight: 500; }
 
-  .liker-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px; background: rgba(30,30,40,0.5);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px; margin-bottom: 8px;
-  }
-  .liker-row img, .liker-row .mini-avatar {
-    width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
-    background: linear-gradient(135deg, #2a2a34, #3a3a48);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; color: #b0b0c4; flex-shrink: 0;
-  }
+  .liker-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; }
+  .liker-row img, .liker-row .mini-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #b0b0c4; flex-shrink: 0; }
   .liker-row .liker-info { flex: 1; min-width: 0; }
   .liker-row .liker-info strong { display: block; font-size: 14.5px; color: #f0f0f8; font-weight: 600; }
   .liker-row .liker-info small { font-size: 12px; color: #8a8a9c; }
-  .liker-row .liker-contact {
-    font-size: 12.5px; color: #e8e8f5;
-    background: color-mix(in srgb, var(--accent) 25%, transparent);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px; padding: 6px 11px;
-    text-decoration: none; white-space: nowrap; transition: all 0.25s;
-  }
+  .liker-row .liker-contact { font-size: 12.5px; color: #e8e8f5; background: color-mix(in srgb, var(--accent) 25%, transparent); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 6px 11px; text-decoration: none; white-space: nowrap; transition: all 0.25s; }
   .liker-row .liker-contact:hover { background: color-mix(in srgb, var(--accent) 45%, transparent); box-shadow: 0 0 14px var(--accent-glow); }
 
-  .empty-small {
-    text-align: center; padding: 20px; font-size: 13.5px; color: #7a7a8c;
-    background: rgba(30,30,40,0.4);
-    border: 1px dashed rgba(255,255,255,0.08);
-    border-radius: 12px;
-  }
+  .empty-small { text-align: center; padding: 20px; font-size: 13.5px; color: #7a7a8c; background: rgba(30,30,40,0.4); border: 1px dashed rgba(255,255,255,0.08); border-radius: 12px; }
 
   .modal-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
-  .modal-actions button {
-    flex: 1; padding: 12px; font-size: 13.5px; letter-spacing: 0.5px;
-    border-radius: 12px; cursor: pointer; font-family: inherit;
-    transition: all 0.25s;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(60,60,78,0.55); color: #e8e8f0;
-  }
+  .modal-actions button { flex: 1; padding: 12px; font-size: 13.5px; letter-spacing: 0.5px; border-radius: 12px; cursor: pointer; font-family: inherit; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.55); color: #e8e8f0; }
   .modal-actions button:hover { background: rgba(150,150,180,0.55); }
   .modal-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .modal-actions button.danger:hover { background: rgba(255,80,100,0.18); border-color: rgba(255,90,110,0.55); }
@@ -453,233 +179,80 @@
   .modal-actions button.premium:hover { background: rgba(255,215,0,0.15); }
 
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-  .theme-swatch {
-    position: relative; padding: 14px 8px; border-radius: 14px; cursor: pointer;
-    text-align: center; border: 2px solid transparent; transition: all 0.25s;
-    background: rgba(20,20,26,0.6); overflow: hidden;
-  }
+  .theme-swatch { position: relative; padding: 14px 8px; border-radius: 14px; cursor: pointer; text-align: center; border: 2px solid transparent; transition: all 0.25s; background: rgba(20,20,26,0.6); overflow: hidden; }
   .theme-swatch:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(170,170,200,0.3); }
   .theme-swatch.active { border-color: #fff; box-shadow: 0 0 22px rgba(255,255,255,0.35); }
-  .theme-swatch .dot {
-    width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 8px;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
-    display: flex; align-items: center; justify-content: center; font-size: 16px;
-  }
+  .theme-swatch .dot { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; }
   .theme-swatch .name { font-size: 11.5px; color: #d8d8e4; letter-spacing: 0.5px; }
-  .custom-theme-row {
-    display: flex; gap: 8px; margin-top: 14px; padding-top: 14px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .custom-theme-row input[type="color"] {
-    width: 48px; height: 44px; padding: 4px; border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(20,20,26,0.7); cursor: pointer; margin: 0;
-  }
-  .custom-theme-row button {
-    flex: 1; padding: 10px; font-size: 13px; letter-spacing: 0.5px;
-    color: #e8e8f0; background: rgba(60,60,78,0.55);
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
-    cursor: pointer; font-family: inherit; transition: all 0.25s;
-  }
+  .custom-theme-row { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .custom-theme-row input[type="color"] { width: 48px; height: 44px; padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(20,20,26,0.7); cursor: pointer; margin: 0; }
+  .custom-theme-row button { flex: 1; padding: 10px; font-size: 13px; letter-spacing: 0.5px; color: #e8e8f0; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; cursor: pointer; font-family: inherit; transition: all 0.25s; }
   .custom-theme-row button:hover { background: rgba(150,150,180,0.55); box-shadow: 0 0 18px var(--accent-glow); }
 
   .fx-list { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
-  .fx-list h4 {
-    font-size: 11.5px; letter-spacing: 2px; color: #b8b8cc;
-    text-transform: uppercase; margin-bottom: 10px;
-  }
-  .fx-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
+  .fx-list h4 { font-size: 11.5px; letter-spacing: 2px; color: #b8b8cc; text-transform: uppercase; margin-bottom: 10px; }
+  .fx-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
   .fx-row:last-child { border-bottom: none; }
   .fx-row .fx-label { font-size: 13.5px; color: #d8d8e4; display:flex; align-items:center; gap:8px; }
-  .switch {
-    position: relative; width: 46px; height: 26px;
-    background: rgba(60,60,78,0.7); border-radius: 13px; cursor: pointer;
-    transition: all 0.25s; border: 1px solid rgba(255,255,255,0.1);
-    flex-shrink: 0;
-  }
-  .switch::after {
-    content: ''; position: absolute; top: 2px; left: 2px;
-    width: 20px; height: 20px; border-radius: 50%;
-    background: #b0b0c4; transition: all 0.25s;
-  }
+  .switch { position: relative; width: 46px; height: 26px; background: rgba(60,60,78,0.7); border-radius: 13px; cursor: pointer; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+  .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #b0b0c4; transition: all 0.25s; }
   .switch.on { background: rgba(255,215,0,0.35); border-color: rgba(255,215,0,0.6); }
   .switch.on::after { left: 22px; background: #ffd970; box-shadow: 0 0 10px rgba(255,215,0,0.7); }
 
   .wheel-wrap { position: relative; width: 260px; height: 260px; margin: 0 auto 20px; }
-  .wheel-pointer {
-    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-    width: 0; height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 22px solid #ffd970;
-    z-index: 3;
-    filter: drop-shadow(0 0 8px rgba(255,215,0,0.6));
-  }
-  .wheel {
-    width: 100%; height: 100%; border-radius: 50%; position: relative;
-    transition: transform 4s cubic-bezier(0.17, 0.67, 0.16, 1);
-    background: conic-gradient(
-      #ff6b9d 0deg 45deg, #5b9dff 45deg 90deg, #4dd68a 90deg 135deg,
-      #b17aff 135deg 180deg, #ff5c6e 180deg 225deg, #ffd970 225deg 270deg,
-      #ff7ac4 270deg 315deg, #5fd4d4 315deg 360deg
-    );
-    border: 6px solid rgba(38,38,46,0.9);
-    box-shadow: 0 0 30px var(--accent-glow), inset 0 0 30px rgba(0,0,0,0.4);
-  }
-  .wheel-center {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 60px; height: 60px; border-radius: 50%;
-    background: rgba(38,38,46,0.95);
-    border: 2px solid #ffd970;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; z-index: 2;
-    box-shadow: 0 0 20px rgba(255,215,0,0.5);
-  }
-  .wheel-result {
-    text-align: center; font-size: 14px; color: #d8d8e4;
-    min-height: 60px; margin-bottom: 14px;
-  }
-  .wheel-result img {
-    width: 100px; height: 100px; border-radius: 12px; object-fit: cover;
-    margin: 8px auto; display: block;
-    border: 2px solid #ffd970;
-    box-shadow: 0 0 20px rgba(255,215,0,0.5);
-    animation: popIn 0.4s ease;
-  }
-  .wheel-result .rarity {
-    display: block; font-size: 11px; letter-spacing: 2px;
-    text-transform: uppercase; margin-top: 4px; opacity: 0.75;
-  }
-  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .spin-btn {
-    width: 100%; padding: 14px; font-size: 15px; letter-spacing: 1px;
-    color: #1a1a22; font-weight: 700;
-    background: linear-gradient(135deg, #ffd970, #ffb400);
-    border: none; border-radius: 12px; cursor: pointer;
-    transition: all 0.25s; font-family: inherit;
-  }
+  .wheel-pointer { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid #ffd970; z-index: 3; filter: drop-shadow(0 0 8px rgba(255,215,0,0.6)); }
+  .wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.16, 1); background: conic-gradient(#ff6b9d 0deg 45deg, #5b9dff 45deg 90deg, #4dd68a 90deg 135deg, #b17aff 135deg 180deg, #ff5c6e 180deg 225deg, #ffd970 225deg 270deg, #ff7ac4 270deg 315deg, #5fd4d4 315deg 360deg); border: 6px solid rgba(38,38,46,0.9); box-shadow: 0 0 30px var(--accent-glow), inset 0 0 30px rgba(0,0,0,0.4); }
+  .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border-radius: 50%; background: rgba(38,38,46,0.95); border: 2px solid #ffd970; display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+  .wheel-result { text-align: center; font-size: 14px; color: #d8d8e4; min-height: 60px; margin-bottom: 14px; }
+  .wheel-result img { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; margin: 8px auto; display: block; border: 2px solid #ffd970; box-shadow: 0 0 20px rgba(255,215,0,0.5); animation: popIn 0.4s ease; }
+  .wheel-result .rarity { display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; opacity: 0.75; }
+  @keyframes popIn { from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1} }
+  .spin-btn { width: 100%; padding: 14px; font-size: 15px; letter-spacing: 1px; color: #1a1a22; font-weight: 700; background: linear-gradient(135deg, #ffd970, #ffb400); border: none; border-radius: 12px; cursor: pointer; transition: all 0.25s; font-family: inherit; }
   .spin-btn:hover { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
   .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
   .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-  .inv-item {
-    position: relative;
-    background: rgba(30,30,40,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px; padding: 8px; text-align: center;
-  }
+  .inv-item { position: relative; background: rgba(30,30,40,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px; text-align: center; }
   .inv-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
-  .inv-item .inv-name {
-    font-size: 11.5px; color: #d8d8e4; margin-top: 6px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .inv-item .inv-count {
-    position: absolute; top: 4px; right: 4px;
-    min-width: 20px; height: 20px; padding: 0 5px;
-    background: rgba(0,0,0,0.7);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 10px; font-size: 11px; color: #fff;
-    display: flex; align-items: center; justify-content: center; font-weight: 600;
-  }
-  .inv-item.rarity-common    { border-color: rgba(150,150,150,0.4); }
-  .inv-item.rarity-rare      { border-color: rgba(90,150,255,0.5); }
-  .inv-item.rarity-epic      { border-color: rgba(180,120,255,0.6); }
+  .inv-item .inv-name { font-size: 11.5px; color: #d8d8e4; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inv-item .inv-count { position: absolute; top: 4px; right: 4px; min-width: 20px; height: 20px; padding: 0 5px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 11px; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .inv-item.rarity-common { border-color: rgba(150,150,150,0.4); }
+  .inv-item.rarity-rare { border-color: rgba(90,150,255,0.5); }
+  .inv-item.rarity-epic { border-color: rgba(180,120,255,0.6); }
   .inv-item.rarity-legendary { border-color: rgba(255,215,0,0.7); box-shadow: 0 0 18px rgba(255,215,0,0.3); }
-  .inv-sell-btn {
-    margin-top: 6px; width: 100%;
-    padding: 6px 8px; font-size: 11.5px;
-    border-radius: 8px; cursor: pointer; font-family: inherit;
-    background: rgba(255,215,0,0.15);
-    border: 1px solid rgba(255,215,0,0.4);
-    color: #ffd970;
-    transition: all 0.25s;
-  }
+  .inv-sell-btn { margin-top: 6px; width: 100%; padding: 6px 8px; font-size: 11.5px; border-radius: 8px; cursor: pointer; font-family: inherit; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); color: #ffd970; transition: all 0.25s; }
   .inv-sell-btn:hover { background: rgba(255,215,0,0.3); }
 
-  .market-lot {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 12px; background: rgba(30,30,40,0.5);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px; margin-bottom: 8px;
-  }
+  .market-lot { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; }
   .market-lot img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
   .market-lot .lot-info { flex: 1; min-width: 0; }
   .market-lot .lot-info strong { display: block; font-size: 14px; color: #f0f0f8; }
   .market-lot .lot-info small { font-size: 11.5px; color: #8a8a9c; }
   .market-lot .lot-price { font-size: 14px; color: #ffd970; font-weight: 700; white-space: nowrap; }
   .market-lot .lot-actions { display: flex; gap: 6px; }
-  .market-lot button {
-    padding: 7px 12px; font-size: 12px;
-    border-radius: 8px; cursor: pointer; font-family: inherit;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(60,60,78,0.55); color: #e8e8f0;
-    transition: all 0.25s;
-  }
+  .market-lot button { padding: 7px 12px; font-size: 12px; border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.55); color: #e8e8f0; transition: all 0.25s; }
   .market-lot button.buy { color: #ffd970; border-color: rgba(255,215,0,0.4); }
   .market-lot button.buy:hover { background: rgba(255,215,0,0.15); }
   .market-lot button.cancel { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .market-lot button.cancel:hover { background: rgba(255,80,100,0.18); }
   .market-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-  .market-tabs button {
-    flex: 1; padding: 10px; font-size: 13px;
-    border-radius: 10px; cursor: pointer; font-family: inherit;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(60,60,78,0.4); color: #d8d8e4;
-    transition: all 0.25s;
-  }
+  .market-tabs button { flex: 1; padding: 10px; font-size: 13px; border-radius: 10px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.4); color: #d8d8e4; transition: all 0.25s; }
   .market-tabs button.active { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.5); color: #ffd970; }
 
-  .premium-preview {
-    margin-bottom: 16px; padding: 12px;
-    background: rgba(20,20,26,0.6);
-    border-radius: 14px; border: 1px dashed rgba(255,215,0,0.4);
-  }
-  .premium-preview h4 {
-    font-size: 11.5px; letter-spacing: 1px; color: #ffd970;
-    text-transform: uppercase; margin-bottom: 10px;
-  }
+  .premium-preview { margin-bottom: 16px; padding: 12px; background: rgba(20,20,26,0.6); border-radius: 14px; border: 1px dashed rgba(255,215,0,0.4); }
+  .premium-preview h4 { font-size: 11.5px; letter-spacing: 1px; color: #ffd970; text-transform: uppercase; margin-bottom: 10px; }
   .color-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .color-row input[type="color"] {
-    width: 44px; height: 40px; padding: 3px; margin: 0;
-    border-radius: 10px; border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(20,20,26,0.7); cursor: pointer;
-  }
+  .color-row input[type="color"] { width: 44px; height: 40px; padding: 3px; margin: 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(20,20,26,0.7); cursor: pointer; }
   .color-row label { margin: 0; font-size: 12.5px; color: #b8b8cc; }
 
-  .admin-user-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 12px; background: rgba(30,30,40,0.5);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px; margin-bottom: 8px; flex-wrap: wrap;
-  }
-  .admin-user-row img, .admin-user-row .mini-avatar {
-    width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-    background: linear-gradient(135deg, #2a2a34, #3a3a48);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; color: #b0b0c4; flex-shrink: 0;
-  }
+  .admin-user-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+  .admin-user-row img, .admin-user-row .mini-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #b0b0c4; flex-shrink: 0; }
   .admin-user-info { flex: 1; min-width: 130px; }
   .admin-user-info strong { display: block; font-size: 14px; color: #f0f0f8; }
   .admin-user-info small { font-size: 11.5px; color: #8a8a9c; }
   .admin-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  .admin-actions input[type="number"] {
-    width: 70px; padding: 6px 8px; font-size: 12.5px;
-    margin: 0; border-radius: 8px;
-    background: rgba(20,20,26,0.7);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #f0f0f8;
-  }
-  .admin-actions button {
-    padding: 6px 10px; font-size: 12px;
-    border-radius: 8px; cursor: pointer; font-family: inherit;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(60,60,78,0.55); color: #e8e8f0;
-    transition: all 0.25s;
-  }
+  .admin-actions input[type="number"] { width: 70px; padding: 6px 8px; font-size: 12.5px; margin: 0; border-radius: 8px; background: rgba(20,20,26,0.7); border: 1px solid rgba(255,255,255,0.1); color: #f0f0f8; }
+  .admin-actions button { padding: 6px 10px; font-size: 12px; border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.55); color: #e8e8f0; transition: all 0.25s; }
   .admin-actions button:hover { background: rgba(150,150,180,0.55); }
   .admin-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .admin-actions button.danger:hover { background: rgba(255,80,100,0.18); }
@@ -687,12 +260,14 @@
   .admin-actions button.give:hover { background: rgba(255,215,0,0.15); }
   .admin-actions button.premium { color: #b17aff; border-color: rgba(177,122,255,0.4); }
   .admin-actions button.premium:hover { background: rgba(177,122,255,0.15); }
+  .admin-actions button.ban { color: #ff5c6e; border-color: rgba(255,90,110,0.4); }
+  .admin-actions button.ban:hover { background: rgba(255,80,100,0.2); }
+  .admin-actions button.ban-dev { color: #ffaa5c; border-color: rgba(255,170,90,0.4); }
+  .admin-actions button.ban-dev:hover { background: rgba(255,170,90,0.2); }
+  .admin-actions button.ban-all { color: #ff2e5c; border-color: rgba(255,46,92,0.5); font-weight: 600; }
+  .admin-actions button.ban-all:hover { background: rgba(255,46,92,0.25); }
 
-  .brand-footer {
-    position: fixed; bottom: 12px; left: 0; right: 0;
-    text-align: center; font-size: 11px; letter-spacing: 5px;
-    color: rgba(200,200,220,0.22); z-index: 0; pointer-events: none;
-  }
+  .brand-footer { position: fixed; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 11px; letter-spacing: 5px; color: rgba(200,200,220,0.22); z-index: 0; pointer-events: none; }
 
   @media (max-width: 480px) {
     .brand { font-size: 20px; letter-spacing: 3px; }
@@ -854,26 +429,11 @@
       </div>
       <div class="fx-list">
         <h4>Эффекты</h4>
-        <div class="fx-row">
-          <div class="fx-label">🕸 Паутина на всю тему</div>
-          <div class="switch" id="fxWeb"></div>
-        </div>
-        <div class="fx-row">
-          <div class="fx-label">🪟 Стеклянный интерфейс</div>
-          <div class="switch" id="fxGlass"></div>
-        </div>
-        <div class="fx-row">
-          <div class="fx-label">❄️ Снег</div>
-          <div class="switch" id="fxSnow"></div>
-        </div>
-        <div class="fx-row">
-          <div class="fx-label">✨ Звёзды</div>
-          <div class="switch" id="fxStars"></div>
-        </div>
-        <div class="fx-row">
-          <div class="fx-label">💡 Неоновое мерцание</div>
-          <div class="switch" id="fxNeon"></div>
-        </div>
+        <div class="fx-row"><div class="fx-label">🕸 Паутина на всю тему</div><div class="switch" id="fxWeb"></div></div>
+        <div class="fx-row"><div class="fx-label">🪟 Стеклянный интерфейс</div><div class="switch" id="fxGlass"></div></div>
+        <div class="fx-row"><div class="fx-label">❄️ Снег</div><div class="switch" id="fxSnow"></div></div>
+        <div class="fx-row"><div class="fx-label">✨ Звёзды</div><div class="switch" id="fxStars"></div></div>
+        <div class="fx-row"><div class="fx-label">💡 Неоновое мерцание</div><div class="switch" id="fxNeon"></div></div>
       </div>
     </div>
   </div>
@@ -931,13 +491,47 @@
   const THEME_KEY = 'xivivide_theme';
   const FX_KEY = 'xivivide_fx';
   const ADMIN_TOKEN_KEY = 'xivivide_admin_token';
+  const DEVICE_KEY = 'xivivide_device_id';
 
   let myProfile = null;
   let myLikes = new Set();
 
+  // === DEVICE ID (fingerprint) ===
+  function getDeviceId() {
+    let d = localStorage.getItem(DEVICE_KEY);
+    if (d) return d;
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillText('xivivide-fp', 2, 2);
+      const canvasData = canvas.toDataURL();
+      const raw = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width + 'x' + screen.height,
+        screen.colorDepth,
+        new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency || 0,
+        navigator.platform || '',
+        canvasData.slice(-100)
+      ].join('|');
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      d = 'd_' + Math.abs(hash).toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    } catch {
+      d = 'd_' + Math.random().toString(36).slice(2, 14);
+    }
+    localStorage.setItem(DEVICE_KEY, d);
+    return d;
+  }
+
   const wallEl = document.getElementById('wall');
   const topbarRight = document.getElementById('topbarRight');
-
   const registerModal = document.getElementById('registerModal');
   const loginModal = document.getElementById('loginModal');
   const myProfileModal = document.getElementById('myProfileModal');
@@ -949,26 +543,20 @@
   const invModal = document.getElementById('invModal');
   const marketModal = document.getElementById('marketModal');
   const adminModal = document.getElementById('adminModal');
-
   const openForm = document.getElementById('openForm');
   const snowLayer = document.getElementById('snowLayer');
   const starsLayer = document.getElementById('starsLayer');
 
   function getToken() { return localStorage.getItem(TOKEN_KEY); }
-  function setToken(t) {
-    if (t) localStorage.setItem(TOKEN_KEY, t);
-    else localStorage.removeItem(TOKEN_KEY);
-  }
+  function setToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
   function getAdminToken() { return sessionStorage.getItem(ADMIN_TOKEN_KEY); }
-  function setAdminToken(t) {
-    if (t) sessionStorage.setItem(ADMIN_TOKEN_KEY, t);
-    else sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-  }
+  function setAdminToken(t) { if (t) sessionStorage.setItem(ADMIN_TOKEN_KEY, t); else sessionStorage.removeItem(ADMIN_TOKEN_KEY); }
 
   async function api(url, options = {}) {
     options.headers = options.headers || {};
     const token = getToken();
     if (token) options.headers['Authorization'] = 'Bearer ' + token;
+    options.headers['X-Device-Id'] = getDeviceId();
     if (options.body && !(options.body instanceof FormData)) {
       options.headers['Content-Type'] = 'application/json';
     }
@@ -982,6 +570,7 @@
     options.headers = options.headers || {};
     const at = getAdminToken();
     if (at) options.headers['Authorization'] = 'Bearer ' + at;
+    options.headers['X-Device-Id'] = getDeviceId();
     if (options.body && !(options.body instanceof FormData)) {
       options.headers['Content-Type'] = 'application/json';
     }
@@ -992,97 +581,35 @@
   }
 
   const THEMES = {
-    gray:   { name: 'Серая',   accent: '#a0a0b8', accentLight: '#e8e8f0', accentDark: '#6b6b85',
-              bg1: '#14141a', bg2: '#1c1c24', bg3: '#101014',
-              r1: 'rgba(120,120,140,0.25)', r2: 'rgba(90,90,110,0.28)', r3: 'rgba(140,140,160,0.15)',
-              f1: 'rgba(180,180,200,0.10)', f2: 'rgba(150,150,175,0.12)' },
-    blue:   { name: 'Синяя',   accent: '#5b9dff', accentLight: '#d6e6ff', accentDark: '#3a6fc4',
-              bg1: '#0d1420', bg2: '#122036', bg3: '#080d17',
-              r1: 'rgba(80,140,220,0.28)', r2: 'rgba(60,110,180,0.30)', r3: 'rgba(120,170,240,0.18)',
-              f1: 'rgba(120,180,255,0.12)', f2: 'rgba(90,150,230,0.14)' },
-    purple: { name: 'Фиолет',  accent: '#b17aff', accentLight: '#e8d9ff', accentDark: '#7a4fc4',
-              bg1: '#150d20', bg2: '#1f1233', bg3: '#0d0817',
-              r1: 'rgba(150,90,220,0.28)', r2: 'rgba(110,60,180,0.30)', r3: 'rgba(180,130,240,0.18)',
-              f1: 'rgba(180,130,255,0.12)', f2: 'rgba(150,100,230,0.14)' },
-    green:  { name: 'Зелёная', accent: '#4dd68a', accentLight: '#d4f7e3', accentDark: '#2a9a5e',
-              bg1: '#0d1f17', bg2: '#123026', bg3: '#081510',
-              r1: 'rgba(80,200,140,0.28)', r2: 'rgba(60,160,110,0.30)', r3: 'rgba(120,230,180,0.18)',
-              f1: 'rgba(120,240,180,0.12)', f2: 'rgba(90,200,150,0.14)' },
-    red:    { name: 'Красная', accent: '#ff5c6e', accentLight: '#ffd6da', accentDark: '#c4384a',
-              bg1: '#1f0d12', bg2: '#2e121a', bg3: '#150810',
-              r1: 'rgba(220,80,100,0.28)', r2: 'rgba(180,60,80,0.30)', r3: 'rgba(240,120,140,0.18)',
-              f1: 'rgba(255,120,140,0.12)', f2: 'rgba(220,90,110,0.14)' },
-    pink:   { name: 'Розовая', accent: '#ff7ac4', accentLight: '#ffd9ec', accentDark: '#c44a94',
-              bg1: '#1f0d1a', bg2: '#2e1226', bg3: '#150810',
-              r1: 'rgba(220,90,180,0.28)', r2: 'rgba(180,60,140,0.30)', r3: 'rgba(240,130,210,0.18)',
-              f1: 'rgba(255,130,200,0.12)', f2: 'rgba(220,100,170,0.14)' },
-    web:    { name: 'Паутина', accent: '#c0c0d8', accentLight: '#f0f0ff', accentDark: '#505068',
-              bg1: '#050508', bg2: '#0a0a10', bg3: '#020204',
-              r1: 'rgba(120,120,140,0.06)', r2: 'rgba(90,90,110,0.08)', r3: 'rgba(140,140,160,0.05)',
-              f1: 'rgba(180,180,200,0.05)', f2: 'rgba(150,150,175,0.06)',
-              special: 'web' },
-    matrix: { name: 'Матрица', accent: '#4dd68a', accentLight: '#c8ffdc', accentDark: '#1a7a44',
-              bg1: '#000800', bg2: '#001505', bg3: '#000300',
-              r1: 'rgba(40,220,120,0.15)', r2: 'rgba(20,180,80,0.20)', r3: 'rgba(100,255,150,0.10)',
-              f1: 'rgba(60,255,140,0.08)', f2: 'rgba(40,200,100,0.10)' },
-    night:  { name: 'Ночь',   accent: '#8a8aff', accentLight: '#dadaff', accentDark: '#4a4ad4',
-              bg1: '#050510', bg2: '#0a0a20', bg3: '#020208',
-              r1: 'rgba(90,90,200,0.22)', r2: 'rgba(60,60,160,0.25)', r3: 'rgba(140,140,240,0.14)',
-              f1: 'rgba(120,120,255,0.10)', f2: 'rgba(90,90,220,0.12)' },
-    sunset: { name: 'Закат',  accent: '#ff9a5c', accentLight: '#ffe0c4', accentDark: '#c45a1a',
-              bg1: '#1f0d05', bg2: '#2e1408', bg3: '#150802',
-              r1: 'rgba(220,120,60,0.28)', r2: 'rgba(180,80,40,0.30)', r3: 'rgba(255,160,100,0.18)',
-              f1: 'rgba(255,160,100,0.12)', f2: 'rgba(220,120,70,0.14)' }
+    gray:   { name: 'Серая',   accent: '#a0a0b8', accentLight: '#e8e8f0', accentDark: '#6b6b85', bg1: '#14141a', bg2: '#1c1c24', bg3: '#101014', r1: 'rgba(120,120,140,0.25)', r2: 'rgba(90,90,110,0.28)', r3: 'rgba(140,140,160,0.15)', f1: 'rgba(180,180,200,0.10)', f2: 'rgba(150,150,175,0.12)' },
+    blue:   { name: 'Синяя',   accent: '#5b9dff', accentLight: '#d6e6ff', accentDark: '#3a6fc4', bg1: '#0d1420', bg2: '#122036', bg3: '#080d17', r1: 'rgba(80,140,220,0.28)', r2: 'rgba(60,110,180,0.30)', r3: 'rgba(120,170,240,0.18)', f1: 'rgba(120,180,255,0.12)', f2: 'rgba(90,150,230,0.14)' },
+    purple: { name: 'Фиолет',  accent: '#b17aff', accentLight: '#e8d9ff', accentDark: '#7a4fc4', bg1: '#150d20', bg2: '#1f1233', bg3: '#0d0817', r1: 'rgba(150,90,220,0.28)', r2: 'rgba(110,60,180,0.30)', r3: 'rgba(180,130,240,0.18)', f1: 'rgba(180,130,255,0.12)', f2: 'rgba(150,100,230,0.14)' },
+    green:  { name: 'Зелёная', accent: '#4dd68a', accentLight: '#d4f7e3', accentDark: '#2a9a5e', bg1: '#0d1f17', bg2: '#123026', bg3: '#081510', r1: 'rgba(80,200,140,0.28)', r2: 'rgba(60,160,110,0.30)', r3: 'rgba(120,230,180,0.18)', f1: 'rgba(120,240,180,0.12)', f2: 'rgba(90,200,150,0.14)' },
+    red:    { name: 'Красная', accent: '#ff5c6e', accentLight: '#ffd6da', accentDark: '#c4384a', bg1: '#1f0d12', bg2: '#2e121a', bg3: '#150810', r1: 'rgba(220,80,100,0.28)', r2: 'rgba(180,60,80,0.30)', r3: 'rgba(240,120,140,0.18)', f1: 'rgba(255,120,140,0.12)', f2: 'rgba(220,90,110,0.14)' },
+    pink:   { name: 'Розовая', accent: '#ff7ac4', accentLight: '#ffd9ec', accentDark: '#c44a94', bg1: '#1f0d1a', bg2: '#2e1226', bg3: '#150810', r1: 'rgba(220,90,180,0.28)', r2: 'rgba(180,60,140,0.30)', r3: 'rgba(240,130,210,0.18)', f1: 'rgba(255,130,200,0.12)', f2: 'rgba(220,100,170,0.14)' },
+    web:    { name: 'Паутина', accent: '#c0c0d8', accentLight: '#f0f0ff', accentDark: '#505068', bg1: '#050508', bg2: '#0a0a10', bg3: '#020204', r1: 'rgba(120,120,140,0.06)', r2: 'rgba(90,90,110,0.08)', r3: 'rgba(140,140,160,0.05)', f1: 'rgba(180,180,200,0.05)', f2: 'rgba(150,150,175,0.06)', special: 'web' },
+    matrix: { name: 'Матрица', accent: '#4dd68a', accentLight: '#c8ffdc', accentDark: '#1a7a44', bg1: '#000800', bg2: '#001505', bg3: '#000300', r1: 'rgba(40,220,120,0.15)', r2: 'rgba(20,180,80,0.20)', r3: 'rgba(100,255,150,0.10)', f1: 'rgba(60,255,140,0.08)', f2: 'rgba(40,200,100,0.10)' },
+    night:  { name: 'Ночь',   accent: '#8a8aff', accentLight: '#dadaff', accentDark: '#4a4ad4', bg1: '#050510', bg2: '#0a0a20', bg3: '#020208', r1: 'rgba(90,90,200,0.22)', r2: 'rgba(60,60,160,0.25)', r3: 'rgba(140,140,240,0.14)', f1: 'rgba(120,120,255,0.10)', f2: 'rgba(90,90,220,0.12)' },
+    sunset: { name: 'Закат',  accent: '#ff9a5c', accentLight: '#ffe0c4', accentDark: '#c45a1a', bg1: '#1f0d05', bg2: '#2e1408', bg3: '#150802', r1: 'rgba(220,120,60,0.28)', r2: 'rgba(180,80,40,0.30)', r3: 'rgba(255,160,100,0.18)', f1: 'rgba(255,160,100,0.12)', f2: 'rgba(220,120,70,0.14)' }
   };
 
-  function hexToRgba(hex, alpha) {
-    if (!hex) return 'rgba(0,0,0,0)';
-    const h = hex.replace('#', '');
-    const r = parseInt(h.substring(0, 2), 16);
-    const g = parseInt(h.substring(2, 4), 16);
-    const b = parseInt(h.substring(4, 6), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-  }
-  function lighten(hex, amount = 0.4) {
-    const h = hex.replace('#', '');
-    const r = Math.min(255, Math.round(parseInt(h.substring(0, 2), 16) + 255 * amount));
-    const g = Math.min(255, Math.round(parseInt(h.substring(2, 4), 16) + 255 * amount));
-    const b = Math.min(255, Math.round(parseInt(h.substring(4, 6), 16) + 255 * amount));
-    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
-  }
-  function darken(hex, amount = 0.3) {
-    const h = hex.replace('#', '');
-    const r = Math.max(0, Math.round(parseInt(h.substring(0, 2), 16) * (1 - amount)));
-    const g = Math.max(0, Math.round(parseInt(h.substring(2, 4), 16) * (1 - amount)));
-    const b = Math.max(0, Math.round(parseInt(h.substring(4, 6), 16) * (1 - amount)));
-    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
-  }
+  function hexToRgba(hex, alpha) { if (!hex) return 'rgba(0,0,0,0)'; const h = hex.replace('#',''); const r=parseInt(h.substring(0,2),16); const g=parseInt(h.substring(2,4),16); const b=parseInt(h.substring(4,6),16); return `rgba(${r},${g},${b},${alpha})`; }
+  function lighten(hex, amount=0.4) { const h=hex.replace('#',''); const r=Math.min(255,Math.round(parseInt(h.substring(0,2),16)+255*amount)); const g=Math.min(255,Math.round(parseInt(h.substring(2,4),16)+255*amount)); const b=Math.min(255,Math.round(parseInt(h.substring(4,6),16)+255*amount)); return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join(''); }
+  function darken(hex, amount=0.3) { const h=hex.replace('#',''); const r=Math.max(0,Math.round(parseInt(h.substring(0,2),16)*(1-amount))); const g=Math.max(0,Math.round(parseInt(h.substring(2,4),16)*(1-amount))); const b=Math.max(0,Math.round(parseInt(h.substring(4,6),16)*(1-amount))); return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join(''); }
 
   function applyTheme(themeKey) {
     let theme;
     if (THEMES[themeKey]) theme = THEMES[themeKey];
     else if (themeKey.startsWith('custom:')) {
       const accent = themeKey.slice(7);
-      theme = {
-        name: 'Своя', accent,
-        accentLight: lighten(accent, 0.45),
-        accentDark: darken(accent, 0.35),
-        bg1: darken(accent, 0.9),
-        bg2: darken(accent, 0.86),
-        bg3: darken(accent, 0.94),
-        r1: hexToRgba(accent, 0.22),
-        r2: hexToRgba(accent, 0.24),
-        r3: hexToRgba(accent, 0.14),
-        f1: hexToRgba(accent, 0.10),
-        f2: hexToRgba(accent, 0.12)
-      };
+      theme = { name:'Своя', accent, accentLight: lighten(accent,0.45), accentDark: darken(accent,0.35), bg1: darken(accent,0.9), bg2: darken(accent,0.86), bg3: darken(accent,0.94), r1: hexToRgba(accent,0.22), r2: hexToRgba(accent,0.24), r3: hexToRgba(accent,0.14), f1: hexToRgba(accent,0.10), f2: hexToRgba(accent,0.12) };
     } else theme = THEMES.gray;
 
     const root = document.documentElement;
     root.style.setProperty('--accent', theme.accent);
     root.style.setProperty('--accent-light', theme.accentLight);
     root.style.setProperty('--accent-dark', theme.accentDark);
-    root.style.setProperty('--accent-glow', hexToRgba(theme.accent, 0.45));
+    root.style.setProperty('--accent-glow', hexToRgba(theme.accent,0.45));
     root.style.setProperty('--bg-1', theme.bg1);
     root.style.setProperty('--bg-2', theme.bg2);
     root.style.setProperty('--bg-3', theme.bg3);
@@ -1091,12 +618,9 @@
     root.style.setProperty('--bg-radial-3', theme.r3);
     root.style.setProperty('--float-1', theme.f1);
     root.style.setProperty('--float-2', theme.f2);
-
     if (theme.special === 'web') setFx('web', true);
     localStorage.setItem(THEME_KEY, themeKey);
-    document.querySelectorAll('.theme-swatch').forEach(s => {
-      s.classList.toggle('active', s.dataset.key === themeKey);
-    });
+    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === themeKey));
   }
 
   function renderThemeGrid() {
@@ -1106,106 +630,47 @@
       const el = document.createElement('div');
       el.className = 'theme-swatch';
       el.dataset.key = key;
-      const dotStyle = key === 'web'
-        ? `background: #050508; border: 1px solid rgba(255,255,255,0.3);`
-        : `background: linear-gradient(135deg, ${t.accentLight}, ${t.accent}, ${t.accentDark})`;
+      const dotStyle = key === 'web' ? `background: #050508; border: 1px solid rgba(255,255,255,0.3);` : `background: linear-gradient(135deg, ${t.accentLight}, ${t.accent}, ${t.accentDark})`;
       const dotContent = key === 'web' ? '🕷' : '';
-      el.innerHTML = `
-        <div class="dot" style="${dotStyle}">${dotContent}</div>
-        <div class="name">${t.name}</div>
-      `;
+      el.innerHTML = `<div class="dot" style="${dotStyle}">${dotContent}</div><div class="name">${t.name}</div>`;
       el.addEventListener('click', () => applyTheme(key));
       themeGrid.appendChild(el);
     });
     const saved = localStorage.getItem(THEME_KEY) || 'gray';
-    document.querySelectorAll('.theme-swatch').forEach(s => {
-      s.classList.toggle('active', s.dataset.key === saved);
-    });
+    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === saved));
   }
 
-  function getFx() {
-    try { return JSON.parse(localStorage.getItem(FX_KEY)) || {}; }
-    catch { return {}; }
-  }
+  function getFx() { try { return JSON.parse(localStorage.getItem(FX_KEY)) || {}; } catch { return {}; } }
   function saveFx(fx) { localStorage.setItem(FX_KEY, JSON.stringify(fx)); }
-  function setFx(name, value) {
-    const fx = getFx();
-    fx[name] = value;
-    saveFx(fx);
-    applyFx(fx);
-  }
+  function setFx(name, value) { const fx = getFx(); fx[name] = value; saveFx(fx); applyFx(fx); }
   function applyFx(fx) {
     document.body.classList.toggle('fx-web', !!fx.web);
     document.body.classList.toggle('fx-glass', !!fx.glass);
     document.body.classList.toggle('fx-snow', !!fx.snow);
     document.body.classList.toggle('fx-stars', !!fx.stars);
     document.body.classList.toggle('fx-neon', !!fx.neon);
-
     ['fxWeb','fxGlass','fxSnow','fxStars','fxNeon'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.toggle('on', !!fx[id.replace('fx','').toLowerCase()]);
     });
-
     if (fx.snow) spawnSnow(); else snowLayer.innerHTML = '';
     if (fx.stars) spawnStars(); else starsLayer.innerHTML = '';
   }
-  function spawnSnow() {
-    snowLayer.innerHTML = '';
-    const flakes = ['❄','❅','❆','*','·'];
-    for (let i = 0; i < 40; i++) {
-      const el = document.createElement('div');
-      el.className = 'snowflake';
-      el.textContent = flakes[Math.floor(Math.random() * flakes.length)];
-      el.style.left = Math.random() * 100 + '%';
-      el.style.fontSize = (8 + Math.random() * 14) + 'px';
-      el.style.animationDuration = (6 + Math.random() * 10) + 's';
-      el.style.animationDelay = (-Math.random() * 10) + 's';
-      snowLayer.appendChild(el);
-    }
-  }
-  function spawnStars() {
-    starsLayer.innerHTML = '';
-    for (let i = 0; i < 80; i++) {
-      const el = document.createElement('div');
-      el.className = 'star';
-      el.style.left = Math.random() * 100 + '%';
-      el.style.top = Math.random() * 100 + '%';
-      el.style.animationDelay = (-Math.random() * 3) + 's';
-      el.style.opacity = Math.random() * 0.7 + 0.3;
-      starsLayer.appendChild(el);
-    }
-  }
+  function spawnSnow() { snowLayer.innerHTML = ''; const flakes = ['❄','❅','❆','*','·']; for (let i=0;i<40;i++){ const el=document.createElement('div'); el.className='snowflake'; el.textContent=flakes[Math.floor(Math.random()*flakes.length)]; el.style.left=Math.random()*100+'%'; el.style.fontSize=(8+Math.random()*14)+'px'; el.style.animationDuration=(6+Math.random()*10)+'s'; el.style.animationDelay=(-Math.random()*10)+'s'; snowLayer.appendChild(el); } }
+  function spawnStars() { starsLayer.innerHTML = ''; for (let i=0;i<80;i++){ const el=document.createElement('div'); el.className='star'; el.style.left=Math.random()*100+'%'; el.style.top=Math.random()*100+'%'; el.style.animationDelay=(-Math.random()*3)+'s'; el.style.opacity=Math.random()*0.7+0.3; starsLayer.appendChild(el); } }
   ['fxWeb','fxGlass','fxSnow','fxStars','fxNeon'].forEach(id => {
-    document.getElementById(id).addEventListener('click', () => {
-      const fx = getFx();
-      const key = id.replace('fx','').toLowerCase();
-      setFx(key, !fx[key]);
-    });
+    document.getElementById(id).addEventListener('click', () => { const fx=getFx(); const key=id.replace('fx','').toLowerCase(); setFx(key, !fx[key]); });
   });
 
-  function escapeHtml(str) {
-    return String(str || '').replace(/[&<>"']/g, s => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[s]));
-  }
-  function buildContactLink(type, value) {
-    const clean = String(value).trim().replace(/^@/, '');
-    if (type === 'telegram') return 'https://t.me/' + encodeURIComponent(clean);
-    if (type === 'discord') return 'https://discord.com/users/' + encodeURIComponent(clean);
-    return null;
-  }
-  function contactLabel(type) { return type === 'telegram' ? 'Telegram' : 'Discord'; }
-  function contactIcon(type) { return type === 'telegram' ? '✈️' : '🎮'; }
+  function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+  function buildContactLink(type, value) { const clean=String(value).trim().replace(/^@/,''); if(type==='telegram') return 'https://t.me/'+encodeURIComponent(clean); if(type==='discord') return 'https://discord.com/users/'+encodeURIComponent(clean); return null; }
+  function contactLabel(type) { return type==='telegram'?'Telegram':'Discord'; }
+  function contactIcon(type) { return type==='telegram'?'✈️':'🎮'; }
 
   async function loadWall() {
     try {
       const profiles = await api('/profiles');
-      if (myProfile) {
-        try {
-          const likedIds = await api('/likes/' + myProfile.id);
-          myLikes = new Set(likedIds.map(String));
-        } catch {}
-      }
+      if (myProfile) { try { const likedIds = await api('/likes/' + myProfile.id); myLikes = new Set(likedIds.map(String)); } catch {} }
       renderWall(profiles);
     } catch (err) { console.error(err); }
   }
@@ -1225,40 +690,23 @@
     if (p.is_premium && p.card_rgb) cls += ' rgb';
     card.className = cls;
     card.dataset.id = p.id;
-
     if (p.is_premium) {
-      if (p.card_color && !p.card_rgb) {
-        card.style.borderColor = p.card_color;
-        card.style.boxShadow = `0 12px 30px rgba(0,0,0,0.5), 0 0 22px ${hexToRgba(p.card_color, 0.55)}`;
-      }
-      if (p.card_bg) {
-        card.style.background = p.card_bg;
-        card.style.backdropFilter = 'blur(16px)';
-      }
+      if (p.card_color && !p.card_rgb) { card.style.borderColor = p.card_color; card.style.boxShadow = `0 12px 30px rgba(0,0,0,0.5), 0 0 22px ${hexToRgba(p.card_color, 0.55)}`; }
+      if (p.card_bg) { card.style.background = p.card_bg; card.style.backdropFilter = 'blur(16px)'; }
     }
-
-    const photoHTML = p.photo
-      ? `<img class="profile-photo" src="${p.photo}" alt="" loading="lazy">`
-      : `<div class="profile-photo-placeholder">✦</div>`;
+    const photoHTML = p.photo ? `<img class="profile-photo" src="${p.photo}" alt="" loading="lazy">` : `<div class="profile-photo-placeholder">✦</div>`;
     const date = new Date(p.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' });
-
     let contactHTML = '';
     if (p.contact_value) {
       const link = buildContactLink(p.contact_type, p.contact_value);
       const label = contactLabel(p.contact_type);
       const icon = contactIcon(p.contact_type);
-      const display = p.contact_type === 'telegram'
-        ? (p.contact_value.startsWith('@') ? p.contact_value : '@' + p.contact_value)
-        : p.contact_value;
-      contactHTML = link
-        ? `<a class="contact-badge" href="${link}" target="_blank" rel="noopener">${icon} ${label}: ${escapeHtml(display)}</a>`
-        : `<span class="contact-badge">${icon} ${label}: ${escapeHtml(display)}</span>`;
+      const display = p.contact_type === 'telegram' ? (p.contact_value.startsWith('@') ? p.contact_value : '@' + p.contact_value) : p.contact_value;
+      contactHTML = link ? `<a class="contact-badge" href="${link}" target="_blank" rel="noopener">${icon} ${label}: ${escapeHtml(display)}</a>` : `<span class="contact-badge">${icon} ${label}: ${escapeHtml(display)}</span>`;
     }
-
     const liked = myLikes.has(String(p.id));
     const likeCount = p.likes || 0;
     const isMine = String(p.id) === String(myId);
-
     card.innerHTML = `
       ${isMine ? '<div class="mine-badge">★ Это ты</div>' : ''}
       ${p.card_pinned ? '<div class="pin-badge">📌</div>' : ''}
@@ -1276,9 +724,7 @@
         <span class="profile-date">с ${date}</span>
       </div>
     `;
-    if (!isMine) {
-      card.querySelector('.like-btn').addEventListener('click', () => toggleLike(p.id));
-    }
+    if (!isMine) card.querySelector('.like-btn').addEventListener('click', () => toggleLike(p.id));
     return card;
   }
 
@@ -1286,8 +732,7 @@
     if (!myProfile) { alert('Войди, чтобы лайкать'); return; }
     try {
       const r = await api('/like', { method: 'POST', body: JSON.stringify({ targetId: parseInt(targetId) }) });
-      if (r.liked) myLikes.add(String(targetId));
-      else myLikes.delete(String(targetId));
+      if (r.liked) myLikes.add(String(targetId)); else myLikes.delete(String(targetId));
       await loadWall();
     } catch (err) { alert(err.message); }
   }
@@ -1302,23 +747,17 @@
     status.className = 'form-status';
     try {
       const fd = new FormData(form);
-      const res = await fetch(API + '/register', { method: 'POST', body: fd });
+      fd.append('deviceId', getDeviceId());
+      const res = await fetch(API + '/register', { method: 'POST', headers: { 'X-Device-Id': getDeviceId() }, body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка');
       setToken(data.token);
       myProfile = data.profile;
       status.textContent = 'Готово!';
       status.className = 'form-status success';
-      setTimeout(() => {
-        registerModal.classList.remove('show');
-        form.reset();
-        renderTopbar();
-        loadWall();
-      }, 500);
-    } catch (err) {
-      status.textContent = err.message;
-      status.className = 'form-status error';
-    } finally { btn.disabled = false; }
+      setTimeout(() => { registerModal.classList.remove('show'); form.reset(); renderTopbar(); loadWall(); }, 500);
+    } catch (err) { status.textContent = err.message; status.className = 'form-status error'; }
+    finally { btn.disabled = false; }
   });
 
   document.getElementById('loginForm').addEventListener('submit', async e => {
@@ -1331,97 +770,62 @@
     status.className = 'form-status';
     try {
       const fd = new FormData(form);
-      const data = await api('/login', {
-        method: 'POST',
-        body: JSON.stringify({ name: fd.get('name'), password: fd.get('password') })
-      });
+      const data = await api('/login', { method: 'POST', body: JSON.stringify({ name: fd.get('name'), password: fd.get('password') }) });
       setToken(data.token);
       myProfile = data.profile;
       status.textContent = 'Добро пожаловать!';
       status.className = 'form-status success';
-      setTimeout(() => {
-        loginModal.classList.remove('show');
-        form.reset();
-        renderTopbar();
-        loadWall();
-      }, 400);
-    } catch (err) {
-      status.textContent = err.message;
-      status.className = 'form-status error';
-    } finally { btn.disabled = false; }
+      setTimeout(() => { loginModal.classList.remove('show'); form.reset(); renderTopbar(); loadWall(); }, 400);
+    } catch (err) { status.textContent = err.message; status.className = 'form-status error'; }
+    finally { btn.disabled = false; }
   });
 
   function logout() {
     if (!confirm('Выйти из профиля?')) return;
-    setToken(null);
-    myProfile = null;
-    myLikes = new Set();
-    renderTopbar();
-    loadWall();
+    setToken(null); myProfile = null; myLikes = new Set();
+    renderTopbar(); loadWall();
   }
 
   function renderTopbar() {
     topbarRight.innerHTML = '';
-
     const themeBtn = document.createElement('button');
-    themeBtn.className = 'theme-btn';
-    themeBtn.title = 'Тема и эффекты';
-    themeBtn.textContent = '🎨';
+    themeBtn.className = 'theme-btn'; themeBtn.title = 'Тема и эффекты'; themeBtn.textContent = '🎨';
     themeBtn.addEventListener('click', () => themeModal.classList.add('show'));
     topbarRight.appendChild(themeBtn);
-
     const adminBtn = document.createElement('button');
-    adminBtn.className = 'theme-btn';
-    adminBtn.title = 'Админ-панель';
-    adminBtn.textContent = '👑';
+    adminBtn.className = 'theme-btn'; adminBtn.title = 'Админ-панель'; adminBtn.textContent = '👑';
     adminBtn.addEventListener('click', openAdmin);
     topbarRight.appendChild(adminBtn);
-
     if (!myProfile) {
       const loginBtn = document.createElement('button');
-      loginBtn.className = 'login-btn';
-      loginBtn.textContent = 'Войти';
+      loginBtn.className = 'login-btn'; loginBtn.textContent = 'Войти';
       loginBtn.addEventListener('click', () => loginModal.classList.add('show'));
       topbarRight.appendChild(loginBtn);
       openForm.style.display = 'block';
       return;
     }
-
     const videBtn = document.createElement('button');
-    videBtn.className = 'vide-badge';
-    videBtn.title = 'Колесо фортуны';
+    videBtn.className = 'vide-badge'; videBtn.title = 'Колесо фортуны';
     videBtn.innerHTML = `🪙 ${myProfile.vide || 0}`;
     videBtn.addEventListener('click', openWheel);
     topbarRight.appendChild(videBtn);
-
     const invBtn = document.createElement('button');
-    invBtn.className = 'theme-btn';
-    invBtn.title = 'Инвентарь';
-    invBtn.textContent = '🎒';
+    invBtn.className = 'theme-btn'; invBtn.title = 'Инвентарь'; invBtn.textContent = '🎒';
     invBtn.addEventListener('click', openInventory);
     topbarRight.appendChild(invBtn);
-
     const marketBtn = document.createElement('button');
-    marketBtn.className = 'theme-btn';
-    marketBtn.title = 'Рынок';
-    marketBtn.textContent = '🏪';
+    marketBtn.className = 'theme-btn'; marketBtn.title = 'Рынок'; marketBtn.textContent = '🏪';
     marketBtn.addEventListener('click', openMarket);
     topbarRight.appendChild(marketBtn);
-
     const chip = document.createElement('div');
     chip.className = 'user-chip' + (myProfile.is_premium ? ' premium' : '');
-    chip.innerHTML = (myProfile.photo
-      ? `<img src="${myProfile.photo}" alt="">`
-      : `<div class="avatar-placeholder">✦</div>`) + `<span>${escapeHtml(myProfile.name)}${myProfile.is_premium ? ' ⭐' : ''}</span>`;
+    chip.innerHTML = (myProfile.photo ? `<img src="${myProfile.photo}" alt="">` : `<div class="avatar-placeholder">✦</div>`) + `<span>${escapeHtml(myProfile.name)}${myProfile.is_premium ? ' ⭐' : ''}</span>`;
     chip.addEventListener('click', openMyProfile);
     topbarRight.appendChild(chip);
-
     const logoutBtn = document.createElement('button');
-    logoutBtn.className = 'logout-btn';
-    logoutBtn.textContent = 'Выйти';
+    logoutBtn.className = 'logout-btn'; logoutBtn.textContent = 'Выйти';
     logoutBtn.addEventListener('click', logout);
     topbarRight.appendChild(logoutBtn);
-
     openForm.style.display = 'none';
   }
 
@@ -1445,9 +849,7 @@
         <div class="profile-hero-info">
           <h3>${escapeHtml(me.name)} <span class="age">${me.age}</span> ${me.is_premium ? '⭐' : ''}</h3>
           ${me.bio ? `<p>${escapeHtml(me.bio)}</p>` : ''}
-          ${me.contact_value ? `<a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>
-            ${contactIcon(me.contact_type)} ${contactLabel(me.contact_type)}: ${escapeHtml(me.contact_value)}
-          </a>` : ''}
+          ${me.contact_value ? `<a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>${contactIcon(me.contact_type)} ${contactLabel(me.contact_type)}: ${escapeHtml(me.contact_value)}</a>` : ''}
         </div>
       </div>
       <div class="stat-row">
@@ -1455,22 +857,12 @@
         <div class="stat-box"><div class="num">${likedBy.length}</div><div class="label">Кто лайкнул</div></div>
       </div>
       <div class="section-title">Кто тебя лайкнул</div>
-      ${likedBy.length === 0
-        ? '<div class="empty-small">Пока никто не лайкнул.</div>'
-        : likedBy.map(p => {
-            const link = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
-            const av = p.photo ? `<img src="${p.photo}" alt="">` : `<div class="mini-avatar">✦</div>`;
-            const c = p.contact_value
-              ? (link
-                  ? `<a class="liker-contact" href="${link}" target="_blank" rel="noopener">${contactIcon(p.contact_type)} ${escapeHtml(p.contact_value)}</a>`
-                  : `<span class="liker-contact">${contactIcon(p.contact_type)} ${escapeHtml(p.contact_value)}</span>`)
-              : '';
-            return `<div class="liker-row">${av}
-              <div class="liker-info">
-                <strong>${escapeHtml(p.name)}, ${p.age}</strong>
-              </div>${c}</div>`;
-          }).join('')
-      }
+      ${likedBy.length === 0 ? '<div class="empty-small">Пока никто не лайкнул.</div>' : likedBy.map(p => {
+        const link = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
+        const av = p.photo ? `<img src="${p.photo}" alt="">` : `<div class="mini-avatar">✦</div>`;
+        const c = p.contact_value ? (link ? `<a class="liker-contact" href="${link}" target="_blank" rel="noopener">${contactIcon(p.contact_type)} ${escapeHtml(p.contact_value)}</a>` : `<span class="liker-contact">${contactIcon(p.contact_type)} ${escapeHtml(p.contact_value)}</span>`) : '';
+        return `<div class="liker-row">${av}<div class="liker-info"><strong>${escapeHtml(p.name)}, ${p.age}</strong></div>${c}</div>`;
+      }).join('')}
       <div class="modal-actions">
         <button id="editMyBtn">Редактировать</button>
         <button id="changePwBtn">Сменить пароль</button>
@@ -1478,29 +870,14 @@
         <button id="deleteMyBtn" class="danger">Удалить анкету</button>
       </div>
     `;
-    document.getElementById('editMyBtn').onclick = () => {
-      myProfileModal.classList.remove('show');
-      openEditForm(me);
-    };
-    document.getElementById('changePwBtn').onclick = () => {
-      myProfileModal.classList.remove('show');
-      pwModal.classList.add('show');
-    };
+    document.getElementById('editMyBtn').onclick = () => { myProfileModal.classList.remove('show'); openEditForm(me); };
+    document.getElementById('changePwBtn').onclick = () => { myProfileModal.classList.remove('show'); pwModal.classList.add('show'); };
     const appBtn = document.getElementById('appearanceBtn');
-    if (appBtn) appBtn.onclick = () => {
-      myProfileModal.classList.remove('show');
-      openAppearance(me);
-    };
+    if (appBtn) appBtn.onclick = () => { myProfileModal.classList.remove('show'); openAppearance(me); };
     document.getElementById('deleteMyBtn').onclick = async () => {
       if (!confirm('Точно удалить свою анкету? Действие необратимо.')) return;
-      try {
-        await api('/profiles/' + me.id, { method: 'DELETE' });
-        setToken(null);
-        myProfile = null;
-        myProfileModal.classList.remove('show');
-        renderTopbar();
-        loadWall();
-      } catch (err) { alert(err.message); }
+      try { await api('/profiles/' + me.id, { method: 'DELETE' }); setToken(null); myProfile = null; myProfileModal.classList.remove('show'); renderTopbar(); loadWall(); }
+      catch (err) { alert(err.message); }
     };
   }
 
@@ -1513,24 +890,17 @@
     status.textContent = 'Меняем...';
     try {
       const fd = new FormData(form);
-      await api('/change-password', {
-        method: 'POST',
-        body: JSON.stringify({ oldPassword: fd.get('oldPassword'), newPassword: fd.get('newPassword') })
-      });
+      await api('/change-password', { method: 'POST', body: JSON.stringify({ oldPassword: fd.get('oldPassword'), newPassword: fd.get('newPassword') }) });
       status.textContent = 'Пароль изменён!';
       status.className = 'form-status success';
       setTimeout(() => { pwModal.classList.remove('show'); form.reset(); }, 700);
-    } catch (err) {
-      status.textContent = err.message;
-      status.className = 'form-status error';
-    } finally { btn.disabled = false; }
+    } catch (err) { status.textContent = err.message; status.className = 'form-status error'; }
+    finally { btn.disabled = false; }
   });
 
   function openEditForm(me) {
     const form = document.getElementById('editForm');
-    form.name.value = me.name;
-    form.age.value = me.age;
-    form.bio.value = me.bio || '';
+    form.name.value = me.name; form.age.value = me.age; form.bio.value = me.bio || '';
     form.contactType.value = me.contact_type || 'telegram';
     form.contactValue.value = me.contact_value || '';
     document.getElementById('editStatus').textContent = '';
@@ -1545,26 +915,15 @@
     status.textContent = 'Сохраняем...';
     try {
       const fd = new FormData(form);
-      const res = await fetch(API + '/profiles/' + myProfile.id, {
-        method: 'PUT',
-        headers: { 'Authorization': 'Bearer ' + getToken() },
-        body: fd
-      });
+      const res = await fetch(API + '/profiles/' + myProfile.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'X-Device-Id': getDeviceId() }, body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка');
       myProfile = { ...myProfile, ...data };
       status.textContent = 'Сохранено';
       status.className = 'form-status success';
-      setTimeout(() => {
-        editModal.classList.remove('show');
-        form.reset();
-        renderTopbar();
-        loadWall();
-      }, 500);
-    } catch (err) {
-      status.textContent = err.message;
-      status.className = 'form-status error';
-    } finally { btn.disabled = false; }
+      setTimeout(() => { editModal.classList.remove('show'); form.reset(); renderTopbar(); loadWall(); }, 500);
+    } catch (err) { status.textContent = err.message; status.className = 'form-status error'; }
+    finally { btn.disabled = false; }
   });
 
   function openAppearance(me) {
@@ -1578,39 +937,15 @@
       <div class="premium-preview">
         <h4>Предпросмотр</h4>
         <div style="display:flex; gap:10px; align-items:center;">
-          <div id="previewCard" style="
-            width:60px;height:60px;border-radius:12px;
-            background: ${me.card_bg || 'rgba(38,38,46,0.7)'};
-            border:2px solid ${me.card_color || 'transparent'};
-            box-shadow: ${me.card_color && !me.card_rgb ? `0 0 18px ${hexToRgba(me.card_color, 0.6)}` : 'none'};
-            display:flex;align-items:center;justify-content:center;font-size:24px;
-            ${me.card_rgb ? 'animation: rgbGlow 4s linear infinite;' : ''}
-          ">${me.card_pinned ? '📌' : '✦'}</div>
-          <div>
-            <div style="color:#f0f0f8;font-weight:600;">${escapeHtml(me.name)}, ${me.age}</div>
-          </div>
+          <div id="previewCard" style="width:60px;height:60px;border-radius:12px;background:${me.card_bg || 'rgba(38,38,46,0.7)'};border:2px solid ${me.card_color || 'transparent'};box-shadow:${me.card_color && !me.card_rgb ? `0 0 18px ${hexToRgba(me.card_color,0.6)}` : 'none'};display:flex;align-items:center;justify-content:center;font-size:24px;${me.card_rgb ? 'animation: rgbGlow 4s linear infinite;' : ''}">${me.card_pinned ? '📌' : '✦'}</div>
+          <div><div style="color:#f0f0f8;font-weight:600;">${escapeHtml(me.name)}, ${me.age}</div></div>
         </div>
       </div>
-      <div class="color-row">
-        <input type="color" id="cardColorInput" value="${me.card_color || '#a0a0b8'}">
-        <label>Цвет рамки</label>
-      </div>
-      <div class="color-row">
-        <input type="color" id="cardBgInput" value="${me.card_bg && me.card_bg.startsWith('#') ? me.card_bg : '#2a2a34'}">
-        <label>Цвет всей карточки</label>
-      </div>
-      <div class="fx-row">
-        <div class="fx-label">Использовать цвет карточки</div>
-        <div class="switch ${me.card_bg ? 'on' : ''}" id="useBgSwitch"></div>
-      </div>
-      <div class="fx-row">
-        <div class="fx-label">RGB-подсветка</div>
-        <div class="switch ${me.card_rgb ? 'on' : ''}" id="rgbSwitch"></div>
-      </div>
-      <div class="fx-row">
-        <div class="fx-label">Закрепить сверху</div>
-        <div class="switch ${me.card_pinned ? 'on' : ''}" id="pinSwitch"></div>
-      </div>
+      <div class="color-row"><input type="color" id="cardColorInput" value="${me.card_color || '#a0a0b8'}"><label>Цвет рамки</label></div>
+      <div class="color-row"><input type="color" id="cardBgInput" value="${me.card_bg && me.card_bg.startsWith('#') ? me.card_bg : '#2a2a34'}"><label>Цвет всей карточки</label></div>
+      <div class="fx-row"><div class="fx-label">Использовать цвет карточки</div><div class="switch ${me.card_bg ? 'on' : ''}" id="useBgSwitch"></div></div>
+      <div class="fx-row"><div class="fx-label">RGB-подсветка</div><div class="switch ${me.card_rgb ? 'on' : ''}" id="rgbSwitch"></div></div>
+      <div class="fx-row"><div class="fx-label">Закрепить сверху</div><div class="switch ${me.card_pinned ? 'on' : ''}" id="pinSwitch"></div></div>
       <button class="submit-btn" id="saveAppearanceBtn" style="margin-top:18px;">Сохранить</button>
       <div class="form-status" id="appearanceStatus"></div>
     `;
@@ -1620,20 +955,13 @@
     const rgbSwitch = document.getElementById('rgbSwitch');
     const pinSwitch = document.getElementById('pinSwitch');
     const previewCard = document.getElementById('previewCard');
-    let state = {
-      cardColor: me.card_color || '',
-      cardBg: me.card_bg || '',
-      cardRgb: !!me.card_rgb,
-      cardPinned: !!me.card_pinned,
-      useBg: !!me.card_bg
-    };
+    let state = { cardColor: me.card_color || '', cardBg: me.card_bg || '', cardRgb: !!me.card_rgb, cardPinned: !!me.card_pinned, useBg: !!me.card_bg };
     function updatePreview() {
       previewCard.style.borderColor = state.cardColor || 'transparent';
       previewCard.style.background = state.useBg ? state.cardBg : 'rgba(38,38,46,0.7)';
       previewCard.style.animation = state.cardRgb ? 'rgbGlow 4s linear infinite' : 'none';
-      if (!state.cardRgb) {
-        previewCard.style.boxShadow = state.cardColor ? `0 0 18px ${hexToRgba(state.cardColor, 0.6)}` : 'none';
-      } else previewCard.style.boxShadow = '';
+      if (!state.cardRgb) previewCard.style.boxShadow = state.cardColor ? `0 0 18px ${hexToRgba(state.cardColor,0.6)}` : 'none';
+      else previewCard.style.boxShadow = '';
       previewCard.textContent = state.cardPinned ? '📌' : '✦';
     }
     colorInput.addEventListener('input', () => { state.cardColor = colorInput.value; updatePreview(); });
@@ -1645,32 +973,17 @@
       const st = document.getElementById('appearanceStatus');
       st.textContent = 'Сохраняем...';
       try {
-        const updated = await api('/profiles/' + me.id + '/appearance', {
-          method: 'POST',
-          body: JSON.stringify({
-            cardColor: state.cardColor,
-            cardBg: state.useBg ? state.cardBg : '',
-            cardRgb: state.cardRgb,
-            cardPinned: state.cardPinned
-          })
-        });
+        const updated = await api('/profiles/' + me.id + '/appearance', { method: 'POST', body: JSON.stringify({ cardColor: state.cardColor, cardBg: state.useBg ? state.cardBg : '', cardRgb: state.cardRgb, cardPinned: state.cardPinned }) });
         myProfile = { ...myProfile, ...updated };
         st.textContent = 'Сохранено';
         st.className = 'form-status success';
         setTimeout(() => { appearanceModal.classList.remove('show'); loadWall(); }, 500);
-      } catch (err) {
-        st.textContent = err.message;
-        st.className = 'form-status error';
-      }
+      } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
     });
   }
 
   let isSpinning = false;
-  function openWheel() {
-    if (!myProfile) return;
-    wheelModal.classList.add('show');
-    updateWheelUI();
-  }
+  function openWheel() { if (!myProfile) return; wheelModal.classList.add('show'); updateWheelUI(); }
   function updateWheelUI() {
     const spinBtn = document.getElementById('spinBtn');
     spinBtn.textContent = `Крутить · 10 🪙 (у тебя ${myProfile ? myProfile.vide : 0})`;
@@ -1678,8 +991,7 @@
   }
   document.getElementById('spinBtn').addEventListener('click', async () => {
     if (isSpinning || !myProfile) return;
-    isSpinning = true;
-    updateWheelUI();
+    isSpinning = true; updateWheelUI();
     const wheel = document.getElementById('wheel');
     const result = document.getElementById('wheelResult');
     result.innerHTML = 'Крутим...';
@@ -1689,23 +1001,15 @@
       const r = await api('/wheel/spin', { method: 'POST', body: JSON.stringify({}) });
       setTimeout(() => {
         myProfile.vide = r.balance;
-        result.innerHTML = `
-          Тебе выпал <strong>${escapeHtml(r.skin.name)}</strong>!<br>
-          <img src="${r.skin.photo}" alt="">
-          <span class="rarity">${r.skin.rarity}</span>
-        `;
+        result.innerHTML = `Тебе выпал <strong>${escapeHtml(r.skin.name)}</strong>!<br><img src="${r.skin.photo}" alt=""><span class="rarity">${r.skin.rarity}</span>`;
         isSpinning = false;
-        wheel.style.transition = 'none';
-        wheel.style.transform = 'rotate(0deg)';
+        wheel.style.transition = 'none'; wheel.style.transform = 'rotate(0deg)';
         setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.16, 1)', 50);
-        updateWheelUI();
-        renderTopbar();
+        updateWheelUI(); renderTopbar();
       }, 4100);
     } catch (err) {
-      result.textContent = err.message;
-      isSpinning = false;
-      wheel.style.transition = 'none';
-      wheel.style.transform = 'rotate(0deg)';
+      result.textContent = err.message; isSpinning = false;
+      wheel.style.transition = 'none'; wheel.style.transform = 'rotate(0deg)';
       setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.16, 1)', 50);
       updateWheelUI();
     }
@@ -1718,23 +1022,15 @@
     content.innerHTML = '<div class="empty-small">Загрузка...</div>';
     try {
       const items = await api('/inventory/' + myProfile.id);
-      if (!items.length) {
-        content.innerHTML = '<div class="empty-small">Инвентарь пуст. Крути колесо!</div>';
-        return;
-      }
-      content.innerHTML = `<div class="inv-grid">${
-        items.map(it => `
-          <div class="inv-item rarity-${it.rarity}">
-            <img src="${it.photo}" alt="">
-            <div class="inv-name">${escapeHtml(it.name)}</div>
-            <div class="inv-count">×${it.count}</div>
-            <button class="inv-sell-btn" data-skin="${it.id}">Продать</button>
-          </div>
-        `).join('')
-      }</div>`;
-      content.querySelectorAll('.inv-sell-btn').forEach(btn => {
-        btn.addEventListener('click', () => sellDialog(parseInt(btn.dataset.skin)));
-      });
+      if (!items.length) { content.innerHTML = '<div class="empty-small">Инвентарь пуст. Крути колесо!</div>'; return; }
+      content.innerHTML = `<div class="inv-grid">${items.map(it => `
+        <div class="inv-item rarity-${it.rarity}">
+          <img src="${it.photo}" alt="">
+          <div class="inv-name">${escapeHtml(it.name)}</div>
+          <div class="inv-count">×${it.count}</div>
+          <button class="inv-sell-btn" data-skin="${it.id}">Продать</button>
+        </div>`).join('')}</div>`;
+      content.querySelectorAll('.inv-sell-btn').forEach(btn => btn.addEventListener('click', () => sellDialog(parseInt(btn.dataset.skin))));
     } catch (err) { content.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
   }
   async function sellDialog(skinId) {
@@ -1742,31 +1038,14 @@
     if (!price) return;
     const p = parseInt(price);
     if (!p || p < 1) { alert('Некорректная цена'); return; }
-    try {
-      await api('/market/list', { method: 'POST', body: JSON.stringify({ skinId, price: p }) });
-      alert('Лот выставлен!');
-      await openInventory();
-    } catch (err) { alert(err.message); }
+    try { await api('/market/list', { method: 'POST', body: JSON.stringify({ skinId, price: p }) }); alert('Лот выставлен!'); await openInventory(); }
+    catch (err) { alert(err.message); }
   }
 
   let marketTab = 'all';
-  function openMarket() {
-    if (!myProfile) return;
-    marketModal.classList.add('show');
-    renderMarket();
-  }
-  document.getElementById('tabAll').addEventListener('click', () => {
-    marketTab = 'all';
-    document.getElementById('tabAll').classList.add('active');
-    document.getElementById('tabMy').classList.remove('active');
-    renderMarket();
-  });
-  document.getElementById('tabMy').addEventListener('click', () => {
-    marketTab = 'my';
-    document.getElementById('tabMy').classList.add('active');
-    document.getElementById('tabAll').classList.remove('active');
-    renderMarket();
-  });
+  function openMarket() { if (!myProfile) return; marketModal.classList.add('show'); renderMarket(); }
+  document.getElementById('tabAll').addEventListener('click', () => { marketTab='all'; document.getElementById('tabAll').classList.add('active'); document.getElementById('tabMy').classList.remove('active'); renderMarket(); });
+  document.getElementById('tabMy').addEventListener('click', () => { marketTab='my'; document.getElementById('tabMy').classList.add('active'); document.getElementById('tabAll').classList.remove('active'); renderMarket(); });
   async function renderMarket() {
     const content = document.getElementById('marketContent');
     content.innerHTML = '<div class="empty-small">Загрузка...</div>';
@@ -1774,71 +1053,41 @@
       let lots;
       if (marketTab === 'all') lots = await api('/market');
       else lots = await api('/market/my/' + myProfile.id);
-      if (!lots.length) {
-        content.innerHTML = '<div class="empty-small">Пусто.</div>';
-        return;
-      }
+      if (!lots.length) { content.innerHTML = '<div class="empty-small">Пусто.</div>'; return; }
       content.innerHTML = lots.map(l => `
         <div class="market-lot">
           <img src="${l.skin ? l.skin.photo : ''}" alt="">
-          <div class="lot-info">
-            <strong>${escapeHtml(l.skin ? l.skin.name : '—')}</strong>
-            <small>${marketTab === 'all' ? 'Продавец: ' + escapeHtml(l.seller_name) : 'Ждёт покупателя'}</small>
-          </div>
+          <div class="lot-info"><strong>${escapeHtml(l.skin ? l.skin.name : '—')}</strong><small>${marketTab === 'all' ? 'Продавец: ' + escapeHtml(l.seller_name) : 'Ждёт покупателя'}</small></div>
           <div class="lot-price">${l.price} 🪙</div>
-          <div class="lot-actions">
-            ${marketTab === 'all' && String(l.seller_id) !== String(myProfile.id)
-              ? `<button class="buy" data-action="buy" data-id="${l.id}">Купить</button>`
-              : `<button class="cancel" data-action="cancel" data-id="${l.id}">Снять</button>`}
-          </div>
-        </div>
-      `).join('');
-      content.querySelectorAll('button[data-action]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = parseInt(btn.dataset.id);
-          const action = btn.dataset.action;
-          try {
-            if (action === 'buy') {
-              if (!confirm('Купить?')) return;
-              const r = await api('/market/buy', { method: 'POST', body: JSON.stringify({ lotId: id }) });
-              myProfile.vide = r.balance;
-              alert('Куплено!');
-            } else {
-              await api('/market/cancel', { method: 'POST', body: JSON.stringify({ lotId: id }) });
-            }
-            await renderMarket();
-            renderTopbar();
-          } catch (err) { alert(err.message); }
-        });
-      });
+          <div class="lot-actions">${marketTab === 'all' && String(l.seller_id) !== String(myProfile.id) ? `<button class="buy" data-action="buy" data-id="${l.id}">Купить</button>` : `<button class="cancel" data-action="cancel" data-id="${l.id}">Снять</button>`}</div>
+        </div>`).join('');
+      content.querySelectorAll('button[data-action]').forEach(btn => btn.addEventListener('click', async () => {
+        const id = parseInt(btn.dataset.id);
+        const action = btn.dataset.action;
+        try {
+          if (action === 'buy') { if (!confirm('Купить?')) return; const r = await api('/market/buy', { method: 'POST', body: JSON.stringify({ lotId: id }) }); myProfile.vide = r.balance; alert('Куплено!'); }
+          else { await api('/market/cancel', { method: 'POST', body: JSON.stringify({ lotId: id }) }); }
+          await renderMarket(); renderTopbar();
+        } catch (err) { alert(err.message); }
+      }));
     } catch (err) { content.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
   }
 
   async function openAdmin() {
     adminModal.classList.add('show');
-    if (getAdminToken()) {
-      loadAdmin();
-    } else {
+    if (getAdminToken()) loadAdmin();
+    else {
       const content = document.getElementById('adminContent');
       content.innerHTML = `
-        <label>Пароль админа
-          <input type="password" id="adminPw" placeholder="Пароль">
-        </label>
+        <label>Пароль админа<input type="password" id="adminPw" placeholder="Пароль"></label>
         <button class="submit-btn" id="adminLoginBtn">Войти</button>
-        <div class="form-status" id="adminStatus"></div>
-      `;
+        <div class="form-status" id="adminStatus"></div>`;
       document.getElementById('adminLoginBtn').onclick = async () => {
         const pw = document.getElementById('adminPw').value;
         const st = document.getElementById('adminStatus');
         st.textContent = 'Проверяем...';
-        try {
-          const r = await api('/admin/login', { method: 'POST', body: JSON.stringify({ password: pw }) });
-          setAdminToken(r.token);
-          loadAdmin();
-        } catch (err) {
-          st.textContent = err.message;
-          st.className = 'form-status error';
-        }
+        try { const r = await api('/admin/login', { method: 'POST', body: JSON.stringify({ password: pw }) }); setAdminToken(r.token); loadAdmin(); }
+        catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
       };
     }
   }
@@ -1851,12 +1100,12 @@
 
       const header = `
         <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-          <button id="purgeNoPassBtn" style="flex:1;padding:10px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(255,80,100,0.15);border:1px solid rgba(255,90,110,0.5);color:#ff9aa7;transition:all 0.25s;">
-            🗑 Удалить все анкеты без паролей
-          </button>
-          <button id="refreshAdminBtn" style="flex:1;padding:10px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(60,60,78,0.55);border:1px solid rgba(255,255,255,0.12);color:#e8e8f0;transition:all 0.25s;">
-            🔄 Обновить
-          </button>
+          <button id="purgeNoPassBtn" style="flex:1;padding:10px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(255,80,100,0.15);border:1px solid rgba(255,90,110,0.5);color:#ff9aa7;">🗑 Удалить без паролей</button>
+          <button id="refreshAdminBtn" style="flex:1;padding:10px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(60,60,78,0.55);border:1px solid rgba(255,255,255,0.12);color:#e8e8f0;">🔄 Обновить</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <input type="text" id="purgeIdsInput" placeholder="ID через запятую: 5, 12, 33" style="flex:1;padding:10px 12px;font-size:13px;border-radius:10px;background:rgba(20,20,26,0.7);border:1px solid rgba(255,90,110,0.4);color:#f0f0f8;outline:none;font-family:inherit;">
+          <button id="purgeByIdsBtn" style="padding:10px 16px;font-size:12.5px;border-radius:10px;cursor:pointer;font-family:inherit;background:rgba(255,80,100,0.2);border:1px solid rgba(255,90,110,0.6);color:#ff9aa7;font-weight:600;white-space:nowrap;">🗑 Удалить по ID</button>
         </div>
       `;
 
@@ -1867,38 +1116,51 @@
             ${av}
             <div class="admin-user-info">
               <strong>${escapeHtml(u.name)}, ${u.age} ${u.is_premium ? '⭐' : ''}</strong>
-              <small>ID: ${u.id} · 🪙 ${u.vide} · ♥ ${u.likes}</small>
+              <small>ID: ${u.id} · 🪙 ${u.vide} · ♥ ${u.likes}${u.reg_ip ? ' · IP: ' + escapeHtml(u.reg_ip) : ''}${u.device_id ? ' · Dev: ' + escapeHtml(u.device_id.slice(0, 12)) + '…' : ''}</small>
             </div>
             <div class="admin-actions">
               <input type="number" id="amt_${u.id}" value="100">
               <button class="give" data-action="give" data-id="${u.id}">Дать 🪙</button>
               <button class="premium" data-action="premium" data-id="${u.id}">${u.is_premium ? 'Снять ⭐' : 'Дать ⭐'}</button>
+              <button class="ban" data-action="ban-ip" data-id="${u.id}">🚫 Бан IP</button>
+              <button class="ban-dev" data-action="ban-dev" data-id="${u.id}">📱 Бан устр.</button>
+              <button class="ban-all" data-action="ban-all" data-id="${u.id}">🚫📱 Бан всё</button>
               <button class="danger" data-action="del" data-id="${u.id}">Удалить</button>
             </div>
           </div>
         `;
       }).join('');
 
-      content.innerHTML = header + rows;
+      content.innerHTML = header + rows + `<div id="bansBlock" style="margin-top:20px;"></div>`;
 
       document.getElementById('purgeNoPassBtn').addEventListener('click', async () => {
-        if (!confirm('Удалить ВСЕ анкеты без паролей? Это старые и вредительские аккаунты. Действие необратимо.')) return;
+        if (!confirm('Удалить ВСЕ анкеты без паролей? Необратимо.')) return;
         const btn = document.getElementById('purgeNoPassBtn');
-        btn.disabled = true;
-        btn.textContent = 'Удаляем...';
+        btn.disabled = true; btn.textContent = 'Удаляем...';
         try {
           const r = await apiAdmin('/admin/purge-nopass', { method: 'POST', body: JSON.stringify({}) });
-          alert(`Удалено анкет: ${r.deleted}`);
-          await loadAdmin();
-          await loadWall();
-        } catch (err) {
-          alert(err.message);
-          btn.disabled = false;
-          btn.textContent = '🗑 Удалить все анкеты без паролей';
-        }
+          alert(`Удалено: ${r.deleted}`);
+          await loadAdmin(); await loadWall();
+        } catch (err) { alert(err.message); btn.disabled = false; btn.textContent = '🗑 Удалить без паролей'; }
       });
 
       document.getElementById('refreshAdminBtn').addEventListener('click', () => loadAdmin());
+
+      document.getElementById('purgeByIdsBtn').addEventListener('click', async () => {
+        const raw = document.getElementById('purgeIdsInput').value || '';
+        const ids = raw.split(/[\s,;]+/).map(x => parseInt(x)).filter(x => Number.isInteger(x) && x > 0);
+        if (!ids.length) { alert('Введи ID.'); return; }
+        if (!confirm(`Удалить ${ids.length} анкет(ы)? Необратимо.`)) return;
+        const btn = document.getElementById('purgeByIdsBtn');
+        btn.disabled = true; btn.textContent = 'Удаляем...';
+        try {
+          const r = await apiAdmin('/admin/purge-by-ids', { method: 'POST', body: JSON.stringify({ ids }) });
+          alert(`Удалено: ${r.deleted}`);
+          document.getElementById('purgeIdsInput').value = '';
+          await loadAdmin(); await loadWall();
+        } catch (err) { alert(err.message); }
+        finally { btn.disabled = false; btn.textContent = '🗑 Удалить по ID'; }
+      });
 
       content.querySelectorAll('button[data-action]').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -1910,6 +1172,18 @@
               await apiAdmin('/admin/give-vide', { method: 'POST', body: JSON.stringify({ userId: id, amount: amt }) });
             } else if (action === 'premium') {
               await apiAdmin('/admin/toggle-premium', { method: 'POST', body: JSON.stringify({ userId: id }) });
+            } else if (action === 'ban-ip') {
+              if (!confirm('Забанить IP этого пользователя?')) return;
+              await apiAdmin('/admin/ban', { method: 'POST', body: JSON.stringify({ userId: id, banIp: true, banDevice: false, reason: 'admin ban ip' }) });
+              alert('IP забанен');
+            } else if (action === 'ban-dev') {
+              if (!confirm('Забанить устройство этого пользователя?')) return;
+              await apiAdmin('/admin/ban', { method: 'POST', body: JSON.stringify({ userId: id, banIp: false, banDevice: true, reason: 'admin ban device' }) });
+              alert('Устройство забанено');
+            } else if (action === 'ban-all') {
+              if (!confirm('Забанить IP + устройство?')) return;
+              await apiAdmin('/admin/ban', { method: 'POST', body: JSON.stringify({ userId: id, banIp: true, banDevice: true, reason: 'admin ban all' }) });
+              alert('IP + устройство забанены');
             } else if (action === 'del') {
               if (!confirm('Удалить анкету навсегда?')) return;
               await apiAdmin('/admin/delete-user', { method: 'POST', body: JSON.stringify({ userId: id }) });
@@ -1919,10 +1193,42 @@
           } catch (err) { alert(err.message); }
         });
       });
+
+      // список банов
+      const bansBlock = document.getElementById('bansBlock');
+      bansBlock.innerHTML = '<div class="section-title">Забаненные</div><div id="bansList"></div>';
+      await loadBans();
     } catch (err) {
       content.innerHTML = `<div class="form-status error">${escapeHtml(err.message)}</div>`;
       setAdminToken(null);
     }
+  }
+
+  async function loadBans() {
+    const list = document.getElementById('bansList');
+    if (!list) return;
+    list.innerHTML = '<div class="empty-small">Загрузка...</div>';
+    try {
+      const bans = await apiAdmin('/admin/bans', { method: 'POST', body: JSON.stringify({}) });
+      if (!bans.length) { list.innerHTML = '<div class="empty-small">Пусто</div>'; return; }
+      list.innerHTML = bans.map(b => `
+        <div class="admin-user-row">
+          <div class="admin-user-info">
+            <strong>${b.ip ? '🚫 IP: ' + escapeHtml(b.ip) : ''}${b.ip && b.device_id ? ' · ' : ''}${b.device_id ? '📱 Dev: ' + escapeHtml(b.device_id.slice(0, 16)) + '…' : ''}</strong>
+            <small>${escapeHtml(b.reason || 'без причины')} · ${new Date(b.created_at).toLocaleString('ru-RU')}</small>
+          </div>
+          <div class="admin-actions">
+            <button data-unban="${b.id}">Разбанить</button>
+          </div>
+        </div>
+      `).join('');
+      list.querySelectorAll('button[data-unban]').forEach(btn => btn.addEventListener('click', async () => {
+        const banId = parseInt(btn.dataset.unban);
+        if (!confirm('Снять бан?')) return;
+        try { await apiAdmin('/admin/unban', { method: 'POST', body: JSON.stringify({ banId }) }); await loadBans(); }
+        catch (err) { alert(err.message); }
+      }));
+    } catch (err) { list.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
   }
 
   openForm.addEventListener('click', () => {
@@ -1930,9 +1236,7 @@
     registerModal.classList.add('show');
   });
 
-  document.querySelectorAll('.modal').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
-  });
+  document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); }));
   document.getElementById('closeRegister').onclick = () => registerModal.classList.remove('show');
   document.getElementById('closeLogin').onclick = () => loginModal.classList.remove('show');
   document.getElementById('closeMyProfile').onclick = () => myProfileModal.classList.remove('show');
@@ -1953,7 +1257,7 @@
     renderThemeGrid();
     applyTheme(localStorage.getItem(THEME_KEY) || 'gray');
     applyFx(getFx());
-
+    getDeviceId(); // гарантируем наличие device id
     const token = getToken();
     if (token) {
       try { myProfile = await api('/me'); }
