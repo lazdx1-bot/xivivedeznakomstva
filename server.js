@@ -16,7 +16,7 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 if (!process.env.JWT_SECRET) {
-  console.error('❌ НЕТ JWT_SECRET! Добавь переменную окружения (любая длинная случайная строка).');
+  console.error('❌ НЕТ JWT_SECRET! Добавь переменную окружения.');
   process.exit(1);
 }
 
@@ -104,7 +104,6 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    // безопасные миграции
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS vide INTEGER DEFAULT 100;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_admin INTEGER DEFAULT 0;`);
     await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_premium INTEGER DEFAULT 0;`);
@@ -126,10 +125,9 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// rate limits
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 20, // 20 попыток
+  windowMs: 15 * 60 * 1000,
+  max: 20,
   message: { error: 'Слишком много попыток входа. Попробуй через 15 минут.' },
   standardHeaders: true, legacyHeaders: false
 });
@@ -179,7 +177,6 @@ function rollSkin() {
 }
 function skinById(id) { return SKINS.find(s => s.id === parseInt(id)); }
 
-// === УТИЛИТЫ ===
 function sanitize(str, maxLen = 500) {
   if (typeof str !== 'string') return '';
   return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen);
@@ -225,9 +222,7 @@ async function audit(userId, action, details, req) {
   } catch {}
 }
 
-// ==================== АВТОРИЗАЦИЯ ====================
-
-// Регистрация (создание анкеты)
+// ==================== РЕГИСТРАЦИЯ / ВХОД ====================
 app.post('/api/register', registerLimiter, upload.single('photo'), async (req, res) => {
   try {
     const { name, age, bio, contactType, contactValue, password } = req.body;
@@ -264,7 +259,6 @@ app.post('/api/register', registerLimiter, upload.single('photo'), async (req, r
   }
 });
 
-// Вход по имени + паролю
 app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     const { name, password } = req.body;
@@ -285,7 +279,6 @@ app.post('/api/login', loginLimiter, async (req, res) => {
       await audit(row.id, 'login_fail', `name=${cleanName} (wrong pw)`, req);
       return res.status(401).json({ error: 'Неверное имя или пароль' });
     }
-
     const token = makeUserToken(row.id);
     const profile = {
       id: row.id, name: row.name, age: row.age, bio: row.bio,
@@ -303,7 +296,6 @@ app.post('/api/login', loginLimiter, async (req, res) => {
   }
 });
 
-// Текущий пользователь
 app.get('/api/me', authUser, async (req, res) => {
   try {
     const r = await pool.query(`
@@ -319,7 +311,6 @@ app.get('/api/me', authUser, async (req, res) => {
   }
 });
 
-// Смена пароля
 app.post('/api/change-password', authUser, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -343,8 +334,7 @@ app.post('/api/change-password', authUser, async (req, res) => {
   }
 });
 
-// ==================== ПРОФИЛИ (публичные) ====================
-
+// ==================== ПРОФИЛИ ====================
 app.get('/api/profiles', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -361,7 +351,6 @@ app.get('/api/profiles', async (req, res) => {
   }
 });
 
-// Редактирование — только своего
 app.put('/api/profiles/:id', authUser, upload.single('photo'), async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) {
@@ -379,7 +368,6 @@ app.put('/api/profiles/:id', authUser, upload.single('photo'), async (req, res) 
     const cleanContactType = ['telegram', 'discord'].includes(contactType) ? contactType : row.contact_type;
     const ageNum = parseInt(age) || row.age;
 
-    // запрет на смену имени, если оно занято другим
     if (cleanName.toLowerCase() !== row.name.toLowerCase()) {
       const clash = await pool.query('SELECT id FROM profiles WHERE LOWER(name)=LOWER($1) AND id<>$2', [cleanName, req.userId]);
       if (clash.rows.length) return res.status(400).json({ error: 'Имя занято' });
@@ -401,7 +389,6 @@ app.put('/api/profiles/:id', authUser, upload.single('photo'), async (req, res) 
   }
 });
 
-// Удаление — только своего
 app.delete('/api/profiles/:id', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) {
@@ -428,7 +415,6 @@ app.delete('/api/profiles/:id', authUser, async (req, res) => {
   }
 });
 
-// Премиум-оформление (только своё)
 app.post('/api/profiles/:id/appearance', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) {
@@ -662,4 +648,164 @@ app.post('/api/market/buy', authUser, actionLimiter, async (req, res) => {
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error(err);
-    res.status(500).json({ error: 'Ошибка покуп
+    res.status(500).json({ error: 'Ошибка покупки' });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/market/cancel', authUser, async (req, res) => {
+  try {
+    const lotId = parseInt(req.body.lotId);
+    if (!lotId) return res.status(400).json({ error: 'Нужен lotId' });
+    const lot = await pool.query('SELECT * FROM market WHERE id=$1 AND is_sold=0', [lotId]);
+    if (!lot.rows.length) return res.status(404).json({ error: 'Лот не найден' });
+    if (lot.rows[0].seller_id !== req.userId) return res.status(403).json({ error: 'Не твой лот' });
+
+    await pool.query('DELETE FROM market WHERE id=$1', [lotId]);
+    await pool.query('INSERT INTO inventory (user_id, skin_id) VALUES ($1, $2)', [req.userId, lot.rows[0].skin_id]);
+    await audit(req.userId, 'market_cancel', `lot=${lotId}`, req);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+app.get('/api/market/my/:userId', async (req, res) => {
+  try {
+    const rows = await pool.query(
+      'SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC',
+      [parseInt(req.params.userId)]
+    );
+    res.json(rows.rows.map(r => ({ ...r, skin: skinById(r.skin_id) })));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+// ==================== АДМИНКА ====================
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (password !== ADMIN_PASSWORD) {
+      await audit(null, 'admin_login_fail', '', req);
+      return res.status(403).json({ error: 'Неверный пароль' });
+    }
+    const token = makeAdminToken();
+    await audit(null, 'admin_login_ok', '', req);
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+app.post('/api/admin/users', authAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, name, age, photo, vide, is_admin, is_premium, card_color, card_bg, card_rgb, card_pinned,
+        theme_web, theme_glass, created_at,
+        (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
+      FROM profiles ORDER BY id DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+app.post('/api/admin/give-vide', authAdmin, async (req, res) => {
+  try {
+    const { userId, amount } = req.body;
+    const amt = parseInt(amount);
+    if (!amt) return res.status(400).json({ error: 'Сумма не указана' });
+    await pool.query('UPDATE profiles SET vide = GREATEST(0, vide + $1) WHERE id = $2', [amt, userId]);
+    await audit(null, 'admin_give_vide', `user=${userId} amount=${amt}`, req);
+    const r = await pool.query('SELECT id, name, vide FROM profiles WHERE id=$1', [userId]);
+    res.json(r.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+app.post('/api/admin/toggle-premium', authAdmin, async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const existing = await pool.query('SELECT * FROM profiles WHERE id=$1', [userId]);
+    if (!existing.rows.length) return res.status(404).json({ error: 'Не найдено' });
+    const newVal = existing.rows[0].is_premium ? 0 : 1;
+    await pool.query('UPDATE profiles SET is_premium=$1 WHERE id=$2', [newVal, userId]);
+    if (!newVal) {
+      await pool.query(`UPDATE profiles SET card_color='', card_bg='', card_rgb=0, card_pinned=0, theme_web=0, theme_glass=0 WHERE id=$1`, [userId]);
+    }
+    await audit(null, 'admin_toggle_premium', `user=${userId} to=${newVal}`, req);
+    const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [userId]);
+    res.json(r.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+app.post('/api/admin/delete-user', authAdmin, async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const existing = await pool.query('SELECT * FROM profiles WHERE id=$1', [userId]);
+    if (!existing.rows.length) return res.status(404).json({ error: 'Не найдено' });
+    const row = existing.rows[0];
+    if (row.photo) {
+      const fp = path.join(__dirname, 'public', row.photo);
+      if (fs.existsSync(fp)) fs.unlinkSync(fp);
+    }
+    await pool.query('DELETE FROM likes WHERE target_id=$1 OR liker_id=$1', [userId]);
+    await pool.query('DELETE FROM wheel_spins WHERE user_id=$1', [userId]);
+    await pool.query('DELETE FROM inventory WHERE user_id=$1', [userId]);
+    await pool.query('DELETE FROM market WHERE seller_id=$1 OR buyer_id=$1', [userId]);
+    await pool.query('DELETE FROM profiles WHERE id=$1', [userId]);
+    await audit(null, 'admin_delete_user', `user=${userId}`, req);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка удаления' });
+  }
+});
+
+app.post('/api/admin/reset-password', authAdmin, async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: 'Пароль минимум 6 символов' });
+    }
+    const hash = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE profiles SET password_hash=$1 WHERE id=$2', [hash, userId]);
+    await audit(null, 'admin_reset_pw', `user=${userId}`, req);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+// лог действий (для админа)
+app.get('/api/admin/log', authAdmin, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT a.*, p.name AS user_name
+      FROM audit_log a
+      LEFT JOIN profiles p ON p.id = a.user_id
+      ORDER BY a.created_at DESC LIMIT 200
+    `);
+    res.json(r.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка' });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 XIVIVIDE запущен: http://localhost:${PORT}`);
+});
