@@ -16,7 +16,7 @@ if (!process.env.DATABASE_URL) { console.error('❌ НЕТ DATABASE_URL!'); proc
 if (!process.env.JWT_SECRET) { console.error('❌ НЕТ JWT_SECRET!'); process.exit(1); }
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '148823242161';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1488206783242187661';
 const ADMIN_JWT_SECRET = JWT_SECRET + ':admin';
 
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
