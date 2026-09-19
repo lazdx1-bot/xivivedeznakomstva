@@ -64,6 +64,8 @@
   .vide-badge:hover { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25)); box-shadow: 0 0 18px rgba(255,215,0,0.4); }
   .settings-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; font-size: 20px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; }
   .settings-btn:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: rotate(45deg); }
+  .login-btn { padding: 10px 20px; border-radius: 22px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 70%, transparent), color-mix(in srgb, var(--accent-dark) 70%, transparent)); border: 1px solid rgba(255,255,255,0.14); color: #f0f0f8; cursor: pointer; font-family: inherit; font-size: 14px; transition: all 0.25s; }
+  .login-btn:hover { box-shadow: 0 0 24px var(--accent-glow); }
   .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
   .main-tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
   .main-tabs button { padding: 12px 28px; font-size: 14px; letter-spacing: 1px; border-radius: 30px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.4); color: #d8d8e4; transition: all 0.25s; }
@@ -359,6 +361,42 @@
   .admin-bulk-bar { display: flex; gap: 10px; padding: 12px; margin-bottom: 14px; background: rgba(255,80,100,0.08); border: 1px solid rgba(255,90,110,0.3); border-radius: 12px; flex-wrap: wrap; align-items: center; }
   .admin-bulk-bar button { padding: 8px 14px; font-size: 12.5px; border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,90,110,0.5); background: rgba(255,80,100,0.15); color: #ff9aa7; font-weight: 600; }
   .admin-bulk-bar span { font-size: 13px; color: #d8d8e4; }
+  /* === BATTLE STYLES === */
+  .battle-lobby-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.25s; }
+  .battle-lobby-row:hover { background: rgba(60,60,78,0.7); border-color: rgba(255,215,0,0.5); }
+  .battle-lobby-row .bl-info { flex: 1; }
+  .battle-lobby-row .bl-info strong { display: block; font-size: 14px; color: #f0f0f8; }
+  .battle-lobby-row .bl-info small { font-size: 11.5px; color: #8a8a9c; }
+  .battle-bet { font-size: 15px; color: #ffd970; font-weight: 700; }
+  .battle-code-display { font-family: 'VT323', monospace; font-size: 32px; letter-spacing: 6px; text-align: center; color: #ffd970; background: rgba(20,20,26,0.7); border: 1px dashed rgba(255,215,0,0.5); border-radius: 12px; padding: 12px; margin: 10px 0; cursor: pointer; }
+  .battle-players { display: flex; align-items: center; gap: 10px; justify-content: space-between; margin: 14px 0; }
+  .battle-player { flex: 1; text-align: center; padding: 12px; border-radius: 14px; background: rgba(30,30,40,0.6); border: 2px solid rgba(255,255,255,0.08); transition: all 0.3s; }
+  .battle-player.me { border-color: rgba(91,157,255,0.5); }
+  .battle-player.winner { border-color: #ffd970; box-shadow: 0 0 24px rgba(255,215,0,0.5); background: rgba(255,215,0,0.1); }
+  .battle-player img, .battle-player .mini-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg,#2a2a34,#3a3a48); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #b0b0c4; margin: 0 auto 6px; }
+  .battle-player strong { display: block; font-size: 14px; color: #f0f0f8; }
+  .battle-player .bp-score { font-size: 22px; font-weight: 700; color: #ffd970; margin-top: 4px; }
+  .battle-player .bp-rounds { font-size: 11px; color: #8a8a9c; }
+  .battle-vs { font-size: 22px; color: #ff5c6e; font-weight: 700; padding: 0 6px; }
+  .battle-drops { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; margin-top: 8px; }
+  .battle-drop { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(20,20,26,0.6); border-radius: 8px; border-left: 3px solid #666; font-size: 12.5px; }
+  .battle-drop.rarity-common { border-left-color: #999; }
+  .battle-drop.rarity-rare { border-left-color: #5b9dff; }
+  .battle-drop.rarity-epic { border-left-color: #b17aff; }
+  .battle-drop.rarity-legendary { border-left-color: #ffd970; }
+  .battle-drop.rarity-mythic { border-left-color: #ff2e5c; }
+  .battle-drop .bd-icon { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 16px; background: rgba(0,0,0,0.4); }
+  .battle-drop .bd-name { flex: 1; color: #e8e8f0; }
+  .battle-drop .bd-round { font-size: 10px; color: #8a8a9c; }
+  .battle-turn { text-align: center; font-size: 14px; color: #b8b8cc; margin: 10px 0; min-height: 20px; }
+  .battle-turn.active { color: #4dd68a; font-weight: 600; }
+  .battle-roll-btn { width: 100%; padding: 16px; font-size: 16px; letter-spacing: 1px; color: #1a1a22; font-weight: 700; background: linear-gradient(135deg, #ffd970, #ffb400); border: none; border-radius: 12px; cursor: pointer; transition: all 0.25s; font-family: inherit; }
+  .battle-roll-btn:hover:not(:disabled) { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
+  .battle-roll-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .battle-result-banner { text-align: center; padding: 18px; margin: 12px 0; border-radius: 14px; font-size: 16px; font-weight: 700; }
+  .battle-result-banner.win { background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,180,0,0.1)); border: 1px solid rgba(255,215,0,0.5); color: #ffd970; }
+  .battle-result-banner.lose { background: linear-gradient(135deg, rgba(255,90,110,0.2), rgba(180,60,80,0.1)); border: 1px solid rgba(255,90,110,0.5); color: #ff8a99; }
+  .battle-result-banner.draw { background: rgba(91,157,255,0.15); border: 1px solid rgba(91,157,255,0.5); color: #8ec0ff; }
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(38,38,46,0.95); backdrop-filter: blur(20px); padding: 14px 24px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 50px rgba(0,0,0,0.6); z-index: 999; transition: transform 0.4s; font-size: 14px; color: #f0f0f8; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: rgba(155,240,180,0.5); }
@@ -398,20 +436,17 @@
     <button id="tabShameBtn">🪧 Доска позора</button>
   </div>
 
-  <!-- СТЕНА -->
   <div class="tab-content active" id="tabWall">
     <div class="stories-strip" id="storiesStrip"></div>
     <button class="add-btn" id="openForm" style="display:none;">+ Создать анкету</button>
     <div class="wall" id="wall"></div>
   </div>
 
-  <!-- ДОСКА ПОЗОРА -->
   <div class="tab-content" id="tabShame">
     <button class="shame-add-btn" id="openShameForm">+ Добавить на доску</button>
     <div class="shame-feed" id="shameFeed"></div>
   </div>
 </main>
-
 <!-- МОДАЛКИ -->
 <div class="modal" id="registerModal"><div class="modal-content"><button class="modal-close" id="closeRegister">✕</button><h2>Создать анкету</h2><form id="registerForm">
 <label>Имя (логин)<input type="text" name="name" required maxlength="40" autocomplete="username"></label>
@@ -489,7 +524,17 @@
 </div>
 <button class="spin-btn" id="spinBtn">Открыть за 100 🪙</button>
 <div class="wheel-result-msg" id="wheelResult"></div>
+<div style="margin-top:14px;"><button class="ghost-btn" id="openBattleBtn" style="background: linear-gradient(135deg, rgba(255,90,110,0.2), rgba(180,60,80,0.15)); border-color: rgba(255,90,110,0.5); color: #ff8a99;">⚔️ Кейс Батл (PvP)</button></div>
 <div class="section-title" style="margin-top:20px;">Последние выпадения</div><div id="wheelHistory"></div>
+</div></div>
+
+<div class="modal" id="battleModal"><div class="modal-content wide"><button class="modal-close" id="closeBattle">✕</button><h2>⚔️ Кейс Батл</h2>
+<div class="market-tabs" id="battleTabs"></div>
+<div id="battleContent"></div>
+</div></div>
+
+<div class="modal" id="battleRoomModal"><div class="modal-content wide"><button class="modal-close" id="closeBattleRoom">✕</button><h2>⚔️ Бой</h2>
+<div id="battleRoomContent"></div>
 </div></div>
 
 <div class="modal" id="invModal"><div class="modal-content wide"><button class="modal-close" id="closeInv">✕</button><h2>Инвентарь</h2><div id="invContent"></div></div></div>
@@ -555,6 +600,13 @@ let shopTab = 'banners';
 let currentAudio = null;
 let audioRepeat = false;
 let audioState = { volume: 0.7 };
+
+// === BATTLE STATE ===
+let battleTab = 'lobby';
+let battleRoomPollTimer = null;
+let currentBattleCode = null;
+let battleConfig = { bets: [100,300,500,1000], rounds: [3,5] };
+let battleSpinLock = false;
 
 const FONTS = [
   { key: '', name: 'Обычный', css: '' },
@@ -814,7 +866,7 @@ document.getElementById('shameForm').addEventListener('submit', async (e) => {
   } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
   finally { btn.disabled = false; }
 });
- 
+
 // === СТЕНА ===
 async function loadWall() {
   try {
@@ -1189,7 +1241,6 @@ async function openChatFromLike(userId) {
     openChat(p);
   } catch (err) { toast(err.message, 'error'); }
 }
-
 // === РЕДАКТОР РАСКЛАДКИ ===
 function openLayoutEditor(me) {
   document.getElementById('layoutModal').classList.add('show');
@@ -1422,7 +1473,7 @@ function renderProfileStyle(me, shop) {
 function openAppearance(me) {
   const c = document.getElementById('appearanceContent');
   c.innerHTML = `
-    <div class="premium-preview"><h4>Предпросмотр</h4><div style="display:flex;gap:10px;"><div id="previewCard" style="width:60px;height:60px;border-radius:12px;background:${me.card_bg || 'rgba(38,38,46,0.7)'};border:2px solid ${me.card_color || 'transparent'};display:flex;align-items:center;justify-content:center;font-size:24px;">✦</div></div></div>
+    <div style="margin-bottom:16px;"><h4 style="font-size:12px;color:#b8b8cc;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Предпросмотр</h4><div style="display:flex;gap:10px;"><div id="previewCard" style="width:60px;height:60px;border-radius:12px;background:${me.card_bg || 'rgba(38,38,46,0.7)'};border:2px solid ${me.card_color || 'transparent'};display:flex;align-items:center;justify-content:center;font-size:24px;">✦</div></div></div>
     <div class="fx-row"><input type="color" id="cardColorInput" value="${me.card_color || '#a0a0b8'}" style="width:44px;height:40px;margin-right:10px;"><div class="fx-label">Цвет рамки</div></div>
     <div class="fx-row"><input type="color" id="cardBgInput" value="${me.card_bg && me.card_bg.startsWith('#') ? me.card_bg : '#2a2a34'}" style="width:44px;height:40px;margin-right:10px;"><div class="fx-label">Цвет карточки</div></div>
     <div class="fx-row"><div class="fx-label">Использовать</div><div class="switch ${me.card_bg ? 'on' : ''}" id="useBgSwitch"></div></div>
@@ -1507,6 +1558,324 @@ async function loadWheelHistory() {
   } catch {}
 }
 document.getElementById('spinBtn').addEventListener('click', spinWheel);
+document.getElementById('openBattleBtn').addEventListener('click', () => { document.getElementById('wheelModal').classList.remove('show'); openBattle(); });
+
+// ============================
+// ⚔️ КЕЙС БАТЛ
+// ============================
+async function openBattle() {
+  if (!myProfile) { toast('Войди', 'error'); return; }
+  document.getElementById('battleModal').classList.add('show');
+  renderBattleTabs();
+  renderBattleContent();
+}
+function renderBattleTabs() {
+  const t = document.getElementById('battleTabs');
+  const tabs = [
+    { k: 'lobby', name: '🏛 Лобби' },
+    { k: 'create', name: '+ Создать' },
+    { k: 'history', name: '📜 История' }
+  ];
+  t.innerHTML = tabs.map(x => `<button class="${battleTab===x.k?'active':''}" data-tab="${x.k}">${x.name}</button>`).join('');
+  t.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { battleTab = b.dataset.tab; renderBattleTabs(); renderBattleContent(); }));
+}
+async function renderBattleContent() {
+  const c = document.getElementById('battleContent');
+  c.innerHTML = '<div class="empty-small">Загрузка...</div>';
+  try {
+    if (battleTab === 'lobby') {
+      const list = await api('/battle/list');
+      c.innerHTML = `
+        <div style="margin-bottom:12px;display:flex;gap:8px;">
+          <input type="text" id="battleJoinCode" placeholder="Код комнаты" maxlength="10" style="flex:1;text-transform:uppercase;padding:11px 14px;font-size:14px;border-radius:12px;background:rgba(20,20,26,0.7);border:1px solid rgba(255,255,255,0.1);color:#f0f0f8;outline:none;font-family:inherit;">
+          <button id="battleJoinBtn" class="submit-btn" style="width:auto;padding:11px 20px;margin:0;">Войти</button>
+        </div>
+        ${list.length === 0 ? '<div class="empty-small">Открытых комнат нет. Создай свою!</div>' : list.map(r => {
+          const nk = nickClass(r.creator_nick); const fc = fontClass(r.creator_font);
+          const av = r.creator_photo ? `<img src="${r.creator_photo}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;">` : `<div class="mini-avatar">✦</div>`;
+          return `<div class="battle-lobby-row" data-code="${r.code}">${av}<div class="bl-info"><strong class="${nk} ${fc}">${escapeHtml(r.creator_name)}</strong><small>${r.rounds} раундов · код ${r.code} · ${timeAgo(r.created_at)}</small></div><div class="battle-bet">${r.bet} 🪙</div></div>`;
+        }).join('')}
+      `;
+      document.getElementById('battleJoinBtn').onclick = async () => {
+        const code = document.getElementById('battleJoinCode').value.trim().toUpperCase();
+        if (!code) return;
+        try { const r = await api('/battle/join', { method:'POST', body: JSON.stringify({ code }) }); toast('Ты в бою!', 'success'); openBattleRoom(r.room.code); }
+        catch (err) { toast(err.message, 'error'); }
+      };
+      c.querySelectorAll('.battle-lobby-row').forEach(el => el.addEventListener('click', async () => {
+        const code = el.dataset.code;
+        if (!confirm('Присоединиться к комнате ' + code + '?')) return;
+        try { const r = await api('/battle/join', { method:'POST', body: JSON.stringify({ code }) }); toast('Ты в бою!', 'success'); openBattleRoom(r.room.code); }
+        catch (err) { toast(err.message, 'error'); }
+      }));
+    } else if (battleTab === 'create') {
+      c.innerHTML = `
+        <div class="section-title">Ставка</div>
+        <div class="market-tabs" id="betTabs">${battleConfig.bets.map(b => `<button data-bet="${b}">${b} 🪙</button>`).join('')}</div>
+        <div class="section-title">Раундов</div>
+        <div class="market-tabs" id="roundTabs">${battleConfig.rounds.map(r => `<button data-rounds="${r}">${r}</button>`).join('')}</div>
+        <button class="battle-roll-btn" id="createBattleBtn" style="margin-top:18px;">Создать комнату</button>
+        <div class="form-status" id="createBattleStatus"></div>
+      `;
+      let bet = battleConfig.bets[0], rounds = battleConfig.rounds[0];
+      const bt = document.getElementById('betTabs'); bt.querySelector('button').classList.add('active');
+      bt.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { bet = parseInt(b.dataset.bet); bt.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b)); }));
+      const rt = document.getElementById('roundTabs'); rt.querySelector('button').classList.add('active');
+      rt.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { rounds = parseInt(b.dataset.rounds); rt.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b)); }));
+      document.getElementById('createBattleBtn').onclick = async () => {
+        const st = document.getElementById('createBattleStatus'); st.textContent = 'Создаём...';
+        try {
+          const r = await api('/battle/create', { method:'POST', body: JSON.stringify({ bet, rounds }) });
+          toast('Комната создана! Код: ' + r.code, 'success');
+          document.getElementById('battleModal').classList.remove('show');
+          openBattleRoom(r.code);
+        } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
+      };
+    } else if (battleTab === 'history') {
+      const list = await api('/battle/history');
+      if (!list.length) { c.innerHTML = '<div class="empty-small">Пока нет завершённых боёв</div>'; return; }
+      c.innerHTML = list.map(h => {
+        const meId = myProfile.id;
+        const meWon = h.winnerId === meId;
+        const isDraw = !h.winnerId;
+        const cls = isDraw ? 'draw' : (meWon ? 'win' : 'lose');
+        const label = isDraw ? '🤝 Ничья' : (meWon ? '🏆 Победа' : '💀 Поражение');
+        const meIsCreator = h.creatorId === meId;
+        const myScore = meIsCreator ? h.creatorScore : h.opponentScore;
+        const opScore = meIsCreator ? h.opponentScore : h.creatorScore;
+        const opName = meIsCreator ? h.opponentName : h.creatorName;
+        return `<div class="battle-result-banner ${cls}" style="text-align:left;padding:12px 16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><strong>${label}</strong><div style="font-size:12px;font-weight:400;opacity:0.8;margin-top:4px;">vs ${escapeHtml(opName||'—')} · ${h.rounds} раундов</div></div>
+            <div style="text-align:right;">
+              <div style="font-size:20px;">${myScore} : ${opScore}</div>
+              <div style="font-size:11px;opacity:0.7;">${timeAgo(h.updatedAt)}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
+}
+
+async function openBattleRoom(code) {
+  currentBattleCode = code;
+  document.getElementById('battleRoomModal').classList.add('show');
+  document.getElementById('battleRoomContent').innerHTML = '<div class="empty-small">Загрузка...</div>';
+  try {
+    const room = await api('/battle/room/' + code);
+    renderBattleRoom(room);
+    startBattleRoomPoll();
+  } catch (err) {
+    document.getElementById('battleRoomContent').innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`;
+  }
+}
+function stopBattleRoomPoll() {
+  if (battleRoomPollTimer) { clearInterval(battleRoomPollTimer); battleRoomPollTimer = null; }
+}
+function startBattleRoomPoll() {
+  stopBattleRoomPoll();
+  battleRoomPollTimer = setInterval(async () => {
+    if (!currentBattleCode) return;
+    try {
+      const room = await api('/battle/room/' + currentBattleCode);
+      renderBattleRoom(room);
+      if (room.status === 'finished' || room.status === 'cancelled') stopBattleRoomPoll();
+    } catch (err) { /* ignore */ }
+  }, 1500);
+}
+function renderBattleRoom(room) {
+  const c = document.getElementById('battleRoomContent');
+  const meId = myProfile.id;
+  const meIsCreator = room.creatorId === meId;
+  const meDrops = meIsCreator ? room.creatorDrops : room.opponentDrops;
+  const opDrops = meIsCreator ? room.opponentDrops : room.creatorDrops;
+  const meScore = meIsCreator ? room.creatorScore : room.opponentScore;
+  const opScore = meIsCreator ? room.opponentScore : room.creatorScore;
+  const meRolled = meIsCreator ? room.creatorRolled : room.opponentRolled;
+  const opRolled = meIsCreator ? room.opponentRolled : room.creatorRolled;
+  const op = meIsCreator ? room.opponent : room.creator;
+  const mePlayer = meIsCreator ? room.creator : room.opponent;
+  const meObj = mePlayer || { name: myProfile.name, photo: myProfile.photo, nick_style: myProfile.nick_style, profile_font: myProfile.profile_font, is_premium: myProfile.is_premium };
+
+  const meAv = meObj.photo ? `<img src="${meObj.photo}">` : `<div class="mini-avatar">✦</div>`;
+  const opAv = op && op.photo ? `<img src="${op.photo}">` : `<div class="mini-avatar">✦</div>`;
+  const meNk = nickClass(meObj.nick_style); const meFc = fontClass(meObj.profile_font);
+  const opNk = op ? nickClass(op.nick_style) : ''; const opFc = op ? fontClass(op.profile_font) : '';
+
+  const isWinnerMe = room.status === 'finished' && room.winnerId === meId;
+  const isWinnerOp = room.status === 'finished' && op && room.winnerId === op.id;
+  const isDraw = room.status === 'finished' && !room.winnerId;
+
+  const meWinCls = isWinnerMe ? 'winner' : '';
+  const opWinCls = isWinnerOp ? 'winner' : '';
+
+  function dropHTML(d) {
+    const isImg = d.icon && d.icon.startsWith('http');
+    const icon = isImg ? `<img src="${d.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : (d.icon || '🎁');
+    return `<div class="battle-drop rarity-${d.rarity}"><div class="bd-icon">${icon}</div><div class="bd-name">${escapeHtml(d.name)}</div><div class="bd-round">+${d.points}</div></div>`;
+  }
+
+  let topHTML = '';
+  if (room.status === 'waiting') {
+    topHTML = `
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:14px;color:#b8b8cc;margin-bottom:14px;">Ждём соперника...</div>
+        <div style="font-size:11px;letter-spacing:2px;color:#8a8a9c;text-transform:uppercase;margin-bottom:6px;">Код комнаты</div>
+        <div class="battle-code-display" id="battleCodeCopy">${room.code}</div>
+        <div style="font-size:11.5px;color:#8a8a9c;margin-top:8px;">Нажми на код, чтобы скопировать</div>
+        <div style="font-size:13px;color:#c8c8d6;margin-top:14px;">Ставка: <b style="color:#ffd970">${room.bet} 🪙</b> · Раундов: <b>${room.rounds}</b></div>
+        <button class="ghost-btn" id="battleCancelBtn" style="margin-top:18px;background:rgba(255,80,100,0.15);border-color:rgba(255,90,110,0.4);color:#ff9aa7;">Отменить комнату</button>
+      </div>
+    `;
+  } else if (room.status === 'active') {
+    let turnText = '';
+    let canRoll = false;
+    if (!meRolled && !opRolled) {
+      if (meIsCreator) { turnText = '⚡ Твой ход — крути кейс!'; canRoll = true; }
+      else { turnText = '⏳ Ждём ход создателя...'; }
+    } else if (meRolled && !opRolled) {
+      if (meIsCreator) { turnText = '⏳ Ждём ход соперника...'; }
+      else { turnText = '⚡ Твой ход — крути кейс!'; canRoll = true; }
+    }
+    topHTML = `
+      <div class="battle-players">
+        <div class="battle-player me ${meWinCls}">
+          ${meAv}
+          <strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)} ${meObj.is_premium ? '⭐' : ''}</strong>
+          <div class="bp-score">${meScore}</div>
+          <div class="bp-rounds">Ты ${meRolled ? '✓' : ''}</div>
+        </div>
+        <div class="battle-vs">VS</div>
+        <div class="battle-player ${opWinCls}">
+          ${opAv}
+          <strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'} ${op && op.is_premium ? '⭐' : ''}</strong>
+          <div class="bp-score">${opScore}</div>
+          <div class="bp-rounds">Соперник ${opRolled ? '✓' : ''}</div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:#8a8a9c;margin-bottom:10px;">Раунд ${Math.min(room.currentRound, room.rounds)} / ${room.rounds} · Банк: <b style="color:#ffd970">${room.bank} 🪙</b></div>
+      <div class="wheel-wrap" style="height:110px;"><div class="wheel-line"></div><div class="wheel-track" id="battleWheelTrack"></div></div>
+      <div class="battle-turn ${canRoll ? 'active' : ''}">${turnText}</div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="battle-roll-btn" id="battleRollBtn" style="flex:2;" ${canRoll ? '' : 'disabled'}>🎰 Открыть кейс</button>
+        <button class="ghost-btn" id="battleForfeitBtn" style="flex:1;margin:0;background:rgba(255,80,100,0.15);border-color:rgba(255,90,110,0.4);color:#ff9aa7;">Сдаться</button>
+      </div>
+    `;
+  } else if (room.status === 'finished') {
+    let bannerHTML = '';
+    if (isDraw) bannerHTML = `<div class="battle-result-banner draw">🤝 Ничья! Ставки возвращены</div>`;
+    else if (isWinnerMe) bannerHTML = `<div class="battle-result-banner win">🏆 ТЫ ВЫИГРАЛ! +${room.bank} 🪙 и все скины соперника</div>`;
+    else bannerHTML = `<div class="battle-result-banner lose">💀 Ты проиграл. −${room.bet} 🪙 и все твои скины</div>`;
+    topHTML = `
+      ${bannerHTML}
+      <div class="battle-players">
+        <div class="battle-player me ${meWinCls}">
+          ${meAv}
+          <strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)}</strong>
+          <div class="bp-score">${meScore}</div>
+        </div>
+        <div class="battle-vs">VS</div>
+        <div class="battle-player ${opWinCls}">
+          ${opAv}
+          <strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'}</strong>
+          <div class="bp-score">${opScore}</div>
+        </div>
+      </div>
+      <button class="submit-btn" id="battleCloseBtn">Закрыть</button>
+    `;
+  } else if (room.status === 'cancelled') {
+    topHTML = `<div class="battle-result-banner draw">⌛ Комната отменена</div><button class="submit-btn" id="battleCloseBtn">Закрыть</button>`;
+  }
+
+  c.innerHTML = topHTML + `
+    <div class="section-title">Твои дропы</div>
+    <div class="battle-drops">${meDrops.length ? meDrops.map(dropHTML).join('') : '<div class="empty-small">Пока пусто</div>'}</div>
+    <div class="section-title">Дропы соперника</div>
+    <div class="battle-drops">${opDrops.length ? opDrops.map(dropHTML).join('') : '<div class="empty-small">Пока пусто</div>'}</div>
+  `;
+
+  // обработчики
+  const codeCopy = document.getElementById('battleCodeCopy');
+  if (codeCopy) codeCopy.onclick = () => { navigator.clipboard.writeText(room.code); toast('Код скопирован', 'success'); };
+  const cancelBtn = document.getElementById('battleCancelBtn');
+  if (cancelBtn) cancelBtn.onclick = async () => {
+    if (!confirm('Отменить комнату? Ставка вернётся.')) return;
+    try { await api('/battle/leave', { method:'POST', body: JSON.stringify({ code: room.code }) }); toast('Отменено', 'success'); stopBattleRoomPoll(); document.getElementById('battleRoomModal').classList.remove('show'); }
+    catch (err) { toast(err.message, 'error'); }
+  };
+  const rollBtn = document.getElementById('battleRollBtn');
+  if (rollBtn) rollBtn.onclick = () => rollBattle(room.code);
+  const forfBtn = document.getElementById('battleForfeitBtn');
+  if (forfBtn) forfBtn.onclick = async () => {
+    if (!confirm('Сдаться? Соперник заберёт банк.')) return;
+    try { await api('/battle/leave', { method:'POST', body: JSON.stringify({ code: room.code }) }); toast('Ты сдался', 'error'); stopBattleRoomPoll(); }
+    catch (err) { toast(err.message, 'error'); }
+  };
+  const closeBtn = document.getElementById('battleCloseBtn');
+  if (closeBtn) closeBtn.onclick = () => { stopBattleRoomPoll(); currentBattleCode = null; document.getElementById('battleRoomModal').classList.remove('show'); renderTopbar(); };
+
+  // если активный и я должен крутить — рендерим рулетку
+  if (room.status === 'active') {
+    const track = document.getElementById('battleWheelTrack');
+    if (track) {
+      const fakeTape = [];
+      for (let i = 0; i < 60; i++) fakeTape.push({ name: '', icon: '🎁', rarity: 'common' });
+      track.innerHTML = fakeTape.map(it => `<div class="wheel-item rarity-common"><div class="wi-icon">${it.icon}</div><div class="wi-name"></div></div>`).join('');
+    }
+  }
+}
+
+async function rollBattle(code) {
+  if (battleSpinLock) return;
+  battleSpinLock = true;
+  const btn = document.getElementById('battleRollBtn');
+  if (btn) btn.disabled = true;
+  try {
+    const r = await api('/battle/roll', { method: 'POST', body: JSON.stringify({ code }) });
+    // Анимация: подменяем трек на реальный
+    const track = document.getElementById('battleWheelTrack');
+    if (track) {
+      const tape = [];
+      const winnerIndex = 40 + Math.floor(Math.random() * 10);
+      for (let i = 0; i < 60; i++) {
+        if (i === winnerIndex) tape.push(r.drop);
+        else {
+          const items = [
+            { name: 'Кролик', icon: '🎁', rarity: 'common' },
+            { name: 'Мадонна', icon: '🎁', rarity: 'rare' },
+            { name: 'Кот', icon: '🎁', rarity: 'epic' },
+            { name: 'Анонимус', icon: '🎁', rarity: 'legendary' },
+            { name: 'Тема', icon: '🎨', rarity: 'epic' },
+            { name: 'Фон чата', icon: '💬', rarity: 'rare' }
+          ];
+          tape.push(items[Math.floor(Math.random() * items.length)]);
+        }
+      }
+      track.innerHTML = tape.map(it => {
+        const isImg = it.icon && it.icon.startsWith('http');
+        return `<div class="wheel-item rarity-${it.rarity}"><div class="wi-icon">${isImg ? `<img src="${it.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : (it.icon || '🎁')}</div><div class="wi-name">${escapeHtml(it.name||'')}</div></div>`;
+      }).join('');
+      const itemW = 100;
+      const containerW = track.parentElement.clientWidth;
+      const targetX = -(winnerIndex * itemW + itemW / 2 - containerW / 2) + (Math.random() * 40 - 20);
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(0)';
+      setTimeout(() => { track.style.transition = 'transform 4.5s cubic-bezier(0.15, 0.7, 0.05, 1)'; track.style.transform = `translateX(${targetX}px)`; }, 50);
+      setTimeout(() => {
+        toast(`🎉 Выпало: ${r.drop.name} (+${r.drop.points})`, 'success');
+        renderBattleRoom(r.room);
+        if (r.room.status === 'finished') stopBattleRoomPoll();
+        renderTopbar();
+        battleSpinLock = false;
+      }, 4800);
+    } else {
+      toast(`🎉 ${r.drop.name} (+${r.drop.points})`, 'success');
+      renderBattleRoom(r.room);
+      battleSpinLock = false;
+    }
+  } catch (err) { toast(err.message, 'error'); battleSpinLock = false; if (btn) btn.disabled = false; }
+}
 
 // === ИНВЕНТАРЬ ===
 async function openInventory() {
@@ -1705,7 +2074,7 @@ async function openNotifs() {
   try {
     const r = await api('/notifications/' + myProfile.id);
     if (!r.list.length) { c.innerHTML = '<div class="empty-small">Уведомлений нет</div>'; return; }
-    const icons = { like: '❤️', message: '💬', gift: '🎁', comment: '💬', ref: '🤝', wheel: '🎰', report: '⚠️' };
+    const icons = { like: '❤️', message: '💬', gift: '🎁', comment: '💬', ref: '🤝', wheel: '🎰', report: '⚠️', battle: '⚔️' };
     c.innerHTML = r.list.map(n => `<div class="notif-item ${n.is_read ? '' : 'unread'}"><div class="notif-icon">${icons[n.type] || '🔔'}</div><div class="notif-body"><strong>${escapeHtml(n.text)}</strong><small>${timeAgo(n.created_at)}</small></div></div>`).join('');
     refreshNotifBadge();
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
@@ -1851,6 +2220,7 @@ function openSettings() {
     <div class="settings-section-title">Игровое</div>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openBonus()"><div class="si-icon">🎁</div><div class="si-label"><strong>Ежедневный бонус</strong><small>+5 🪙 каждый день</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openWheel()"><div class="si-icon">🎰</div><div class="si-label"><strong>Кейс XIVIVIDE</strong><small>Крутить за 100 🪙</small></div><div class="si-arrow">›</div></button>
+    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openBattle()"><div class="si-icon">⚔️</div><div class="si-label"><strong>Кейс Батл</strong><small>PvP за вайдики</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openInventory()"><div class="si-icon">🎒</div><div class="si-label"><strong>Инвентарь</strong><small>Скины, темы, ник-эффекты</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openShop()"><div class="si-icon">🛍️</div><div class="si-label"><strong>Магазин</strong><small>Темы, баннеры, фоны</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openMarket()"><div class="si-icon">🏪</div><div class="si-label"><strong>Рынок</strong><small>Продать и купить скины</small></div><div class="si-arrow">›</div></button>
@@ -1881,19 +2251,15 @@ function renderTopbar() {
     document.getElementById('openForm').style.display = 'block';
     return;
   }
-  // Диалоги
   const dialogsBtn = document.createElement('button'); dialogsBtn.className = 'theme-btn'; dialogsBtn.title = 'Мои диалоги'; dialogsBtn.textContent = '💬'; dialogsBtn.id = 'dialogsBtn';
   dialogsBtn.addEventListener('click', openDialogs);
   t.appendChild(dialogsBtn);
-  // Уведомления
   const notifBtn = document.createElement('button'); notifBtn.className = 'theme-btn'; notifBtn.title = 'Уведомления'; notifBtn.textContent = '🔔'; notifBtn.id = 'notifBtn';
   notifBtn.addEventListener('click', openNotifs);
   t.appendChild(notifBtn);
-  // Вайдики
   const v = document.createElement('button'); v.className = 'vide-badge'; v.title = 'Кейс'; v.innerHTML = `🪙 ${myProfile.vide || 0}`;
   v.addEventListener('click', openWheel);
   t.appendChild(v);
-  // Профиль
   const chip = document.createElement('div');
   chip.className = 'user-chip' + (myProfile.is_premium ? ' premium' : '');
   const nk = nickClass(myProfile.nick_style);
@@ -1901,7 +2267,6 @@ function renderTopbar() {
   chip.innerHTML = (myProfile.photo ? `<img src="${myProfile.photo}">` : `<div class="avatar-placeholder">✦</div>`) + `<span class="${nk} ${fc}">${escapeHtml(myProfile.name)}${myProfile.is_premium ? ' ⭐' : ''}</span>`;
   chip.addEventListener('click', openMyProfile);
   t.appendChild(chip);
-  // Настройки
   const set = document.createElement('button'); set.className = 'settings-btn'; set.title = 'Настройки'; set.textContent = '⚙️';
   set.addEventListener('click', openSettings);
   t.appendChild(set);
@@ -1924,6 +2289,7 @@ function logout() {
   stopAllAudio();
   setToken(null); myProfile = null; myLikes = new Set();
   clearInterval(unreadPollTimer); clearInterval(notifPollTimer);
+  stopBattleRoomPoll();
   document.getElementById('settingsModal').classList.remove('show');
   renderTopbar(); loadWall();
 }
@@ -2109,9 +2475,9 @@ async function loadAdmin() {
 }
 
 // === ЗАКРЫТИЕ МОДАЛОК ===
-['registerModal','loginModal','settingsModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','layoutModal','fontModal','appearanceModal','themeModal','shamePostModal','wheelModal','invModal','shopModal','marketModal','dialogsModal','newChatModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
+['registerModal','loginModal','settingsModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','layoutModal','fontModal','appearanceModal','themeModal','shamePostModal','wheelModal','battleModal','battleRoomModal','invModal','shopModal','marketModal','dialogsModal','newChatModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
   const m = document.getElementById(id); if (!m) return;
-  m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopAllAudio(); } });
+  m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopAllAudio(); if (m.id === 'battleRoomModal') stopBattleRoomPoll(); } });
 });
 document.getElementById('closeRegister').onclick = () => document.getElementById('registerModal').classList.remove('show');
 document.getElementById('closeLogin').onclick = () => document.getElementById('loginModal').classList.remove('show');
@@ -2127,6 +2493,8 @@ document.getElementById('closeAppearance').onclick = () => document.getElementBy
 document.getElementById('closeTheme').onclick = () => document.getElementById('themeModal').classList.remove('show');
 document.getElementById('closeShamePost').onclick = () => document.getElementById('shamePostModal').classList.remove('show');
 document.getElementById('closeWheel').onclick = () => document.getElementById('wheelModal').classList.remove('show');
+document.getElementById('closeBattle').onclick = () => document.getElementById('battleModal').classList.remove('show');
+document.getElementById('closeBattleRoom').onclick = () => { stopBattleRoomPoll(); currentBattleCode = null; document.getElementById('battleRoomModal').classList.remove('show'); renderTopbar(); };
 document.getElementById('closeInv').onclick = () => document.getElementById('invModal').classList.remove('show');
 document.getElementById('closeShop').onclick = () => document.getElementById('shopModal').classList.remove('show');
 document.getElementById('closeMarket').onclick = () => document.getElementById('marketModal').classList.remove('show');
@@ -2156,6 +2524,7 @@ async function init() {
   applyFx(getFx());
   getDeviceId();
   try { await api('/stories/cleanup', { method:'DELETE' }); } catch {}
+  try { battleConfig = await api('/battle/config'); } catch {}
   const t = getToken();
   if (t) { try { myProfile = await api('/me'); } catch { setToken(null); myProfile = null; } }
   renderTopbar(); loadWall(); loadStories();
