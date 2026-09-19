@@ -65,6 +65,28 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS battle_rooms (
+        id SERIAL PRIMARY KEY,
+        code TEXT UNIQUE NOT NULL,
+        creator_id INTEGER NOT NULL,
+        opponent_id INTEGER,
+        bet INTEGER NOT NULL,
+        rounds INTEGER NOT NULL DEFAULT 3,
+        status TEXT NOT NULL DEFAULT 'waiting',
+        current_round INTEGER NOT NULL DEFAULT 1,
+        creator_score INTEGER NOT NULL DEFAULT 0,
+        opponent_score INTEGER NOT NULL DEFAULT 0,
+        creator_drops JSONB NOT NULL DEFAULT '[]'::jsonb,
+        opponent_drops JSONB NOT NULL DEFAULT '[]'::jsonb,
+        creator_rolled BOOLEAN NOT NULL DEFAULT FALSE,
+        opponent_rolled BOOLEAN NOT NULL DEFAULT FALSE,
+        winner_id INTEGER,
+        bank INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
 
     const migr = [
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS premium_until TIMESTAMP`,
@@ -99,6 +121,9 @@ async function initDB() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_likes_liker ON likes(liker_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_likes_target ON likes(target_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_shame ON shame_posts(created_at DESC);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_battle_status ON battle_rooms(status, created_at DESC);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_battle_creator ON battle_rooms(creator_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_battle_opponent ON battle_rooms(opponent_id);`);
     console.log('✅ Таблицы готовы');
   } catch (err) { console.error('❌ Ошибка initDB:', err.message); }
 }
@@ -187,6 +212,17 @@ function rollWheel() {
   return p[Math.floor(Math.random() * p.length)] || WHEEL_POOL[0];
 }
 
+const RARITY_POINTS = { common: 1, rare: 3, epic: 7, legendary: 15, mythic: 50 };
+const BATTLE_BETS = [100, 300, 500, 1000];
+const BATTLE_ROUNDS = [3, 5];
+function makeBattleCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
+  return c;
+}
+function rarityPoints(r) { return RARITY_POINTS[r] || 1; }
+
 function sanitize(str, maxLen = 500) { if (typeof str !== 'string') return ''; return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen); }
 function getIp(req) { const raw = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString(); return raw.split(',')[0].trim().slice(0, 64); }
 function getDeviceId(req) { return String(req.headers['x-device-id'] || req.body.deviceId || '').slice(0, 128); }
@@ -221,7 +257,7 @@ async function checkBan(req, res, next) {
     next();
   } catch { next(); }
 }
-['/api/register','/api/login','/api/profiles','/api/like','/api/messages','/api/shame'].forEach(p => app.use(p, checkBan));
+['/api/register','/api/login','/api/profiles','/api/like','/api/messages','/api/shame','/api/battle'].forEach(p => app.use(p, checkBan));
 async function touchSeen(userId) { try { await pool.query('UPDATE profiles SET last_seen = CURRENT_TIMESTAMP WHERE id=$1', [userId]); } catch {} }
 
 function pickProfile(row) {
@@ -371,6 +407,7 @@ app.delete('/api/profiles/:id', authUser, async (req, res) => {
     await pool.query('DELETE FROM gifts WHERE sender_id=$1 OR receiver_id=$1', [req.userId]);
     await pool.query('DELETE FROM comments WHERE author_id=$1 OR target_id=$1', [req.userId]);
     await pool.query('DELETE FROM shame_posts WHERE author_id=$1', [req.userId]);
+    await pool.query('DELETE FROM battle_rooms WHERE creator_id=$1 OR opponent_id=$1', [req.userId]);
     for (const t of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await pool.query(`DELETE FROM ${t} WHERE user_id=$1`, [req.userId]);
     await pool.query('DELETE FROM story_views WHERE user_id=$1', [req.userId]);
     await pool.query('DELETE FROM profiles WHERE id=$1', [req.userId]);
@@ -426,7 +463,6 @@ app.post('/api/profiles/:id/profile-font', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// === РАСКЛАДКА ПРОФИЛЯ ===
 app.post('/api/profiles/:id/profile-layout', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
@@ -480,7 +516,6 @@ app.get('/api/likes/:userId', async (req, res) => { try { const r = await pool.q
 app.get('/api/liked-by/:userId', async (req, res) => { try { const r = await pool.query(`SELECT p.id, p.name, p.age, p.bio, p.photo, p.contact_type, p.contact_value FROM profiles p JOIN likes l ON l.liker_id=p.id WHERE l.target_id=$1 ORDER BY l.created_at DESC`, [parseInt(req.params.userId)]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 app.get('/api/mutual/:a/:b', async (req, res) => { try { const a = parseInt(req.params.a), b = parseInt(req.params.b); const r = await pool.query(`SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=$2 UNION SELECT 1 FROM likes WHERE liker_id=$2 AND target_id=$1`, [a, b]); res.json({ mutual: r.rows.length >= 2, any: r.rows.length >= 1 }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 
-// === ДОСКА ПОЗОРА ===
 app.get('/api/shame', async (req, res) => {
   try {
     const r = await pool.query(`
@@ -546,7 +581,6 @@ app.post('/api/admin/shame/list', authAdmin, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// === СООБЩЕНИЯ ===
 app.get('/api/messages/writable/:userId', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' });
@@ -821,7 +855,7 @@ app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
     await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, itemType, String(key)]);
     await client.query('COMMIT');
     const nb = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
-        res.json({ ok: true, balance: nb.rows[0].vide });
+    res.json({ ok: true, balance: nb.rows[0].vide });
   } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка: ' + err.message }); }
   finally { client.release(); }
 });
@@ -880,6 +914,267 @@ app.get('/api/market/my/:userId', async (req, res) => {
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
+// === КЕЙС БАТЛ ===
+async function cleanupStaleBattles() {
+  try {
+    const r = await pool.query(`
+      UPDATE battle_rooms SET status='cancelled', updated_at=CURRENT_TIMESTAMP
+      WHERE status='waiting' AND updated_at < CURRENT_TIMESTAMP - INTERVAL '10 minutes'
+      RETURNING id, creator_id, bet
+    `);
+    for (const row of r.rows) {
+      await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [row.bet, row.creator_id]);
+      await notify(row.creator_id, 'battle', '⏱ Комната кейс-батла отменена (никто не зашёл). Ставка возвращена.', null);
+    }
+  } catch (e) { console.error('battle cleanup:', e.message); }
+}
+setInterval(cleanupStaleBattles, 2 * 60 * 1000);
+
+async function pickBattleRoom(code) {
+  const r = await pool.query(`
+    SELECT b.*,
+      cp.name AS creator_name, cp.photo AS creator_photo, cp.nick_style AS creator_nick, cp.profile_font AS creator_font, cp.is_premium AS creator_premium,
+      op.name AS opponent_name, op.photo AS opponent_photo, op.nick_style AS opponent_nick, op.profile_font AS opponent_font, op.is_premium AS opponent_premium
+    FROM battle_rooms b
+    LEFT JOIN profiles cp ON cp.id = b.creator_id
+    LEFT JOIN profiles op ON op.id = b.opponent_id
+    WHERE b.code = $1
+  `, [code]);
+  if (!r.rows.length) return null;
+  const row = r.rows[0];
+  return {
+    id: row.id, code: row.code, bet: row.bet, rounds: row.rounds, status: row.status,
+    currentRound: row.current_round, bank: row.bank,
+    creatorId: row.creator_id, opponentId: row.opponent_id,
+    creatorScore: row.creator_score, opponentScore: row.opponent_score,
+    creatorDrops: row.creator_drops || [], opponentDrops: row.opponent_drops || [],
+    creatorRolled: row.creator_rolled, opponentRolled: row.opponent_rolled,
+    winnerId: row.winner_id,
+    creator: { id: row.creator_id, name: row.creator_name, photo: row.creator_photo, nick_style: row.creator_nick, profile_font: row.creator_font, is_premium: row.creator_premium },
+    opponent: row.opponent_id ? { id: row.opponent_id, name: row.opponent_name, photo: row.opponent_photo, nick_style: row.opponent_nick, profile_font: row.opponent_font, is_premium: row.opponent_premium } : null,
+    createdAt: row.created_at, updatedAt: row.updated_at
+  };
+}
+
+app.get('/api/battle/config', authUser, (req, res) => {
+  res.json({ bets: BATTLE_BETS, rounds: BATTLE_ROUNDS });
+});
+
+app.get('/api/battle/list', authUser, async (req, res) => {
+  try {
+    await cleanupStaleBattles();
+    const r = await pool.query(`
+      SELECT b.code, b.bet, b.rounds, b.created_at,
+        p.name AS creator_name, p.photo AS creator_photo, p.nick_style AS creator_nick, p.profile_font AS creator_font
+      FROM battle_rooms b JOIN profiles p ON p.id = b.creator_id
+      WHERE b.status = 'waiting' AND b.creator_id <> $1
+      ORDER BY b.created_at DESC LIMIT 50
+    `, [req.userId]);
+    res.json(r.rows);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.get('/api/battle/history', authUser, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT b.*, cp.name AS creator_name, op.name AS opponent_name
+      FROM battle_rooms b
+      LEFT JOIN profiles cp ON cp.id = b.creator_id
+      LEFT JOIN profiles op ON op.id = b.opponent_id
+      WHERE (b.creator_id = $1 OR b.opponent_id = $1) AND b.status = 'finished'
+      ORDER BY b.updated_at DESC LIMIT 20
+    `, [req.userId]);
+    res.json(r.rows.map(row => ({
+      id: row.id, code: row.code, bet: row.bet, bank: row.bank, rounds: row.rounds,
+      creatorId: row.creator_id, opponentId: row.opponent_id,
+      creatorName: row.creator_name, opponentName: row.opponent_name,
+      creatorScore: row.creator_score, opponentScore: row.opponent_score,
+      winnerId: row.winner_id, updatedAt: row.updated_at
+    })));
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.post('/api/battle/create', authUser, actionLimiter, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const bet = parseInt(req.body.bet);
+    const rounds = parseInt(req.body.rounds) || 3;
+    if (!BATTLE_BETS.includes(bet)) return res.status(400).json({ error: 'Неверная ставка' });
+    if (!BATTLE_ROUNDS.includes(rounds)) return res.status(400).json({ error: 'Неверное число раундов' });
+    const active = await client.query(`SELECT id FROM battle_rooms WHERE (creator_id=$1 OR opponent_id=$1) AND status IN ('waiting','active') LIMIT 1`, [req.userId]);
+    if (active.rows.length) return res.status(400).json({ error: 'У тебя уже есть активная комната' });
+    await client.query('BEGIN');
+    const u = await client.query('SELECT vide FROM profiles WHERE id=$1 FOR UPDATE', [req.userId]);
+    if ((u.rows[0].vide || 0) < bet) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Недостаточно вайдиков' }); }
+    await client.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [bet, req.userId]);
+    let code, tries = 0;
+    do { code = makeBattleCode(); tries++; if (tries > 10) throw new Error('code_gen'); } while ((await client.query('SELECT 1 FROM battle_rooms WHERE code=$1', [code])).rows.length);
+    await client.query(`
+      INSERT INTO battle_rooms (code, creator_id, bet, rounds, status, bank)
+      VALUES ($1,$2,$3,$4,'waiting',$5)
+    `, [code, req.userId, bet, rounds, bet]);
+    await client.query('COMMIT');
+    await audit(req.userId, 'battle_create', `code=${code} bet=${bet} rounds=${rounds}`, req);
+    res.json({ ok: true, code, room: await pickBattleRoom(code) });
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка создания' }); }
+  finally { client.release(); }
+});
+
+app.post('/api/battle/join', authUser, actionLimiter, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const code = sanitize(req.body.code, 10).toUpperCase();
+    if (!code) return res.status(400).json({ error: 'Нет кода' });
+    await client.query('BEGIN');
+    const room = await client.query(`SELECT * FROM battle_rooms WHERE code=$1 FOR UPDATE`, [code]);
+    if (!room.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Комната не найдена' }); }
+    const r = room.rows[0];
+    if (r.status !== 'waiting') { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Комната уже не доступна' }); }
+    if (r.creator_id === req.userId) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Это твоя комната' }); }
+    const mine = await client.query(`SELECT id FROM battle_rooms WHERE (creator_id=$1 OR opponent_id=$1) AND status IN ('waiting','active') LIMIT 1`, [req.userId]);
+    if (mine.rows.length) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'У тебя уже есть активная комната' }); }
+    const u = await client.query('SELECT vide FROM profiles WHERE id=$1 FOR UPDATE', [req.userId]);
+    if ((u.rows[0].vide || 0) < r.bet) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Недостаточно вайдиков' }); }
+    await client.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [r.bet, req.userId]);
+    await client.query(`UPDATE battle_rooms SET opponent_id=$1, status='active', bank=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3`, [req.userId, r.bet * 2, r.id]);
+    await client.query('COMMIT');
+    await notify(r.creator_id, 'battle', '⚔️ Соперник присоединился к твоему кейс-батлу!', null);
+    await audit(req.userId, 'battle_join', `code=${code}`, req);
+    res.json({ ok: true, room: await pickBattleRoom(code) });
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка входа' }); }
+  finally { client.release(); }
+});
+
+app.get('/api/battle/room/:code', authUser, async (req, res) => {
+  try {
+    const code = String(req.params.code || '').toUpperCase();
+    await cleanupStaleBattles();
+    const room = await pickBattleRoom(code);
+    if (!room) return res.status(404).json({ error: 'Комната не найдена' });
+    if (room.creatorId !== req.userId && room.opponentId !== req.userId) return res.status(403).json({ error: 'Не твоя комната' });
+    res.json(room);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.post('/api/battle/roll', authUser, actionLimiter, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const code = sanitize(req.body.code, 10).toUpperCase();
+    if (!code) return res.status(400).json({ error: 'Нет кода' });
+    await client.query('BEGIN');
+    const rr = await client.query('SELECT * FROM battle_rooms WHERE code=$1 FOR UPDATE', [code]);
+    if (!rr.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Комната не найдена' }); }
+    const r = rr.rows[0];
+    if (r.status !== 'active') { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Комната не активна' }); }
+    const isCreator = r.creator_id === req.userId;
+    const isOpponent = r.opponent_id === req.userId;
+    if (!isCreator && !isOpponent) { await client.query('ROLLBACK'); return res.status(403).json({ error: 'Не твоя комната' }); }
+    if (isCreator && r.creator_rolled) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Ты уже крутил в этом раунде' }); }
+    if (isOpponent && r.opponent_rolled) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Ты уже крутил в этом раунде' }); }
+    if (isOpponent && !r.creator_rolled) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Ждём хода соперника' }); }
+
+    const prize = rollWheel();
+    const pts = rarityPoints(prize.rarity);
+    const drop = { type: prize.type, key: prize.key, name: prize.name, icon: prize.icon, rarity: prize.rarity, points: pts, round: r.current_round };
+
+    let newCreatorDrops = r.creator_drops || [];
+    let newOpponentDrops = r.opponent_drops || [];
+    let newCreatorScore = r.creator_score;
+    let newOpponentScore = r.opponent_score;
+
+    if (isCreator) {
+      newCreatorDrops = [...newCreatorDrops, drop];
+      newCreatorScore += pts;
+      await client.query(`UPDATE battle_rooms SET creator_drops=$1::jsonb, creator_score=$2, creator_rolled=TRUE, updated_at=CURRENT_TIMESTAMP WHERE id=$3`, [JSON.stringify(newCreatorDrops), newCreatorScore, r.id]);
+    } else {
+      newOpponentDrops = [...newOpponentDrops, drop];
+      newOpponentScore += pts;
+      await client.query(`UPDATE battle_rooms SET opponent_drops=$1::jsonb, opponent_score=$2, opponent_rolled=TRUE, updated_at=CURRENT_TIMESTAMP WHERE id=$3`, [JSON.stringify(newOpponentDrops), newOpponentScore, r.id]);
+    }
+
+    if (prize.type === 'skin') {
+      await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, 'skin', String(prize.key)]);
+    } else if (['theme','nick','color','chatbg'].includes(prize.type)) {
+      await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, prize.type, String(prize.key)]);
+    } else if (prize.type === 'premium') {
+      if (prize.key === 'forever') await client.query('UPDATE profiles SET is_premium=1, premium_until=NULL WHERE id=$1', [req.userId]);
+      else await client.query(`UPDATE profiles SET is_premium=1, premium_until=COALESCE(premium_until, CURRENT_TIMESTAMP) + INTERVAL '7 days' WHERE id=$1`, [req.userId]);
+    }
+
+    let finished = false;
+    let winnerId = null;
+    let nextRound = r.current_round;
+
+    if ((isCreator && r.opponent_rolled) || (isOpponent && r.creator_rolled)) {
+      nextRound = r.current_round + 1;
+      if (nextRound > r.rounds) {
+        finished = true;
+        if (newCreatorScore > newOpponentScore) winnerId = r.creator_id;
+        else if (newOpponentScore > newCreatorScore) winnerId = r.opponent_id;
+        else winnerId = null;
+        await client.query(`UPDATE battle_rooms SET current_round=$1, creator_rolled=FALSE, opponent_rolled=FALSE, status='finished', winner_id=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3`, [nextRound, winnerId, r.id]);
+        if (winnerId) {
+          await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bank, winnerId]);
+          const loserId = winnerId === r.creator_id ? r.opponent_id : r.creator_id;
+          const loserDrops = winnerId === r.creator_id ? newOpponentDrops : newCreatorDrops;
+          for (const d of loserDrops) {
+            if (d.type === 'skin' || ['theme','nick','color','chatbg'].includes(d.type)) {
+              const del = await client.query(`DELETE FROM inventory WHERE id IN (SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1) RETURNING id`, [loserId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+              if (del.rows.length) {
+                await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [winnerId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+              }
+            }
+          }
+          await notify(winnerId, 'battle', `🏆 Ты выиграл кейс-батл! +${r.bank} 🪙 и все скины соперника`, null);
+          await notify(loserId, 'battle', `💀 Ты проиграл кейс-батл (−${r.bet} 🪙 и скины)`, null);
+        } else {
+          await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bet, r.creator_id]);
+          await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bet, r.opponent_id]);
+          await notify(r.creator_id, 'battle', '🤝 Кейс-батл закончился ничьей. Ставка возвращена.', null);
+          await notify(r.opponent_id, 'battle', '🤝 Кейс-батл закончился ничьей. Ставка возвращена.', null);
+        }
+      } else {
+        await client.query(`UPDATE battle_rooms SET current_round=$1, creator_rolled=FALSE, opponent_rolled=FALSE, updated_at=CURRENT_TIMESTAMP WHERE id=$2`, [nextRound, r.id]);
+      }
+    }
+
+    await client.query('COMMIT');
+    await audit(req.userId, 'battle_roll', `code=${code} prize=${prize.name}`, req);
+    res.json({ ok: true, drop, finished, winnerId, room: await pickBattleRoom(code) });
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка ролла' }); }
+  finally { client.release(); }
+});
+
+app.post('/api/battle/leave', authUser, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const code = sanitize(req.body.code, 10).toUpperCase();
+    await client.query('BEGIN');
+    const rr = await client.query('SELECT * FROM battle_rooms WHERE code=$1 FOR UPDATE', [code]);
+    if (!rr.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Нет' }); }
+    const r = rr.rows[0];
+    const isCreator = r.creator_id === req.userId;
+    const isOpponent = r.opponent_id === req.userId;
+    if (!isCreator && !isOpponent) { await client.query('ROLLBACK'); return res.status(403).json({ error: 'Не твоя' }); }
+    if (r.status === 'waiting') {
+      if (!isCreator) { await client.query('ROLLBACK'); return res.status(403).json({ error: 'Только создатель может отменить' }); }
+      await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bet, r.creator_id]);
+      await client.query(`UPDATE battle_rooms SET status='cancelled', updated_at=CURRENT_TIMESTAMP WHERE id=$1`, [r.id]);
+    } else if (r.status === 'active') {
+      const winnerId = isCreator ? r.opponent_id : r.creator_id;
+      await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bank, winnerId]);
+      await client.query(`UPDATE battle_rooms SET status='finished', winner_id=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2`, [winnerId, r.id]);
+      await notify(winnerId, 'battle', `🏆 Соперник сбежал из кейс-батла. Ты забираешь банк +${r.bank} 🪙`, null);
+    } else {
+      await client.query('ROLLBACK');
+      return res.json({ ok: true });
+    }
+    await client.query('COMMIT');
+    res.json({ ok: true });
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  finally { client.release(); }
+});
+
 // === АДМИНКА ===
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
   try { if (req.body.password !== ADMIN_PASSWORD) return res.status(403).json({ error: 'Неверный пароль' }); res.json({ token: makeAdminToken() }); }
@@ -912,6 +1207,7 @@ app.post('/api/admin/delete-user', authAdmin, async (req, res) => {
     await pool.query('DELETE FROM gifts WHERE sender_id=$1 OR receiver_id=$1', [userId]);
     await pool.query('DELETE FROM comments WHERE author_id=$1 OR target_id=$1', [userId]);
     await pool.query('DELETE FROM shame_posts WHERE author_id=$1', [userId]);
+    await pool.query('DELETE FROM battle_rooms WHERE creator_id=$1 OR opponent_id=$1', [userId]);
     for (const t of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await pool.query(`DELETE FROM ${t} WHERE user_id=$1`, [userId]);
     await pool.query('DELETE FROM story_views WHERE user_id=$1', [userId]);
     await pool.query('DELETE FROM profiles WHERE id=$1', [userId]);
@@ -934,6 +1230,7 @@ app.post('/api/admin/purge-nopass', authAdmin, async (req, res) => {
     await client.query('DELETE FROM gifts WHERE sender_id = ANY($1) OR receiver_id = ANY($1)', [ids]);
     await client.query('DELETE FROM comments WHERE author_id = ANY($1) OR target_id = ANY($1)', [ids]);
     await client.query('DELETE FROM shame_posts WHERE author_id = ANY($1)', [ids]);
+    await client.query('DELETE FROM battle_rooms WHERE creator_id = ANY($1) OR opponent_id = ANY($1)', [ids]);
     for (const tb of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await client.query(`DELETE FROM ${tb} WHERE user_id = ANY($1)`, [ids]);
     await client.query('DELETE FROM story_views WHERE user_id = ANY($1)', [ids]);
     await client.query('DELETE FROM audit_log WHERE user_id = ANY($1)', [ids]);
@@ -957,6 +1254,7 @@ app.post('/api/admin/purge-by-ids', authAdmin, async (req, res) => {
     await client.query('DELETE FROM gifts WHERE sender_id = ANY($1) OR receiver_id = ANY($1)', [okIds]);
     await client.query('DELETE FROM comments WHERE author_id = ANY($1) OR target_id = ANY($1)', [okIds]);
     await client.query('DELETE FROM shame_posts WHERE author_id = ANY($1)', [okIds]);
+    await client.query('DELETE FROM battle_rooms WHERE creator_id = ANY($1) OR opponent_id = ANY($1)', [okIds]);
     for (const tb of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await client.query(`DELETE FROM ${tb} WHERE user_id = ANY($1)`, [okIds]);
     await client.query('DELETE FROM story_views WHERE user_id = ANY($1)', [okIds]);
     await client.query('DELETE FROM audit_log WHERE user_id = ANY($1)', [okIds]);
