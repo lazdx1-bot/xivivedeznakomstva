@@ -56,6 +56,12 @@
   .theme-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; font-size: 18px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; position: relative; }
   .theme-btn:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: translateY(-2px); }
   .theme-btn .badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; background: #ff4d6d; color: #fff; border-radius: 10px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(255,77,109,0.6); }
+  .topbar-action { height: 42px; padding: 0 16px; border-radius: 22px; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; font-size: 14px; cursor: pointer; transition: all 0.25s; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-weight: 600; }
+  .topbar-action:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: translateY(-2px); }
+  .topbar-action.battle { background: linear-gradient(135deg, rgba(255,90,110,0.25), rgba(180,60,80,0.2)); border-color: rgba(255,90,110,0.5); color: #ff8a99; padding: 0 20px; font-size: 15px; }
+  .topbar-action.battle:hover { box-shadow: 0 0 22px rgba(255,90,110,0.5); }
+  .topbar-action.market { background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,180,0,0.1)); border-color: rgba(255,215,0,0.4); color: #ffd970; padding: 0 14px; font-size: 18px; }
+  .topbar-action.market:hover { box-shadow: 0 0 22px rgba(255,215,0,0.4); }
   .user-chip { display: flex; align-items: center; gap: 10px; padding: 5px 14px 5px 5px; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; cursor: pointer; transition: all 0.25s; }
   .user-chip:hover { background: rgba(90,90,115,0.65); box-shadow: 0 0 18px var(--accent-glow); }
   .user-chip img, .user-chip .avatar-placeholder { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 15px; color: #b0b0c4; flex-shrink: 0; }
@@ -397,6 +403,12 @@
   .battle-result-banner.win { background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,180,0,0.1)); border: 1px solid rgba(255,215,0,0.5); color: #ffd970; }
   .battle-result-banner.lose { background: linear-gradient(135deg, rgba(255,90,110,0.2), rgba(180,60,80,0.1)); border: 1px solid rgba(255,90,110,0.5); color: #ff8a99; }
   .battle-result-banner.draw { background: rgba(91,157,255,0.15); border: 1px solid rgba(91,157,255,0.5); color: #8ec0ff; }
+  .battle-drop-showcase { display: flex; align-items: center; gap: 12px; padding: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,180,0,0.08)); border: 1px solid rgba(255,215,0,0.5); border-radius: 14px; margin-top: 12px; animation: modalIn 0.4s; }
+  .battle-drop-showcase .bds-icon { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
+  .battle-drop-showcase .bds-info { flex: 1; }
+  .battle-drop-showcase .bds-label { font-size: 12px; color: #8a8a9c; letter-spacing: 1px; text-transform: uppercase; }
+  .battle-drop-showcase .bds-name { font-size: 17px; font-weight: 700; color: #ffd970; margin-top: 2px; }
+  .battle-drop-showcase .bds-meta { font-size: 12px; color: #b8b8cc; margin-top: 2px; }
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(38,38,46,0.95); backdrop-filter: blur(20px); padding: 14px 24px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 50px rgba(0,0,0,0.6); z-index: 999; transition: transform 0.4s; font-size: 14px; color: #f0f0f8; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: rgba(155,240,180,0.5); }
@@ -414,6 +426,7 @@
     .theme-grid { grid-template-columns: repeat(2, 1fr); }
     .theme-btn, .settings-btn { width: 38px; height: 38px; font-size: 16px; }
     .main-tabs button { padding: 10px 18px; font-size: 13px; }
+    .topbar-action { padding: 0 10px; height: 38px; font-size: 12px; }
   }
 </style>
 </head>
@@ -447,6 +460,7 @@
     <div class="shame-feed" id="shameFeed"></div>
   </div>
 </main>
+
 <!-- МОДАЛКИ -->
 <div class="modal" id="registerModal"><div class="modal-content"><button class="modal-close" id="closeRegister">✕</button><h2>Создать анкету</h2><form id="registerForm">
 <label>Имя (логин)<input type="text" name="name" required maxlength="40" autocomplete="username"></label>
@@ -579,7 +593,6 @@
 
 <div class="toast" id="toast"></div>
 <footer class="brand-footer">X I V I V I D E</footer>
-
 <script>
 const API = '/api';
 const TOKEN_KEY = 'xivivide_token';
@@ -624,25 +637,13 @@ const FONTS = [
 function fontClass(k) { if (!k) return ''; const f = FONTS.find(x => x.key === k); return f ? f.css : ''; }
 
 const DEFAULT_LAYOUT = {
-  bannerHeight: 180,
-  bannerPosition: 'center',
-  avatarSize: 110,
-  avatarPosition: 'center',
-  avatarBorderColor: '',
-  avatarBorderWidth: 4,
-  avatarGlow: false,
-  panelColor: '',
-  panelOpacity: 100,
-  panelRadius: 22,
-  textAlign: 'center',
-  elementOrder: ['bio', 'contact', 'music', 'stories', 'stats']
+  bannerHeight: 180, bannerPosition: 'center', avatarSize: 110, avatarPosition: 'center',
+  avatarBorderColor: '', avatarBorderWidth: 4, avatarGlow: false, panelColor: '', panelOpacity: 100,
+  panelRadius: 22, textAlign: 'center', elementOrder: ['bio', 'contact', 'music', 'stories', 'stats']
 };
 function getLayout(profile) {
   if (!profile || !profile.profile_layout) return { ...DEFAULT_LAYOUT };
-  try {
-    const parsed = JSON.parse(profile.profile_layout);
-    return { ...DEFAULT_LAYOUT, ...parsed };
-  } catch { return { ...DEFAULT_LAYOUT }; }
+  try { return { ...DEFAULT_LAYOUT, ...JSON.parse(profile.profile_layout) }; } catch { return { ...DEFAULT_LAYOUT }; }
 }
 
 function getDeviceId() {
@@ -796,13 +797,10 @@ async function loadShameFeed() {
 function createShameCard(p) {
   const card = document.createElement('div');
   card.className = 'shame-card';
-  const photoHTML = p.photo
-    ? `<img class="shame-photo" src="${p.photo}" alt="" loading="lazy">`
-    : `<div class="shame-photo-placeholder">🪧</div>`;
+  const photoHTML = p.photo ? `<img class="shame-photo" src="${p.photo}" alt="" loading="lazy">` : `<div class="shame-photo-placeholder">🪧</div>`;
   const av = p.author_photo ? `<img src="${p.author_photo}">` : `<div class="mini-avatar">✦</div>`;
   const isMine = myProfile && String(p.author_id) === String(myProfile.id);
-  const nk = nickClass(p.nick_style);
-  const fc = fontClass(p.profile_font);
+  const nk = nickClass(p.nick_style); const fc = fontClass(p.profile_font);
   card.innerHTML = `
     ${photoHTML}
     <div class="shame-body">
@@ -853,16 +851,11 @@ document.getElementById('shameForm').addEventListener('submit', async (e) => {
     if (photoFile && photoFile.size > 0) {
       st.textContent = 'Загружаем фото...';
       const url = await uploadToCloudinary(photoFile);
-      fd.delete('photo');
-      fd.append('photoUrl', url);
+      fd.delete('photo'); fd.append('photoUrl', url);
     }
     await api('/shame', { method: 'POST', body: fd });
     st.textContent = 'Опубликовано!'; st.className = 'form-status success';
-    setTimeout(() => {
-      document.getElementById('shamePostModal').classList.remove('show');
-      form.reset();
-      loadShameFeed();
-    }, 500);
+    setTimeout(() => { document.getElementById('shamePostModal').classList.remove('show'); form.reset(); loadShameFeed(); }, 500);
   } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
   finally { btn.disabled = false; }
 });
@@ -900,8 +893,7 @@ function createCard(p) {
   const liked = myLikes.has(String(p.id));
   const likeCount = p.likes || 0;
   const isMine = String(p.id) === String(myId);
-  const nk = nickClass(p.nick_style);
-  const fc = fontClass(p.profile_font);
+  const nk = nickClass(p.nick_style); const fc = fontClass(p.profile_font);
   card.innerHTML = `
     <div class="online-dot ${on.cls}" title="${on.text}"></div>
     ${isMine ? '<div class="mine-badge">★ Ты</div>' : ''}
@@ -961,48 +953,24 @@ function buildPlayer(url, containerId) {
   const sc = url.match(/soundcloud\.com\/(.+)/);
   if (yt || sc) {
     const ifr = document.createElement('iframe');
-    ifr.width = '100%'; ifr.height = '120';
-    ifr.style.border = 'none'; ifr.style.borderRadius = '12px';
-    ifr.allow = 'autoplay';
-    ifr.src = yt
-      ? `https://www.youtube.com/embed/${yt[1]}?autoplay=1&loop=1&playlist=${yt[1]}`
-      : `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false&color=%23a0a0b8`;
+    ifr.width = '100%'; ifr.height = '120'; ifr.style.border = 'none'; ifr.style.borderRadius = '12px'; ifr.allow = 'autoplay';
+    ifr.src = yt ? `https://www.youtube.com/embed/${yt[1]}?autoplay=1&loop=1&playlist=${yt[1]}` : `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false&color=%23a0a0b8`;
     wrap.appendChild(ifr);
     return;
   }
   const audio = new Audio(url);
-  audio.volume = audioState.volume;
-  audio.loop = audioRepeat;
-  currentAudio = audio;
+  audio.volume = audioState.volume; audio.loop = audioRepeat; currentAudio = audio;
   wrap.innerHTML = `
     <div class="music-player" style="margin:0;max-width:100%;">
       <div class="mp-label">🎵 СЕЙЧАС ИГРАЕТ</div>
       <div class="mp-track" id="mpTrackName">${escapeHtml(decodeURIComponent(url.split('/').pop() || 'Трек').slice(0, 60))}</div>
-      <div class="mp-progress-wrap">
-        <span class="mp-time" id="mpCur">0:00</span>
-        <div class="mp-progress" id="mpProgress"><div class="mp-progress-filled" id="mpFilled" style="width:0%"></div><div class="mp-progress-handle" id="mpHandle" style="left:0%"></div></div>
-        <span class="mp-time" id="mpDur">0:00</span>
-      </div>
-      <div class="mp-controls">
-        <button class="mp-btn" id="mpBack">⏪</button>
-        <button class="mp-btn mp-play" id="mpPlay">⏸</button>
-        <button class="mp-btn" id="mpFwd">⏩</button>
-        <button class="mp-btn ${audioRepeat ? 'active' : ''}" id="mpRepeat">🔁</button>
-      </div>
-      <div class="mp-volume-wrap">
-        <span class="mp-volume-icon" id="mpVolIcon">🔊</span>
-        <div class="mp-volume" id="mpVolume"><div class="mp-volume-filled" id="mpVolFilled" style="width:${audioState.volume*100}%"></div><div class="mp-volume-handle" id="mpVolHandle" style="left:${audioState.volume*100}%"></div></div>
-      </div>
+      <div class="mp-progress-wrap"><span class="mp-time" id="mpCur">0:00</span><div class="mp-progress" id="mpProgress"><div class="mp-progress-filled" id="mpFilled" style="width:0%"></div><div class="mp-progress-handle" id="mpHandle" style="left:0%"></div></div><span class="mp-time" id="mpDur">0:00</span></div>
+      <div class="mp-controls"><button class="mp-btn" id="mpBack">⏪</button><button class="mp-btn mp-play" id="mpPlay">⏸</button><button class="mp-btn" id="mpFwd">⏩</button><button class="mp-btn ${audioRepeat ? 'active' : ''}" id="mpRepeat">🔁</button></div>
+      <div class="mp-volume-wrap"><span class="mp-volume-icon" id="mpVolIcon">🔊</span><div class="mp-volume" id="mpVolume"><div class="mp-volume-filled" id="mpVolFilled" style="width:${audioState.volume*100}%"></div><div class="mp-volume-handle" id="mpVolHandle" style="left:${audioState.volume*100}%"></div></div></div>
     </div>
   `;
   const $ = id => document.getElementById(id);
-  function updateProgress() {
-    if (!audio.duration) return;
-    const pct = (audio.currentTime / audio.duration) * 100;
-    $('mpFilled').style.width = pct + '%';
-    $('mpHandle').style.left = pct + '%';
-    $('mpCur').textContent = fmtTime(audio.currentTime);
-  }
+  function updateProgress() { if (!audio.duration) return; const pct = (audio.currentTime / audio.duration) * 100; $('mpFilled').style.width = pct + '%'; $('mpHandle').style.left = pct + '%'; $('mpCur').textContent = fmtTime(audio.currentTime); }
   audio.addEventListener('loadedmetadata', () => { $('mpDur').textContent = fmtTime(audio.duration); });
   audio.addEventListener('timeupdate', updateProgress);
   audio.addEventListener('ended', () => { if (audioRepeat) audio.play(); });
@@ -1025,7 +993,6 @@ function buildProfileHTML(p, opts = {}) {
   if (p.profile_banner) bannerCSS = `background-image: url('${p.profile_banner}'); background-position: center ${layout.bannerPosition};`;
   else if (themeBg) bannerCSS = `background: ${themeBg};`;
   else bannerCSS = 'background: rgba(30,30,40,0.6);';
-  const avatarPos = layout.avatarPosition;
   const avatarSize = layout.avatarSize;
   const borderColor = layout.avatarBorderColor || 'transparent';
   const borderWidth = layout.avatarBorderWidth;
@@ -1038,12 +1005,9 @@ function buildProfileHTML(p, opts = {}) {
   const panelOpacity = layout.panelOpacity / 100;
   const panelRadius = layout.panelRadius;
   const panelStyle = panelColor ? `background: ${hexToRgba(panelColor, panelOpacity)}; border-radius: ${panelRadius}px; padding: 20px;` : '';
-
   const on = onlineStatus(p.last_seen);
-  const nk = nickClass(p.nick_style);
-  const fc = fontClass(p.profile_font);
+  const nk = nickClass(p.nick_style); const fc = fontClass(p.profile_font);
   const contactLink = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
-
   const blocks = {
     bio: p.bio ? `<div class="pv-bio" style="text-align:${textAlign};">${escapeHtml(p.bio)}</div>` : '',
     contact: p.contact_value ? `<div style="text-align:${textAlign};margin:14px 0;"><a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>${contactIcon(p.contact_type)} ${contactLabel(p.contact_type)}: ${escapeHtml(p.contact_value)}</a></div>` : '',
@@ -1052,12 +1016,10 @@ function buildProfileHTML(p, opts = {}) {
     stats: `<div class="stat-row"><div class="stat-box"><div class="num">${p.likes || 0}</div><div class="label">Лайков</div></div></div>`
   };
   const orderedBlocks = layout.elementOrder.map(k => blocks[k] || '').join('');
-
   const giftsHTML = (p.show_gifts && p.gifts && p.gifts.length) ? `
     <div class="section-title">🎁 Подарки</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">${p.gifts.map(g => `<div style="background:rgba(30,30,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px;text-align:center;min-width:80px;font-size:11px;"><div style="font-size:22px;">🎁</div>от ${escapeHtml(g.sender_name)}</div>`).join('')}</div>
   ` : '';
-
   return `
     <div class="pv-wrap">
       <div class="pv-banner" style="${bannerCSS} height:${layout.bannerHeight}px;"></div>
@@ -1089,16 +1051,9 @@ async function openViewProfile(id) {
   try {
     const p = await api('/profiles/' + id);
     let anyLike = false;
-    if (myProfile && myProfile.id !== p.id) {
-      try { const m = await api('/mutual/' + myProfile.id + '/' + p.id); anyLike = m.any; } catch {}
-    }
+    if (myProfile && myProfile.id !== p.id) { try { const m = await api('/mutual/' + myProfile.id + '/' + p.id); anyLike = m.any; } catch {} }
     const isMine = myProfile && myProfile.id === p.id;
-    const opts = {
-      showWriteBtn: myProfile && !isMine && anyLike,
-      showGiftBtn: myProfile && !isMine,
-      showEditBtn: isMine,
-      showNoLikeHint: myProfile && !isMine && !anyLike
-    };
+    const opts = { showWriteBtn: myProfile && !isMine && anyLike, showGiftBtn: myProfile && !isMine, showEditBtn: isMine, showNoLikeHint: myProfile && !isMine && !anyLike };
     c.innerHTML = buildProfileHTML(p, opts);
     if (p.music_url) buildPlayer(p.music_url, 'musicPlayerBody');
     const wb = document.getElementById('writeMsgBtn'); if (wb) wb.onclick = () => { modal.classList.remove('show'); stopAllAudio(); openChat(p); };
@@ -1156,8 +1111,7 @@ function renderMyProfile(me, likedBy) {
   let bannerCSS = '';
   if (me.profile_banner) bannerCSS = `background-image: url('${me.profile_banner}'); background-position: center ${layout.bannerPosition};`;
   else if (themeBg) bannerCSS = `background: ${themeBg};`;
-  const nk = nickClass(me.nick_style);
-  const fc = fontClass(me.profile_font);
+  const nk = nickClass(me.nick_style); const fc = fontClass(me.profile_font);
   const avatarSize = layout.avatarSize;
   const borderColor = layout.avatarBorderColor || 'transparent';
   const borderWidth = layout.avatarBorderWidth;
@@ -1168,7 +1122,6 @@ function renderMyProfile(me, likedBy) {
   const contactLink = me.contact_value ? buildContactLink(me.contact_type, me.contact_value) : null;
   const refLink = me.ref_code ? `${location.origin}/?ref=${me.ref_code}` : '';
   const textAlign = layout.textAlign;
-
   c.innerHTML = `
     <div class="profile-hero" style="${bannerCSS} height:${layout.bannerHeight}px;">
       ${av}
@@ -1241,6 +1194,7 @@ async function openChatFromLike(userId) {
     openChat(p);
   } catch (err) { toast(err.message, 'error'); }
 }
+
 // === РЕДАКТОР РАСКЛАДКИ ===
 function openLayoutEditor(me) {
   document.getElementById('layoutModal').classList.add('show');
@@ -1248,71 +1202,20 @@ function openLayoutEditor(me) {
   const layout = getLayout(me);
   c.innerHTML = `
     <div class="section-title">Баннер</div>
-    <div class="layout-row">
-      <label>Высота: <span id="lhVal">${layout.bannerHeight}px</span></label>
-      <input type="range" id="lhInput" min="60" max="300" value="${layout.bannerHeight}" step="10">
-    </div>
-    <div class="layout-row">
-      <label>Позиция картинки</label>
-      <select id="lbpInput">
-        <option value="top" ${layout.bannerPosition==='top'?'selected':''}>Верх</option>
-        <option value="center" ${layout.bannerPosition==='center'?'selected':''}>Центр</option>
-        <option value="bottom" ${layout.bannerPosition==='bottom'?'selected':''}>Низ</option>
-      </select>
-    </div>
+    <div class="layout-row"><label>Высота: <span id="lhVal">${layout.bannerHeight}px</span></label><input type="range" id="lhInput" min="60" max="300" value="${layout.bannerHeight}" step="10"></div>
+    <div class="layout-row"><label>Позиция картинки</label><select id="lbpInput"><option value="top" ${layout.bannerPosition==='top'?'selected':''}>Верх</option><option value="center" ${layout.bannerPosition==='center'?'selected':''}>Центр</option><option value="bottom" ${layout.bannerPosition==='bottom'?'selected':''}>Низ</option></select></div>
     <div class="section-title">Аватар</div>
-    <div class="layout-row">
-      <label>Размер: <span id="asVal">${layout.avatarSize}px</span></label>
-      <input type="range" id="asInput" min="60" max="180" value="${layout.avatarSize}" step="5">
-    </div>
-    <div class="layout-row">
-      <label>Позиция</label>
-      <select id="apInput">
-        <option value="left" ${layout.avatarPosition==='left'?'selected':''}>Слева</option>
-        <option value="center" ${layout.avatarPosition==='center'?'selected':''}>Центр</option>
-        <option value="right" ${layout.avatarPosition==='right'?'selected':''}>Справа</option>
-      </select>
-    </div>
-    <div class="layout-row">
-      <label>Цвет обводки</label>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <input type="color" id="abcInput" value="${layout.avatarBorderColor || '#a0a0b8'}">
-        <button type="button" id="clearBorderBtn" style="padding:6px 10px;font-size:11px;border-radius:6px;background:rgba(60,60,78,0.5);border:1px solid rgba(255,255,255,0.1);color:#d8d8e4;cursor:pointer;font-family:inherit;">Убрать</button>
-      </div>
-    </div>
-    <div class="layout-row">
-      <label>Толщина: <span id="abwVal">${layout.avatarBorderWidth}px</span></label>
-      <input type="range" id="abwInput" min="0" max="8" value="${layout.avatarBorderWidth}" step="1">
-    </div>
-    <div class="layout-row">
-      <label>Свечение вокруг авы</label>
-      <div class="switch ${layout.avatarGlow ? 'on' : ''}" id="glowSwitch"></div>
-    </div>
+    <div class="layout-row"><label>Размер: <span id="asVal">${layout.avatarSize}px</span></label><input type="range" id="asInput" min="60" max="180" value="${layout.avatarSize}" step="5"></div>
+    <div class="layout-row"><label>Позиция</label><select id="apInput"><option value="left" ${layout.avatarPosition==='left'?'selected':''}>Слева</option><option value="center" ${layout.avatarPosition==='center'?'selected':''}>Центр</option><option value="right" ${layout.avatarPosition==='right'?'selected':''}>Справа</option></select></div>
+    <div class="layout-row"><label>Цвет обводки</label><div style="display:flex;gap:6px;align-items:center;"><input type="color" id="abcInput" value="${layout.avatarBorderColor || '#a0a0b8'}"><button type="button" id="clearBorderBtn" style="padding:6px 10px;font-size:11px;border-radius:6px;background:rgba(60,60,78,0.5);border:1px solid rgba(255,255,255,0.1);color:#d8d8e4;cursor:pointer;font-family:inherit;">Убрать</button></div></div>
+    <div class="layout-row"><label>Толщина: <span id="abwVal">${layout.avatarBorderWidth}px</span></label><input type="range" id="abwInput" min="0" max="8" value="${layout.avatarBorderWidth}" step="1"></div>
+    <div class="layout-row"><label>Свечение вокруг авы</label><div class="switch ${layout.avatarGlow ? 'on' : ''}" id="glowSwitch"></div></div>
     <div class="section-title">Плашка профиля</div>
-    <div class="layout-row">
-      <label>Цвет плашки</label>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <input type="color" id="pcInput" value="${layout.panelColor || '#26262e'}">
-        <button type="button" id="clearPanelBtn" style="padding:6px 10px;font-size:11px;border-radius:6px;background:rgba(60,60,78,0.5);border:1px solid rgba(255,255,255,0.1);color:#d8d8e4;cursor:pointer;font-family:inherit;">Прозрачно</button>
-      </div>
-    </div>
-    <div class="layout-row">
-      <label>Прозрачность: <span id="poVal">${layout.panelOpacity}%</span></label>
-      <input type="range" id="poInput" min="0" max="100" value="${layout.panelOpacity}" step="5">
-    </div>
-    <div class="layout-row">
-      <label>Скругление: <span id="prVal">${layout.panelRadius}px</span></label>
-      <input type="range" id="prInput" min="0" max="40" value="${layout.panelRadius}" step="2">
-    </div>
+    <div class="layout-row"><label>Цвет плашки</label><div style="display:flex;gap:6px;align-items:center;"><input type="color" id="pcInput" value="${layout.panelColor || '#26262e'}"><button type="button" id="clearPanelBtn" style="padding:6px 10px;font-size:11px;border-radius:6px;background:rgba(60,60,78,0.5);border:1px solid rgba(255,255,255,0.1);color:#d8d8e4;cursor:pointer;font-family:inherit;">Прозрачно</button></div></div>
+    <div class="layout-row"><label>Прозрачность: <span id="poVal">${layout.panelOpacity}%</span></label><input type="range" id="poInput" min="0" max="100" value="${layout.panelOpacity}" step="5"></div>
+    <div class="layout-row"><label>Скругление: <span id="prVal">${layout.panelRadius}px</span></label><input type="range" id="prInput" min="0" max="40" value="${layout.panelRadius}" step="2"></div>
     <div class="section-title">Текст</div>
-    <div class="layout-row">
-      <label>Выравнивание</label>
-      <select id="taInput">
-        <option value="left" ${layout.textAlign==='left'?'selected':''}>Слева</option>
-        <option value="center" ${layout.textAlign==='center'?'selected':''}>Центр</option>
-        <option value="right" ${layout.textAlign==='right'?'selected':''}>Справа</option>
-      </select>
-    </div>
+    <div class="layout-row"><label>Выравнивание</label><select id="taInput"><option value="left" ${layout.textAlign==='left'?'selected':''}>Слева</option><option value="center" ${layout.textAlign==='center'?'selected':''}>Центр</option><option value="right" ${layout.textAlign==='right'?'selected':''}>Справа</option></select></div>
     <button class="submit-btn" id="saveLayoutBtn" style="margin-top:18px;">Сохранить</button>
     <div class="form-status" id="layoutStatus"></div>
   `;
@@ -1332,13 +1235,11 @@ function openLayoutEditor(me) {
   $('prInput').oninput = e => { state.panelRadius = parseInt(e.target.value); $('prVal').textContent = state.panelRadius + 'px'; };
   $('taInput').onchange = e => { state.textAlign = e.target.value; };
   $('saveLayoutBtn').onclick = async () => {
-    const st = $('layoutStatus');
-    st.textContent = 'Сохраняем...';
+    const st = $('layoutStatus'); st.textContent = 'Сохраняем...';
     try {
       const updated = await api('/profiles/' + me.id + '/profile-layout', { method:'POST', body: JSON.stringify({ layout: state }) });
       Object.assign(me, updated); myProfile = { ...myProfile, ...updated };
-      st.textContent = 'Сохранено!';
-      st.className = 'form-status success';
+      st.textContent = 'Сохранено!'; st.className = 'form-status success';
       setTimeout(() => { document.getElementById('layoutModal').classList.remove('show'); loadWall(); openMyProfile(); }, 500);
     } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
   };
@@ -1585,7 +1486,21 @@ async function renderBattleContent() {
   try {
     if (battleTab === 'lobby') {
       const list = await api('/battle/list');
+      let myActive = [];
+      try { myActive = await api('/battle/my-active'); } catch {}
       c.innerHTML = `
+        ${myActive.length > 0 ? `
+          <div class="section-title" style="margin-top:0;">⚡ Твои онлайн-комнаты</div>
+          ${myActive.map(r => {
+            const op = r.isMineCreator ? r.opponentName : r.creatorName;
+            return `<div class="battle-lobby-row" data-mine="${r.code}" style="border-color:rgba(255,215,0,0.5);background:rgba(255,215,0,0.05);">
+              <div style="font-size:28px;">⚔️</div>
+              <div class="bl-info"><strong>Комната ${r.code}</strong><small>${r.status === 'waiting' ? '⏳ Ждём соперника · нажми чтобы вернуться' : '🔥 В бою · vs ' + escapeHtml(op||'—')} · ${r.rounds} раундов</small></div>
+              <div class="battle-bet">${r.bet} 🪙</div>
+            </div>`;
+          }).join('')}
+          <div class="section-title">🏛 Открытые комнаты</div>
+        ` : ''}
         <div style="margin-bottom:12px;display:flex;gap:8px;">
           <input type="text" id="battleJoinCode" placeholder="Код комнаты" maxlength="10" style="flex:1;text-transform:uppercase;padding:11px 14px;font-size:14px;border-radius:12px;background:rgba(20,20,26,0.7);border:1px solid rgba(255,255,255,0.1);color:#f0f0f8;outline:none;font-family:inherit;">
           <button id="battleJoinBtn" class="submit-btn" style="width:auto;padding:11px 20px;margin:0;">Войти</button>
@@ -1599,13 +1514,17 @@ async function renderBattleContent() {
       document.getElementById('battleJoinBtn').onclick = async () => {
         const code = document.getElementById('battleJoinCode').value.trim().toUpperCase();
         if (!code) return;
-        try { const r = await api('/battle/join', { method:'POST', body: JSON.stringify({ code }) }); toast('Ты в бою!', 'success'); openBattleRoom(r.room.code); }
+        try { const r = await api('/battle/join', { method:'POST', body: JSON.stringify({ code }) }); toast('Ты в бою!', 'success'); document.getElementById('battleModal').classList.remove('show'); openBattleRoom(r.room.code); }
         catch (err) { toast(err.message, 'error'); }
       };
-      c.querySelectorAll('.battle-lobby-row').forEach(el => el.addEventListener('click', async () => {
+      c.querySelectorAll('.battle-lobby-row[data-mine]').forEach(el => el.addEventListener('click', () => {
+        document.getElementById('battleModal').classList.remove('show');
+        openBattleRoom(el.dataset.mine);
+      }));
+      c.querySelectorAll('.battle-lobby-row[data-code]').forEach(el => el.addEventListener('click', async () => {
         const code = el.dataset.code;
         if (!confirm('Присоединиться к комнате ' + code + '?')) return;
-        try { const r = await api('/battle/join', { method:'POST', body: JSON.stringify({ code }) }); toast('Ты в бою!', 'success'); openBattleRoom(r.room.code); }
+        try { const r = await api('/battle/join', { method:'POST', body: JSON.stringify({ code }) }); toast('Ты в бою!', 'success'); document.getElementById('battleModal').classList.remove('show'); openBattleRoom(r.room.code); }
         catch (err) { toast(err.message, 'error'); }
       }));
     } else if (battleTab === 'create') {
@@ -1647,10 +1566,7 @@ async function renderBattleContent() {
         return `<div class="battle-result-banner ${cls}" style="text-align:left;padding:12px 16px;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div><strong>${label}</strong><div style="font-size:12px;font-weight:400;opacity:0.8;margin-top:4px;">vs ${escapeHtml(opName||'—')} · ${h.rounds} раундов</div></div>
-            <div style="text-align:right;">
-              <div style="font-size:20px;">${myScore} : ${opScore}</div>
-              <div style="font-size:11px;opacity:0.7;">${timeAgo(h.updatedAt)}</div>
-            </div>
+            <div style="text-align:right;"><div style="font-size:20px;">${myScore} : ${opScore}</div><div style="font-size:11px;opacity:0.7;">${timeAgo(h.updatedAt)}</div></div>
           </div>
         </div>`;
       }).join('');
@@ -1668,6 +1584,8 @@ async function openBattleRoom(code) {
     startBattleRoomPoll();
   } catch (err) {
     document.getElementById('battleRoomContent').innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`;
+    stopBattleRoomPoll();
+    currentBattleCode = null;
   }
 }
 function stopBattleRoomPoll() {
@@ -1677,12 +1595,21 @@ function startBattleRoomPoll() {
   stopBattleRoomPoll();
   battleRoomPollTimer = setInterval(async () => {
     if (!currentBattleCode) return;
+    if (battleSpinLock) return;
     try {
       const room = await api('/battle/room/' + currentBattleCode);
+      if (battleSpinLock) return;
       renderBattleRoom(room);
-      if (room.status === 'finished' || room.status === 'cancelled') stopBattleRoomPoll();
-    } catch (err) { /* ignore */ }
-  }, 1500);
+      if (room.status === 'finished') stopBattleRoomPoll();
+    } catch (err) {
+      if (String(err.message).includes('не найдена')) {
+        stopBattleRoomPoll();
+        currentBattleCode = null;
+        document.getElementById('battleRoomModal').classList.remove('show');
+        toast('Комната закрыта', 'error');
+      }
+    }
+  }, 1000);
 }
 function renderBattleRoom(room) {
   const c = document.getElementById('battleRoomContent');
@@ -1697,30 +1624,25 @@ function renderBattleRoom(room) {
   const op = meIsCreator ? room.opponent : room.creator;
   const mePlayer = meIsCreator ? room.creator : room.opponent;
   const meObj = mePlayer || { name: myProfile.name, photo: myProfile.photo, nick_style: myProfile.nick_style, profile_font: myProfile.profile_font, is_premium: myProfile.is_premium };
-
   const meAv = meObj.photo ? `<img src="${meObj.photo}">` : `<div class="mini-avatar">✦</div>`;
   const opAv = op && op.photo ? `<img src="${op.photo}">` : `<div class="mini-avatar">✦</div>`;
   const meNk = nickClass(meObj.nick_style); const meFc = fontClass(meObj.profile_font);
   const opNk = op ? nickClass(op.nick_style) : ''; const opFc = op ? fontClass(op.profile_font) : '';
-
   const isWinnerMe = room.status === 'finished' && room.winnerId === meId;
   const isWinnerOp = room.status === 'finished' && op && room.winnerId === op.id;
   const isDraw = room.status === 'finished' && !room.winnerId;
-
   const meWinCls = isWinnerMe ? 'winner' : '';
   const opWinCls = isWinnerOp ? 'winner' : '';
-
   function dropHTML(d) {
     const isImg = d.icon && d.icon.startsWith('http');
     const icon = isImg ? `<img src="${d.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : (d.icon || '🎁');
     return `<div class="battle-drop rarity-${d.rarity}"><div class="bd-icon">${icon}</div><div class="bd-name">${escapeHtml(d.name)}</div><div class="bd-round">+${d.points}</div></div>`;
   }
-
   let topHTML = '';
   if (room.status === 'waiting') {
     topHTML = `
       <div style="text-align:center;padding:20px 0;">
-        <div style="font-size:14px;color:#b8b8cc;margin-bottom:14px;">Ждём соперника...</div>
+        <div style="font-size:14px;color:#b8b8cc;margin-bottom:14px;">⏳ Ждём соперника...</div>
         <div style="font-size:11px;letter-spacing:2px;color:#8a8a9c;text-transform:uppercase;margin-bottom:6px;">Код комнаты</div>
         <div class="battle-code-display" id="battleCodeCopy">${room.code}</div>
         <div style="font-size:11.5px;color:#8a8a9c;margin-top:8px;">Нажми на код, чтобы скопировать</div>
@@ -1729,8 +1651,7 @@ function renderBattleRoom(room) {
       </div>
     `;
   } else if (room.status === 'active') {
-    let turnText = '';
-    let canRoll = false;
+    let turnText = ''; let canRoll = false;
     if (!meRolled && !opRolled) {
       if (meIsCreator) { turnText = '⚡ Твой ход — крути кейс!'; canRoll = true; }
       else { turnText = '⏳ Ждём ход создателя...'; }
@@ -1740,22 +1661,13 @@ function renderBattleRoom(room) {
     }
     topHTML = `
       <div class="battle-players">
-        <div class="battle-player me ${meWinCls}">
-          ${meAv}
-          <strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)} ${meObj.is_premium ? '⭐' : ''}</strong>
-          <div class="bp-score">${meScore}</div>
-          <div class="bp-rounds">Ты ${meRolled ? '✓' : ''}</div>
-        </div>
+        <div class="battle-player me ${meWinCls}">${meAv}<strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)} ${meObj.is_premium ? '⭐' : ''}</strong><div class="bp-score">${meScore}</div><div class="bp-rounds">Ты ${meRolled ? '✓' : ''}</div></div>
         <div class="battle-vs">VS</div>
-        <div class="battle-player ${opWinCls}">
-          ${opAv}
-          <strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'} ${op && op.is_premium ? '⭐' : ''}</strong>
-          <div class="bp-score">${opScore}</div>
-          <div class="bp-rounds">Соперник ${opRolled ? '✓' : ''}</div>
-        </div>
+        <div class="battle-player ${opWinCls}">${opAv}<strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'} ${op && op.is_premium ? '⭐' : ''}</strong><div class="bp-score">${opScore}</div><div class="bp-rounds">Соперник ${opRolled ? '✓' : ''}</div></div>
       </div>
       <div style="text-align:center;font-size:12px;color:#8a8a9c;margin-bottom:10px;">Раунд ${Math.min(room.currentRound, room.rounds)} / ${room.rounds} · Банк: <b style="color:#ffd970">${room.bank} 🪙</b></div>
       <div class="wheel-wrap" style="height:110px;"><div class="wheel-line"></div><div class="wheel-track" id="battleWheelTrack"></div></div>
+      <div id="battleDropMsg"></div>
       <div class="battle-turn ${canRoll ? 'active' : ''}">${turnText}</div>
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="battle-roll-btn" id="battleRollBtn" style="flex:2;" ${canRoll ? '' : 'disabled'}>🎰 Открыть кейс</button>
@@ -1770,38 +1682,27 @@ function renderBattleRoom(room) {
     topHTML = `
       ${bannerHTML}
       <div class="battle-players">
-        <div class="battle-player me ${meWinCls}">
-          ${meAv}
-          <strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)}</strong>
-          <div class="bp-score">${meScore}</div>
-        </div>
+        <div class="battle-player me ${meWinCls}">${meAv}<strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)}</strong><div class="bp-score">${meScore}</div></div>
         <div class="battle-vs">VS</div>
-        <div class="battle-player ${opWinCls}">
-          ${opAv}
-          <strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'}</strong>
-          <div class="bp-score">${opScore}</div>
-        </div>
+        <div class="battle-player ${opWinCls}">${opAv}<strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'}</strong><div class="bp-score">${opScore}</div></div>
       </div>
       <button class="submit-btn" id="battleCloseBtn">Закрыть</button>
     `;
   } else if (room.status === 'cancelled') {
     topHTML = `<div class="battle-result-banner draw">⌛ Комната отменена</div><button class="submit-btn" id="battleCloseBtn">Закрыть</button>`;
   }
-
   c.innerHTML = topHTML + `
     <div class="section-title">Твои дропы</div>
     <div class="battle-drops">${meDrops.length ? meDrops.map(dropHTML).join('') : '<div class="empty-small">Пока пусто</div>'}</div>
     <div class="section-title">Дропы соперника</div>
     <div class="battle-drops">${opDrops.length ? opDrops.map(dropHTML).join('') : '<div class="empty-small">Пока пусто</div>'}</div>
   `;
-
-  // обработчики
   const codeCopy = document.getElementById('battleCodeCopy');
   if (codeCopy) codeCopy.onclick = () => { navigator.clipboard.writeText(room.code); toast('Код скопирован', 'success'); };
   const cancelBtn = document.getElementById('battleCancelBtn');
   if (cancelBtn) cancelBtn.onclick = async () => {
     if (!confirm('Отменить комнату? Ставка вернётся.')) return;
-    try { await api('/battle/leave', { method:'POST', body: JSON.stringify({ code: room.code }) }); toast('Отменено', 'success'); stopBattleRoomPoll(); document.getElementById('battleRoomModal').classList.remove('show'); }
+    try { await api('/battle/leave', { method:'POST', body: JSON.stringify({ code: room.code }) }); toast('Отменено', 'success'); stopBattleRoomPoll(); currentBattleCode = null; document.getElementById('battleRoomModal').classList.remove('show'); }
     catch (err) { toast(err.message, 'error'); }
   };
   const rollBtn = document.getElementById('battleRollBtn');
@@ -1809,13 +1710,18 @@ function renderBattleRoom(room) {
   const forfBtn = document.getElementById('battleForfeitBtn');
   if (forfBtn) forfBtn.onclick = async () => {
     if (!confirm('Сдаться? Соперник заберёт банк.')) return;
-    try { await api('/battle/leave', { method:'POST', body: JSON.stringify({ code: room.code }) }); toast('Ты сдался', 'error'); stopBattleRoomPoll(); }
+    try { await api('/battle/leave', { method:'POST', body: JSON.stringify({ code: room.code }) }); toast('Ты сдался', 'error'); stopBattleRoomPoll(); currentBattleCode = null; document.getElementById('battleRoomModal').classList.remove('show'); }
     catch (err) { toast(err.message, 'error'); }
   };
   const closeBtn = document.getElementById('battleCloseBtn');
-  if (closeBtn) closeBtn.onclick = () => { stopBattleRoomPoll(); currentBattleCode = null; document.getElementById('battleRoomModal').classList.remove('show'); renderTopbar(); };
-
-  // если активный и я должен крутить — рендерим рулетку
+  if (closeBtn) closeBtn.onclick = async () => {
+    stopBattleRoomPoll();
+    const code = currentBattleCode;
+    currentBattleCode = null;
+    document.getElementById('battleRoomModal').classList.remove('show');
+    renderTopbar();
+    if (code) { try { await api('/battle/abandon', { method: 'POST', body: JSON.stringify({ code }) }); } catch {} }
+  };
   if (room.status === 'active') {
     const track = document.getElementById('battleWheelTrack');
     if (track) {
@@ -1831,26 +1737,28 @@ async function rollBattle(code) {
   battleSpinLock = true;
   const btn = document.getElementById('battleRollBtn');
   if (btn) btn.disabled = true;
+  const ffBtn = document.getElementById('battleForfeitBtn');
+  if (ffBtn) ffBtn.disabled = true;
   try {
     const r = await api('/battle/roll', { method: 'POST', body: JSON.stringify({ code }) });
-    // Анимация: подменяем трек на реальный
     const track = document.getElementById('battleWheelTrack');
+    const dropMsg = document.getElementById('battleDropMsg');
+    if (dropMsg) dropMsg.innerHTML = '';
     if (track) {
       const tape = [];
       const winnerIndex = 40 + Math.floor(Math.random() * 10);
+      const fakePool = [
+        { name: 'Кролик', icon: '🎁', rarity: 'common' },
+        { name: 'Мадонна', icon: '🎁', rarity: 'rare' },
+        { name: 'Кот', icon: '🎁', rarity: 'epic' },
+        { name: 'Анонимус', icon: '🎁', rarity: 'legendary' },
+        { name: 'Тема', icon: '🎨', rarity: 'epic' },
+        { name: 'Фон чата', icon: '💬', rarity: 'rare' },
+        { name: 'RGB', icon: '🌈', rarity: 'rare' }
+      ];
       for (let i = 0; i < 60; i++) {
         if (i === winnerIndex) tape.push(r.drop);
-        else {
-          const items = [
-            { name: 'Кролик', icon: '🎁', rarity: 'common' },
-            { name: 'Мадонна', icon: '🎁', rarity: 'rare' },
-            { name: 'Кот', icon: '🎁', rarity: 'epic' },
-            { name: 'Анонимус', icon: '🎁', rarity: 'legendary' },
-            { name: 'Тема', icon: '🎨', rarity: 'epic' },
-            { name: 'Фон чата', icon: '💬', rarity: 'rare' }
-          ];
-          tape.push(items[Math.floor(Math.random() * items.length)]);
-        }
+        else tape.push(fakePool[Math.floor(Math.random() * fakePool.length)]);
       }
       track.innerHTML = tape.map(it => {
         const isImg = it.icon && it.icon.startsWith('http');
@@ -1863,18 +1771,31 @@ async function rollBattle(code) {
       track.style.transform = 'translateX(0)';
       setTimeout(() => { track.style.transition = 'transform 4.5s cubic-bezier(0.15, 0.7, 0.05, 1)'; track.style.transform = `translateX(${targetX}px)`; }, 50);
       setTimeout(() => {
-        toast(`🎉 Выпало: ${r.drop.name} (+${r.drop.points})`, 'success');
+        if (dropMsg) {
+          const isImg = r.drop.icon && r.drop.icon.startsWith('http');
+          dropMsg.innerHTML = `
+            <div class="battle-drop-showcase">
+              <div class="bds-icon">${isImg ? `<img src="${r.drop.icon}" style="width:100%;height:100%;object-fit:cover;">` : (r.drop.icon || '🎁')}</div>
+              <div class="bds-info">
+                <div class="bds-label">Выпало</div>
+                <div class="bds-name">${escapeHtml(r.drop.name)}</div>
+                <div class="bds-meta">+${r.drop.points} очков · ${r.drop.rarity}</div>
+              </div>
+            </div>
+          `;
+        }
+      }, 4600);
+      setTimeout(() => {
         renderBattleRoom(r.room);
         if (r.room.status === 'finished') stopBattleRoomPoll();
         renderTopbar();
         battleSpinLock = false;
-      }, 4800);
+      }, 5600);
     } else {
-      toast(`🎉 ${r.drop.name} (+${r.drop.points})`, 'success');
       renderBattleRoom(r.room);
       battleSpinLock = false;
     }
-  } catch (err) { toast(err.message, 'error'); battleSpinLock = false; if (btn) btn.disabled = false; }
+  } catch (err) { toast(err.message, 'error'); battleSpinLock = false; if (btn) btn.disabled = false; if (ffBtn) ffBtn.disabled = false; }
 }
 
 // === ИНВЕНТАРЬ ===
@@ -2221,9 +2142,6 @@ function openSettings() {
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openBonus()"><div class="si-icon">🎁</div><div class="si-label"><strong>Ежедневный бонус</strong><small>+5 🪙 каждый день</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openWheel()"><div class="si-icon">🎰</div><div class="si-label"><strong>Кейс XIVIVIDE</strong><small>Крутить за 100 🪙</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openBattle()"><div class="si-icon">⚔️</div><div class="si-label"><strong>Кейс Батл</strong><small>PvP за вайдики</small></div><div class="si-arrow">›</div></button>
-    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openInventory()"><div class="si-icon">🎒</div><div class="si-label"><strong>Инвентарь</strong><small>Скины, темы, ник-эффекты</small></div><div class="si-arrow">›</div></button>
-    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openShop()"><div class="si-icon">🛍️</div><div class="si-label"><strong>Магазин</strong><small>Темы, баннеры, фоны</small></div><div class="si-arrow">›</div></button>
-    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openMarket()"><div class="si-icon">🏪</div><div class="si-label"><strong>Рынок</strong><small>Продать и купить скины</small></div><div class="si-arrow">›</div></button>
 
     <div class="settings-section-title">Социальное</div>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openDialogs()"><div class="si-icon">💬</div><div class="si-label"><strong>Мои диалоги</strong><small>Написать кому-нибудь</small></div><div class="si-arrow">›</div></button>
@@ -2260,6 +2178,30 @@ function renderTopbar() {
   const v = document.createElement('button'); v.className = 'vide-badge'; v.title = 'Кейс'; v.innerHTML = `🪙 ${myProfile.vide || 0}`;
   v.addEventListener('click', openWheel);
   t.appendChild(v);
+  const battleBtn = document.createElement('button');
+  battleBtn.className = 'topbar-action battle';
+  battleBtn.title = 'Кейс Батл';
+  battleBtn.innerHTML = '⚔️ Батл';
+  battleBtn.addEventListener('click', openBattle);
+  t.appendChild(battleBtn);
+  const shopBtn = document.createElement('button');
+  shopBtn.className = 'topbar-action market';
+  shopBtn.title = 'Магазин';
+  shopBtn.innerHTML = '🛍️';
+  shopBtn.addEventListener('click', openShop);
+  t.appendChild(shopBtn);
+  const invBtn = document.createElement('button');
+  invBtn.className = 'topbar-action market';
+  invBtn.title = 'Инвентарь';
+  invBtn.innerHTML = '🎒';
+  invBtn.addEventListener('click', openInventory);
+  t.appendChild(invBtn);
+  const marketBtn = document.createElement('button');
+  marketBtn.className = 'topbar-action market';
+  marketBtn.title = 'Рынок';
+  marketBtn.innerHTML = '🏪';
+  marketBtn.addEventListener('click', openMarket);
+  t.appendChild(marketBtn);
   const chip = document.createElement('div');
   chip.className = 'user-chip' + (myProfile.is_premium ? ' premium' : '');
   const nk = nickClass(myProfile.nick_style);
@@ -2477,7 +2419,7 @@ async function loadAdmin() {
 // === ЗАКРЫТИЕ МОДАЛОК ===
 ['registerModal','loginModal','settingsModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','layoutModal','fontModal','appearanceModal','themeModal','shamePostModal','wheelModal','battleModal','battleRoomModal','invModal','shopModal','marketModal','dialogsModal','newChatModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
   const m = document.getElementById(id); if (!m) return;
-  m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopAllAudio(); if (m.id === 'battleRoomModal') stopBattleRoomPoll(); } });
+  m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopAllAudio(); if (m.id === 'battleRoomModal') { stopBattleRoomPoll(); } } });
 });
 document.getElementById('closeRegister').onclick = () => document.getElementById('registerModal').classList.remove('show');
 document.getElementById('closeLogin').onclick = () => document.getElementById('loginModal').classList.remove('show');
@@ -2494,7 +2436,14 @@ document.getElementById('closeTheme').onclick = () => document.getElementById('t
 document.getElementById('closeShamePost').onclick = () => document.getElementById('shamePostModal').classList.remove('show');
 document.getElementById('closeWheel').onclick = () => document.getElementById('wheelModal').classList.remove('show');
 document.getElementById('closeBattle').onclick = () => document.getElementById('battleModal').classList.remove('show');
-document.getElementById('closeBattleRoom').onclick = () => { stopBattleRoomPoll(); currentBattleCode = null; document.getElementById('battleRoomModal').classList.remove('show'); renderTopbar(); };
+document.getElementById('closeBattleRoom').onclick = async () => {
+  stopBattleRoomPoll();
+  const code = currentBattleCode;
+  currentBattleCode = null;
+  document.getElementById('battleRoomModal').classList.remove('show');
+  renderTopbar();
+  if (code) { try { await api('/battle/abandon', { method: 'POST', body: JSON.stringify({ code }) }); } catch {} }
+};
 document.getElementById('closeInv').onclick = () => document.getElementById('invModal').classList.remove('show');
 document.getElementById('closeShop').onclick = () => document.getElementById('shopModal').classList.remove('show');
 document.getElementById('closeMarket').onclick = () => document.getElementById('marketModal').classList.remove('show');
@@ -2511,6 +2460,16 @@ document.getElementById('closeChatWindow').onclick = () => { document.getElement
 document.getElementById('chatWindow').addEventListener('click', e => { if (e.target.id === 'chatWindow') { document.getElementById('chatWindow').classList.remove('show'); currentChatUser = null; clearInterval(chatPollTimer); } });
 document.getElementById('applyCustom').onclick = () => applyTheme('custom:' + document.getElementById('customColor').value);
 document.getElementById('openForm').onclick = () => { if (myProfile) { toast('Уже вошёл'); return; } document.getElementById('registerModal').classList.add('show'); };
+
+// Reconnect: sendBeacon при закрытии вкладки
+window.addEventListener('beforeunload', () => {
+  if (currentBattleCode && battleRoomPollTimer) {
+    const t = localStorage.getItem(TOKEN_KEY);
+    if (t) {
+      try { navigator.sendBeacon('/api/battle/abandon-beacon?code=' + encodeURIComponent(currentBattleCode) + '&token=' + encodeURIComponent(t)); } catch {}
+    }
+  }
+});
 
 function startPolling() {
   clearInterval(unreadPollTimer); clearInterval(notifPollTimer);
