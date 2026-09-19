@@ -34,7 +34,7 @@ async function initDB() {
         is_admin INTEGER DEFAULT 0, is_premium INTEGER DEFAULT 0, premium_until TIMESTAMP,
         card_color TEXT DEFAULT '', card_bg TEXT DEFAULT '', card_rgb INTEGER DEFAULT 0, card_pinned INTEGER DEFAULT 0,
         profile_banner TEXT DEFAULT '', profile_theme TEXT DEFAULT '', profile_color TEXT DEFAULT '',
-        nick_style TEXT DEFAULT '', chat_bg TEXT DEFAULT '', music_url TEXT DEFAULT '',
+        profile_font TEXT DEFAULT '', nick_style TEXT DEFAULT '', chat_bg TEXT DEFAULT '', music_url TEXT DEFAULT '',
         ref_code TEXT UNIQUE, invited_by INTEGER,
         last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, bonus_streak INTEGER DEFAULT 0,
         last_bonus_date DATE, show_gifts INTEGER DEFAULT 0,
@@ -60,6 +60,7 @@ async function initDB() {
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_banner TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_theme TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_color TEXT DEFAULT ''`,
+      `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_font TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS nick_style TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS chat_bg TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS music_url TEXT DEFAULT ''`,
@@ -216,6 +217,7 @@ function pickProfile(row) {
     photo: row.photo, vide: row.vide, is_premium: row.is_premium, premium_until: row.premium_until,
     card_color: row.card_color, card_bg: row.card_bg, card_rgb: row.card_rgb, card_pinned: row.card_pinned,
     profile_banner: row.profile_banner, profile_theme: row.profile_theme, profile_color: row.profile_color,
+    profile_font: row.profile_font,
     nick_style: row.nick_style, chat_bg: row.chat_bg, music_url: row.music_url,
     ref_code: row.ref_code, show_gifts: row.show_gifts, last_seen: row.last_seen, created_at: row.created_at };
 }
@@ -292,7 +294,7 @@ app.get('/api/profiles', async (req, res) => {
   try {
     const r = await pool.query(`
       SELECT id, name, age, bio, contact_type, contact_value, photo, is_premium,
-             card_color, card_bg, card_rgb, card_pinned, profile_banner, profile_theme, profile_color, nick_style,
+             card_color, card_bg, card_rgb, card_pinned, profile_banner, profile_theme, profile_color, profile_font, nick_style,
              last_seen, show_gifts, created_at,
              (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
       FROM profiles ORDER BY card_pinned DESC, created_at DESC
@@ -306,7 +308,7 @@ app.get('/api/profiles/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const r = await pool.query(`
       SELECT id, name, age, bio, contact_type, contact_value, photo, is_premium,
-             profile_banner, profile_theme, profile_color, nick_style, music_url, last_seen, show_gifts, created_at,
+             profile_banner, profile_theme, profile_color, profile_font, nick_style, music_url, last_seen, show_gifts, created_at,
              (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
       FROM profiles WHERE id=$1
     `, [id]);
@@ -397,6 +399,17 @@ app.post('/api/profiles/:id/profile-style', authUser, async (req, res) => {
     ]);
     const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [req.userId]);
     res.json(pickProfile(r.rows[0]));
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
+// === Шрифт ника ===
+app.post('/api/profiles/:id/profile-font', authUser, async (req, res) => {
+  try {
+    if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
+    const font = String(req.body.font || '').slice(0, 30);
+    await pool.query('UPDATE profiles SET profile_font=$1 WHERE id=$2', [font, req.userId]);
+    const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [req.userId]);
+    res.json(pickProfile(r.rows[0]));
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
@@ -433,7 +446,7 @@ app.get('/api/messages/dialogs/:userId', authUser, async (req, res) => {
     const rows = await pool.query(`SELECT DISTINCT CASE WHEN sender_id=$1 THEN receiver_id ELSE sender_id END AS other_id FROM messages WHERE sender_id=$1 OR receiver_id=$1`, [me]);
     const dialogs = [];
     for (const r of rows.rows) {
-      const other = await pool.query('SELECT id, name, age, photo, profile_theme, profile_color, nick_style, chat_bg, last_seen FROM profiles WHERE id=$1', [r.other_id]);
+      const other = await pool.query('SELECT id, name, age, photo, profile_theme, profile_color, profile_font, nick_style, chat_bg, last_seen FROM profiles WHERE id=$1', [r.other_id]);
       if (!other.rows.length) continue;
       const last = await pool.query(`SELECT * FROM messages WHERE (sender_id=$1 AND receiver_id=$2) OR (sender_id=$2 AND receiver_id=$1) ORDER BY created_at DESC LIMIT 1`, [me, r.other_id]);
       const unread = await pool.query(`SELECT COUNT(*)::int AS c FROM messages WHERE sender_id=$1 AND receiver_id=$2 AND is_read=0`, [r.other_id, me]);
@@ -558,7 +571,6 @@ app.post('/api/wheel/spin', authUser, actionLimiter, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка прокрутки' }); }
 });
 
-// ============ ИНВЕНТАРЬ ============
 app.get('/api/inventory/:userId', async (req, res) => {
   try {
     const r = await pool.query('SELECT item_type, item_key, COUNT(*)::int AS count FROM inventory WHERE user_id=$1 GROUP BY item_type, item_key ORDER BY MAX(obtained_at) DESC', [parseInt(req.params.userId)]);
@@ -576,7 +588,6 @@ app.get('/api/inventory/owned/:userId', authUser, async (req, res) => {
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ ПОДАРКИ ============
 app.post('/api/gifts/send', authUser, actionLimiter, async (req, res) => {
   try {
     const rid = parseInt(req.body.receiverId);
@@ -593,7 +604,6 @@ app.post('/api/gifts/send', authUser, actionLimiter, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка подарка' }); }
 });
 
-// ============ ИСТОРИИ ============
 app.post('/api/stories', authUser, async (req, res) => {
   try {
     const photo = String(req.body.photo || '').slice(0, 500);
@@ -640,7 +650,6 @@ app.get('/api/stories/:id/views', authUser, async (req, res) => {
 });
 app.delete('/api/stories/cleanup', async (req, res) => { try { await pool.query('DELETE FROM stories WHERE expires_at <= CURRENT_TIMESTAMP'); res.json({ ok: true }); } catch { res.json({ ok: true }); } });
 
-// ============ КОММЕНТАРИИ ============
 app.get('/api/comments/:targetId', async (req, res) => {
   try { const r = await pool.query(`SELECT c.*, p.name, p.photo FROM comments c JOIN profiles p ON p.id=c.author_id WHERE c.target_id=$1 ORDER BY c.created_at DESC`, [parseInt(req.params.targetId)]); res.json(r.rows); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
@@ -666,7 +675,6 @@ app.delete('/api/comments/:id', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ МАГАЗИН ============
 app.get('/api/shop', (req, res) => {
   res.json({ banners: BANNERS, nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS });
 });
@@ -694,7 +702,6 @@ app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
   finally { client.release(); }
 });
 
-// ============ РЫНОК (ИСПРАВЛЕНО) ============
 app.get('/api/market', async (req, res) => {
   try { const r = await pool.query(`SELECT m.id, m.item_key, m.item_type, m.price, m.seller_id, m.created_at, p.name AS seller_name FROM market m JOIN profiles p ON p.id=m.seller_id WHERE m.is_sold=0 ORDER BY m.created_at DESC`); res.json(r.rows); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
@@ -765,7 +772,6 @@ app.get('/api/market/my/:userId', async (req, res) => {
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ АДМИНКА ============
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
   try { if (req.body.password !== ADMIN_PASSWORD) return res.status(403).json({ error: 'Неверный пароль' }); res.json({ token: makeAdminToken() }); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
