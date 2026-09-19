@@ -87,6 +87,9 @@ async function initDB() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await pool.query(`ALTER TABLE battle_rooms ADD COLUMN IF NOT EXISTS last_roll_user_id INTEGER`);
+    await pool.query(`ALTER TABLE battle_rooms ADD COLUMN IF NOT EXISTS last_roll_drop JSONB`);
+    await pool.query(`ALTER TABLE battle_rooms ADD COLUMN IF NOT EXISTS last_roll_at TIMESTAMP`);
 
     const migr = [
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS premium_until TIMESTAMP`,
@@ -951,6 +954,9 @@ async function pickBattleRoom(code) {
     creatorDrops: row.creator_drops || [], opponentDrops: row.opponent_drops || [],
     creatorRolled: row.creator_rolled, opponentRolled: row.opponent_rolled,
     winnerId: row.winner_id,
+    lastRollUserId: row.last_roll_user_id || null,
+    lastRollDrop: row.last_roll_drop || null,
+    lastRollAt: row.last_roll_at || null,
     creator: { id: row.creator_id, name: row.creator_name, photo: row.creator_photo, nick_style: row.creator_nick, profile_font: row.creator_font, is_premium: row.creator_premium },
     opponent: row.opponent_id ? { id: row.opponent_id, name: row.opponent_name, photo: row.opponent_photo, nick_style: row.opponent_nick, profile_font: row.opponent_font, is_premium: row.opponent_premium } : null,
     createdAt: row.created_at, updatedAt: row.updated_at
@@ -1107,11 +1113,17 @@ app.post('/api/battle/roll', authUser, actionLimiter, async (req, res) => {
     if (isCreator) {
       newCreatorDrops = [...newCreatorDrops, drop];
       newCreatorScore += pts;
-      await client.query(`UPDATE battle_rooms SET creator_drops=$1::jsonb, creator_score=$2, creator_rolled=TRUE, updated_at=CURRENT_TIMESTAMP WHERE id=$3`, [JSON.stringify(newCreatorDrops), newCreatorScore, r.id]);
+      await client.query(
+        `UPDATE battle_rooms SET creator_drops=$1::jsonb, creator_score=$2, creator_rolled=TRUE, last_roll_user_id=$3, last_roll_drop=$4::jsonb, last_roll_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE id=$5`,
+        [JSON.stringify(newCreatorDrops), newCreatorScore, req.userId, JSON.stringify(drop), r.id]
+      );
     } else {
       newOpponentDrops = [...newOpponentDrops, drop];
       newOpponentScore += pts;
-      await client.query(`UPDATE battle_rooms SET opponent_drops=$1::jsonb, opponent_score=$2, opponent_rolled=TRUE, updated_at=CURRENT_TIMESTAMP WHERE id=$3`, [JSON.stringify(newOpponentDrops), newOpponentScore, r.id]);
+      await client.query(
+        `UPDATE battle_rooms SET opponent_drops=$1::jsonb, opponent_score=$2, opponent_rolled=TRUE, last_roll_user_id=$3, last_roll_drop=$4::jsonb, last_roll_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE id=$5`,
+        [JSON.stringify(newOpponentDrops), newOpponentScore, req.userId, JSON.stringify(drop), r.id]
+      );
     }
 
     if (prize.type === 'skin') {
