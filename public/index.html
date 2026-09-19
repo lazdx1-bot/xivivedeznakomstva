@@ -16,8 +16,7 @@
     --bg-radial-1: rgba(120,120,140,0.25); --bg-radial-2: rgba(90,90,110,0.28); --bg-radial-3: rgba(140,140,160,0.15);
     --float-1: rgba(180,180,200,0.10); --float-2: rgba(150,150,175,0.12);
   }
-  body {
-    min-height: 100vh; background: var(--bg-3);
+  body { min-height: 100vh; background: var(--bg-3);
     background-image: radial-gradient(circle at 15% 20%, var(--bg-radial-1), transparent 45%),
       radial-gradient(circle at 85% 80%, var(--bg-radial-2), transparent 50%),
       radial-gradient(circle at 50% 50%, var(--bg-radial-3), transparent 60%),
@@ -379,13 +378,19 @@
   .battle-player { flex: 1; text-align: center; padding: 12px; border-radius: 14px; background: rgba(30,30,40,0.6); border: 2px solid rgba(255,255,255,0.08); transition: all 0.3s; }
   .battle-player.me { border-color: rgba(91,157,255,0.5); }
   .battle-player.winner { border-color: #ffd970; box-shadow: 0 0 24px rgba(255,215,0,0.5); background: rgba(255,215,0,0.1); }
+  .battle-player.active-turn { border-color: #4dd68a; box-shadow: 0 0 20px rgba(77,214,138,0.5); animation: pulseGreen 1.5s infinite; }
+  @keyframes pulseGreen { 0%,100%{box-shadow:0 0 20px rgba(77,214,138,0.5)}50%{box-shadow:0 0 32px rgba(77,214,138,0.9)} }
+  .battle-player.spinning { border-color: #ffd970; box-shadow: 0 0 32px rgba(255,215,0,0.8); animation: pulseGold 0.8s infinite; }
+  @keyframes pulseGold { 0%,100%{box-shadow:0 0 22px rgba(255,215,0,0.6)}50%{box-shadow:0 0 40px rgba(255,215,0,1)} }
   .battle-player img, .battle-player .mini-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg,#2a2a34,#3a3a48); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #b0b0c4; margin: 0 auto 6px; }
   .battle-player strong { display: block; font-size: 14px; color: #f0f0f8; }
   .battle-player .bp-score { font-size: 22px; font-weight: 700; color: #ffd970; margin-top: 4px; }
-  .battle-player .bp-rounds { font-size: 11px; color: #8a8a9c; }
+  .battle-player .bp-rounds { font-size: 11px; color: #8a8a9c; min-height: 14px; }
+  .battle-player .bp-rounds.spin { color: #ffd970; font-weight: 700; }
   .battle-vs { font-size: 22px; color: #ff5c6e; font-weight: 700; padding: 0 6px; }
   .battle-drops { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; margin-top: 8px; }
-  .battle-drop { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(20,20,26,0.6); border-radius: 8px; border-left: 3px solid #666; font-size: 12.5px; }
+  .battle-drop { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(20,20,26,0.6); border-radius: 8px; border-left: 3px solid #666; font-size: 12.5px; animation: slideIn 0.4s; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)} }
   .battle-drop.rarity-common { border-left-color: #999; }
   .battle-drop.rarity-rare { border-left-color: #5b9dff; }
   .battle-drop.rarity-epic { border-left-color: #b17aff; }
@@ -396,6 +401,7 @@
   .battle-drop .bd-round { font-size: 10px; color: #8a8a9c; }
   .battle-turn { text-align: center; font-size: 14px; color: #b8b8cc; margin: 10px 0; min-height: 20px; }
   .battle-turn.active { color: #4dd68a; font-weight: 600; }
+  .battle-turn.waiting { color: #ffd970; font-weight: 600; }
   .battle-roll-btn { width: 100%; padding: 16px; font-size: 16px; letter-spacing: 1px; color: #1a1a22; font-weight: 700; background: linear-gradient(135deg, #ffd970, #ffb400); border: none; border-radius: 12px; cursor: pointer; transition: all 0.25s; font-family: inherit; }
   .battle-roll-btn:hover:not(:disabled) { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
   .battle-roll-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -404,11 +410,15 @@
   .battle-result-banner.lose { background: linear-gradient(135deg, rgba(255,90,110,0.2), rgba(180,60,80,0.1)); border: 1px solid rgba(255,90,110,0.5); color: #ff8a99; }
   .battle-result-banner.draw { background: rgba(91,157,255,0.15); border: 1px solid rgba(91,157,255,0.5); color: #8ec0ff; }
   .battle-drop-showcase { display: flex; align-items: center; gap: 12px; padding: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,180,0,0.08)); border: 1px solid rgba(255,215,0,0.5); border-radius: 14px; margin-top: 12px; animation: modalIn 0.4s; }
+  .battle-drop-showcase.opponent { background: linear-gradient(135deg, rgba(255,90,110,0.15), rgba(180,60,80,0.08)); border-color: rgba(255,90,110,0.5); }
   .battle-drop-showcase .bds-icon { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
   .battle-drop-showcase .bds-info { flex: 1; }
   .battle-drop-showcase .bds-label { font-size: 12px; color: #8a8a9c; letter-spacing: 1px; text-transform: uppercase; }
   .battle-drop-showcase .bds-name { font-size: 17px; font-weight: 700; color: #ffd970; margin-top: 2px; }
+  .battle-drop-showcase.opponent .bds-name { color: #ff8a99; }
   .battle-drop-showcase .bds-meta { font-size: 12px; color: #b8b8cc; margin-top: 2px; }
+  .battle-opp-spin-bar { text-align: center; padding: 10px 14px; background: linear-gradient(135deg, rgba(255,90,110,0.15), rgba(180,60,80,0.1)); border: 1px solid rgba(255,90,110,0.4); border-radius: 12px; margin-bottom: 10px; font-size: 14px; color: #ff8a99; font-weight: 600; animation: pulseOpacity 1s infinite; }
+  @keyframes pulseOpacity { 0%,100%{opacity:1}50%{opacity:0.6} }
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(38,38,46,0.95); backdrop-filter: blur(20px); padding: 14px 24px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 50px rgba(0,0,0,0.6); z-index: 999; transition: transform 0.4s; font-size: 14px; color: #f0f0f8; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: rgba(155,240,180,0.5); }
@@ -515,12 +525,8 @@
 
 <div class="modal" id="shamePostModal"><div class="modal-content"><button class="modal-close" id="closeShamePost">✕</button><h2>🪧 Пост на доску</h2><form id="shameForm">
 <label>Фото (не обязательно)<input type="file" name="photo" accept="image/*"></label>
-<label>Про кого (ник, имя)
-  <input type="text" name="targetName" maxlength="60" placeholder="Как его зовут?">
-</label>
-<label>Что случилось
-  <textarea name="text" required maxlength="500" rows="5" placeholder="Опиши ситуацию..."></textarea>
-</label>
+<label>Про кого (ник, имя)<input type="text" name="targetName" maxlength="60" placeholder="Как его зовут?"></label>
+<label>Что случилось<textarea name="text" required maxlength="500" rows="5" placeholder="Опиши ситуацию..."></textarea></label>
 <button type="submit" class="submit-btn">Опубликовать</button>
 <div class="form-status" id="shameStatus"></div></form></div></div>
 
@@ -619,7 +625,10 @@ let battleTab = 'lobby';
 let battleRoomPollTimer = null;
 let currentBattleCode = null;
 let battleConfig = { bets: [100,300,500,1000], rounds: [3,5] };
-let battleSpinLock = false;
+let battleSpinLock = false;           // я сейчас кручу
+let battleOppSpinLock = false;        // соперник сейчас крутит (у меня на экране)
+let battleLastSeenOppRollAt = null;   // чтобы не запускать анимацию 2 раза на один ролл
+let battleLastRenderedRoom = null;
 
 const FONTS = [
   { key: '', name: 'Обычный', css: '' },
@@ -808,10 +817,7 @@ function createShameCard(p) {
       <div class="shame-text">${escapeHtml(p.text)}</div>
       <div class="shame-footer">
         ${av}
-        <div class="sf-info">
-          <strong class="${nk} ${fc}">${escapeHtml(p.author_name)}</strong>
-          <small>${timeAgo(p.created_at)}</small>
-        </div>
+        <div class="sf-info"><strong class="${nk} ${fc}">${escapeHtml(p.author_name)}</strong><small>${timeAgo(p.created_at)}</small></div>
         ${isMine ? '<button class="del">Удалить</button>' : '<button class="report">⚠️ Жалоба</button>'}
       </div>
     </div>
@@ -831,13 +837,11 @@ function createShameCard(p) {
   }
   return card;
 }
-
 document.getElementById('openShameForm').onclick = () => {
   if (!myProfile) { toast('Войди, чтобы постить', 'error'); return; }
   document.getElementById('shamePostModal').classList.add('show');
 };
 document.getElementById('closeShamePost').onclick = () => document.getElementById('shamePostModal').classList.remove('show');
-
 document.getElementById('shameForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
@@ -1041,7 +1045,6 @@ function buildProfileHTML(p, opts = {}) {
     </div>
   `;
 }
-
 async function openViewProfile(id) {
   const modal = document.getElementById('viewProfileModal');
   const c = document.getElementById('viewProfileContent');
@@ -1063,7 +1066,6 @@ async function openViewProfile(id) {
     loadComments(p.id);
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
-
 async function loadComments(tid) {
   const block = document.getElementById('commentsBlock');
   if (!block) return;
@@ -1103,7 +1105,6 @@ async function openMyProfile() {
     document.getElementById('myProfileModal').classList.add('show');
   } catch (err) { toast(err.message, 'error'); }
 }
-
 function renderMyProfile(me, likedBy) {
   const c = document.getElementById('myProfileContent');
   const layout = getLayout(me);
@@ -1186,7 +1187,6 @@ function renderMyProfile(me, likedBy) {
     catch (err) { toast(err.message, 'error'); }
   };
 }
-
 async function openChatFromLike(userId) {
   try {
     const p = await api('/profiles/' + userId);
@@ -1576,10 +1576,14 @@ async function renderBattleContent() {
 
 async function openBattleRoom(code) {
   currentBattleCode = code;
+  battleLastSeenOppRollAt = null;
+  battleLastRenderedRoom = null;
+  battleOppSpinLock = false;
   document.getElementById('battleRoomModal').classList.add('show');
   document.getElementById('battleRoomContent').innerHTML = '<div class="empty-small">Загрузка...</div>';
   try {
     const room = await api('/battle/room/' + code);
+    battleLastRenderedRoom = room;
     renderBattleRoom(room);
     startBattleRoomPoll();
   } catch (err) {
@@ -1595,10 +1599,29 @@ function startBattleRoomPoll() {
   stopBattleRoomPoll();
   battleRoomPollTimer = setInterval(async () => {
     if (!currentBattleCode) return;
+    // Если я кручу — не мешаем анимации
     if (battleSpinLock) return;
+    // Если сейчас анимируем ролл соперника — не перерисовываем
+    if (battleOppSpinLock) return;
     try {
       const room = await api('/battle/room/' + currentBattleCode);
-      if (battleSpinLock) return;
+      if (battleSpinLock || battleOppSpinLock) return;
+
+      // === Проверяем: не крутил ли соперник что-то новое ===
+      const prev = battleLastRenderedRoom;
+      const meId = myProfile.id;
+      const lastRollByOpp = room.lastRollUserId && room.lastRollUserId !== meId;
+      const isNewOppRoll = lastRollByOpp && room.lastRollAt && room.lastRollAt !== battleLastSeenOppRollAt;
+
+      battleLastRenderedRoom = room;
+
+      if (isNewOppRoll && room.lastRollDrop) {
+        battleLastSeenOppRollAt = room.lastRollAt;
+        // Запускаем анимацию рулетки с дропом соперника
+        playOpponentRollAnimation(room, room.lastRollDrop);
+        return;
+      }
+
       renderBattleRoom(room);
       if (room.status === 'finished') stopBattleRoomPoll();
     } catch (err) {
@@ -1611,6 +1634,99 @@ function startBattleRoomPoll() {
     }
   }, 1000);
 }
+
+// 🎬 Анимация ролла соперника (запускается у тебя, когда соперник крутит)
+function playOpponentRollAnimation(room, drop) {
+  battleOppSpinLock = true;
+  const c = document.getElementById('battleRoomContent');
+  const meId = myProfile.id;
+  const meIsCreator = room.creatorId === meId;
+  const op = meIsCreator ? room.opponent : room.creator;
+  const mePlayer = meIsCreator ? room.creator : room.opponent;
+  const meObj = mePlayer || { name: myProfile.name, photo: myProfile.photo, nick_style: myProfile.nick_style, profile_font: myProfile.profile_font, is_premium: myProfile.is_premium };
+  const meAv = meObj.photo ? `<img src="${meObj.photo}">` : `<div class="mini-avatar">✦</div>`;
+  const opAv = op && op.photo ? `<img src="${op.photo}">` : `<div class="mini-avatar">✦</div>`;
+  const meNk = nickClass(meObj.nick_style); const meFc = fontClass(meObj.profile_font);
+  const opNk = op ? nickClass(op.nick_style) : ''; const opFc = op ? fontClass(op.profile_font) : '';
+  const meScore = meIsCreator ? room.creatorScore : room.opponentScore;
+  const opScore = meIsCreator ? room.opponentScore : room.creatorScore;
+  const meRolled = meIsCreator ? room.creatorRolled : room.opponentRolled;
+  const opRolled = meIsCreator ? room.opponentRolled : room.creatorRolled;
+
+  // Рендерим топ — я на месте, соперник крутит
+  c.innerHTML = `
+    <div class="battle-players">
+      <div class="battle-player me">${meAv}<strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)} ${meObj.is_premium ? '⭐' : ''}</strong><div class="bp-score">${meScore}</div><div class="bp-rounds">Ты ${meRolled ? '✓' : ''}</div></div>
+      <div class="battle-vs">VS</div>
+      <div class="battle-player spinning">${opAv}<strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'} ${op && op.is_premium ? '⭐' : ''}</strong><div class="bp-score">${opScore}</div><div class="bp-rounds spin">🔥 Крутит...</div></div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:#8a8a9c;margin-bottom:10px;">Раунд ${Math.min(room.currentRound, room.rounds)} / ${room.rounds} · Банк: <b style="color:#ffd970">${room.bank} 🪙</b></div>
+    <div class="battle-opp-spin-bar">🔥 ${op ? escapeHtml(op.name) : 'Соперник'} крутит кейс...</div>
+    <div class="wheel-wrap" style="height:110px;"><div class="wheel-line"></div><div class="wheel-track" id="battleWheelTrack"></div></div>
+    <div id="battleDropMsg"></div>
+    <div class="battle-turn waiting">⏳ Ждём результат соперника...</div>
+  `;
+
+  const track = document.getElementById('battleWheelTrack');
+  const dropMsg = document.getElementById('battleDropMsg');
+  const fakePool = [
+    { name: 'Кролик', icon: '🎁', rarity: 'common' },
+    { name: 'Мадонна', icon: '🎁', rarity: 'rare' },
+    { name: 'Кот', icon: '🎁', rarity: 'epic' },
+    { name: 'Анонимус', icon: '🎁', rarity: 'legendary' },
+    { name: 'Тема', icon: '🎨', rarity: 'epic' },
+    { name: 'Фон чата', icon: '💬', rarity: 'rare' },
+    { name: 'RGB', icon: '🌈', rarity: 'rare' }
+  ];
+  const tape = [];
+  const winnerIndex = 40 + Math.floor(Math.random() * 10);
+  for (let i = 0; i < 60; i++) {
+    if (i === winnerIndex) tape.push(drop);
+    else tape.push(fakePool[Math.floor(Math.random() * fakePool.length)]);
+  }
+  track.innerHTML = tape.map(it => {
+    const isImg = it.icon && it.icon.startsWith('http');
+    return `<div class="wheel-item rarity-${it.rarity}"><div class="wi-icon">${isImg ? `<img src="${it.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : (it.icon || '🎁')}</div><div class="wi-name">${escapeHtml(it.name||'')}</div></div>`;
+  }).join('');
+  const itemW = 100;
+  const containerW = track.parentElement.clientWidth;
+  const targetX = -(winnerIndex * itemW + itemW / 2 - containerW / 2) + (Math.random() * 40 - 20);
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0)';
+  setTimeout(() => { track.style.transition = 'transform 4.5s cubic-bezier(0.15, 0.7, 0.05, 1)'; track.style.transform = `translateX(${targetX}px)`; }, 50);
+
+  // Показать дроп соперника
+  setTimeout(() => {
+    if (dropMsg) {
+      const isImg = drop.icon && drop.icon.startsWith('http');
+      dropMsg.innerHTML = `
+        <div class="battle-drop-showcase opponent">
+          <div class="bds-icon">${isImg ? `<img src="${drop.icon}" style="width:100%;height:100%;object-fit:cover;">` : (drop.icon || '🎁')}</div>
+          <div class="bds-info">
+            <div class="bds-label">${op ? escapeHtml(op.name) : 'Соперник'} выбил</div>
+            <div class="bds-name">${escapeHtml(drop.name)}</div>
+            <div class="bds-meta">+${drop.points} очков · ${drop.rarity}</div>
+          </div>
+        </div>
+      `;
+    }
+  }, 4600);
+
+  // Обновить комнату после показа
+  setTimeout(async () => {
+    battleOppSpinLock = false;
+    try {
+      const fresh = await api('/battle/room/' + room.code);
+      battleLastRenderedRoom = fresh;
+      renderBattleRoom(fresh);
+      if (fresh.status === 'finished') stopBattleRoomPoll();
+    } catch (err) {
+      // если не получилось — просто рендерим то, что было
+      renderBattleRoom(room);
+    }
+  }, 6200);
+}
+
 function renderBattleRoom(room) {
   const c = document.getElementById('battleRoomContent');
   const meId = myProfile.id;
@@ -1633,11 +1749,13 @@ function renderBattleRoom(room) {
   const isDraw = room.status === 'finished' && !room.winnerId;
   const meWinCls = isWinnerMe ? 'winner' : '';
   const opWinCls = isWinnerOp ? 'winner' : '';
+
   function dropHTML(d) {
     const isImg = d.icon && d.icon.startsWith('http');
     const icon = isImg ? `<img src="${d.icon}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : (d.icon || '🎁');
     return `<div class="battle-drop rarity-${d.rarity}"><div class="bd-icon">${icon}</div><div class="bd-name">${escapeHtml(d.name)}</div><div class="bd-round">+${d.points}</div></div>`;
   }
+
   let topHTML = '';
   if (room.status === 'waiting') {
     topHTML = `
@@ -1651,19 +1769,30 @@ function renderBattleRoom(room) {
       </div>
     `;
   } else if (room.status === 'active') {
+    // 🔥 ФИКС: определяем canRoll правильно для всех 4 комбинаций
     let turnText = ''; let canRoll = false;
     if (!meRolled && !opRolled) {
+      // Никто не крутил — ход создателя
       if (meIsCreator) { turnText = '⚡ Твой ход — крути кейс!'; canRoll = true; }
       else { turnText = '⏳ Ждём ход создателя...'; }
     } else if (meRolled && !opRolled) {
+      // Я крутил — ход соперника
       if (meIsCreator) { turnText = '⏳ Ждём ход соперника...'; }
       else { turnText = '⚡ Твой ход — крути кейс!'; canRoll = true; }
+    } else if (!meRolled && opRolled) {
+      // 🔥 Соперник уже крутил, мой ход (независимо от того, кто creator)
+      turnText = '⚡ Твой ход — крути кейс!';
+      canRoll = true;
+    } else if (meRolled && opRolled) {
+      turnText = '⏳ Завершаем раунд...';
     }
+    const meActiveCls = canRoll ? 'active-turn' : '';
+    const opSpinningCls = battleOppSpinLock ? 'spinning' : '';
     topHTML = `
       <div class="battle-players">
-        <div class="battle-player me ${meWinCls}">${meAv}<strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)} ${meObj.is_premium ? '⭐' : ''}</strong><div class="bp-score">${meScore}</div><div class="bp-rounds">Ты ${meRolled ? '✓' : ''}</div></div>
+        <div class="battle-player me ${meWinCls} ${meActiveCls}">${meAv}<strong class="${meNk} ${meFc}">${escapeHtml(meObj.name)} ${meObj.is_premium ? '⭐' : ''}</strong><div class="bp-score">${meScore}</div><div class="bp-rounds">Ты ${meRolled ? '✓' : ''}</div></div>
         <div class="battle-vs">VS</div>
-        <div class="battle-player ${opWinCls}">${opAv}<strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'} ${op && op.is_premium ? '⭐' : ''}</strong><div class="bp-score">${opScore}</div><div class="bp-rounds">Соперник ${opRolled ? '✓' : ''}</div></div>
+        <div class="battle-player ${opWinCls} ${opSpinningCls}">${opAv}<strong class="${opNk} ${opFc}">${op ? escapeHtml(op.name) : '—'} ${op && op.is_premium ? '⭐' : ''}</strong><div class="bp-score">${opScore}</div><div class="bp-rounds">Соперник ${opRolled ? '✓' : ''}</div></div>
       </div>
       <div style="text-align:center;font-size:12px;color:#8a8a9c;margin-bottom:10px;">Раунд ${Math.min(room.currentRound, room.rounds)} / ${room.rounds} · Банк: <b style="color:#ffd970">${room.bank} 🪙</b></div>
       <div class="wheel-wrap" style="height:110px;"><div class="wheel-line"></div><div class="wheel-track" id="battleWheelTrack"></div></div>
@@ -1722,9 +1851,10 @@ function renderBattleRoom(room) {
     renderTopbar();
     if (code) { try { await api('/battle/abandon', { method: 'POST', body: JSON.stringify({ code }) }); } catch {} }
   };
-  if (room.status === 'active') {
+  // Пустая рулетка для активной комнаты (если нет анимации)
+  if (room.status === 'active' && !battleOppSpinLock) {
     const track = document.getElementById('battleWheelTrack');
-    if (track) {
+    if (track && !track.innerHTML.trim()) {
       const fakeTape = [];
       for (let i = 0; i < 60; i++) fakeTape.push({ name: '', icon: '🎁', rarity: 'common' });
       track.innerHTML = fakeTape.map(it => `<div class="wheel-item rarity-common"><div class="wi-icon">${it.icon}</div><div class="wi-name"></div></div>`).join('');
@@ -1786,12 +1916,14 @@ async function rollBattle(code) {
         }
       }, 4600);
       setTimeout(() => {
+        battleLastRenderedRoom = r.room;
         renderBattleRoom(r.room);
         if (r.room.status === 'finished') stopBattleRoomPoll();
         renderTopbar();
         battleSpinLock = false;
       }, 5600);
     } else {
+      battleLastRenderedRoom = r.room;
       renderBattleRoom(r.room);
       battleSpinLock = false;
     }
