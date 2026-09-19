@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XIVIVIDE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Bebas+Neue&family=Caveat:wght@700&family=Russo+One&family=Lobster&family=Pacifico&family=Playfair+Display:ital,wght@1,700&family=VT323&family=Monoton&family=Rubik+Spray+Paint&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
   :root {
@@ -76,6 +79,7 @@
   .story-bubble.unviewed .circle { border-color: #ffd970; box-shadow: 0 0 12px rgba(255,215,0,0.5); }
   .story-bubble.add .circle { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; border-color: rgba(255,255,255,0.2); }
   .story-bubble .name { font-size: 11.5px; color: #c8c8d6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .story-viewer { position: fixed; inset: 0; background: #000; z-index: 200; display: none; justify-content: center; align-items: center; }
   .story-viewer.show { display: flex; }
   .story-viewer img { max-width: 100%; max-height: 100vh; object-fit: contain; }
@@ -96,9 +100,10 @@
   @keyframes cardIn { from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)} }
   .mine-badge { position: absolute; top: 10px; left: 10px; padding: 5px 12px; font-size: 11px; letter-spacing: 1px; background: rgba(20,20,26,0.8); border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent); border-radius: 14px; color: #d8d8e4; text-transform: uppercase; z-index: 2; backdrop-filter: blur(8px); }
   .online-dot { position: absolute; top: 12px; left: 12px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(20,20,26,0.9); z-index: 3; }
-  .online-dot.online { background: #4dd68a; box-shadow: 0 0 8px #4dd68a; }
+  .online-dot.online { background: #4dd68a; box-shadow: 0 0 8px #4dd68a; animation: pulse 2s infinite; }
   .online-dot.recent { background: #ffd970; box-shadow: 0 0 8px #ffd970; }
   .online-dot.offline { background: #555; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 8px #4dd68a; } 50% { box-shadow: 0 0 16px #4dd68a; } }
   .profile-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; background: #1a1a22; }
   .profile-photo-placeholder { width: 100%; aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center; font-size: 46px; color: rgba(200,200,220,0.3); background: linear-gradient(135deg, #22222c, #2e2e3a); }
   .profile-info { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
@@ -119,6 +124,18 @@
   .nick-ice { color: #a5e9ff; text-shadow: 0 0 8px rgba(165,233,255,0.8); }
   .nick-rgb { background: linear-gradient(90deg,#ff0050,#ffb400,#00dc50,#008cff,#ff0050); background-size: 400% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 4s linear infinite; }
   .nick-gold { color: #ffd970; text-shadow: 0 0 10px rgba(255,215,0,0.7); font-weight: 700; }
+
+  /* Шрифты для ника */
+  .font-pixel { font-family: 'Press Start 2P', monospace; letter-spacing: 0 !important; font-size: 0.85em; }
+  .font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
+  .font-caveat { font-family: 'Caveat', cursive; font-size: 1.15em; }
+  .font-russo { font-family: 'Russo One', sans-serif; }
+  .font-lobster { font-family: 'Lobster', cursive; }
+  .font-pacifico { font-family: 'Pacifico', cursive; font-size: 0.95em; }
+  .font-playfair { font-family: 'Playfair Display', serif; font-style: italic; }
+  .font-vt323 { font-family: 'VT323', monospace; font-size: 1.2em; }
+  .font-monoton { font-family: 'Monoton', cursive; letter-spacing: 3px; }
+  .font-spray { font-family: 'Rubik Spray Paint', cursive; }
 
   .modal { position: fixed; inset: 0; background: rgba(10,10,14,0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; animation: fadeIn 0.25s; }
   .modal.show { display: flex; }
@@ -161,6 +178,48 @@
   .modal-actions button:hover { background: rgba(150,150,180,0.55); }
   .modal-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .modal-actions button.premium { color: #ffd970; border-color: rgba(255,215,0,0.35); }
+
+  /* Профиль просмотр — новая версия */
+  .pv-wrap { position: relative; border-radius: 22px; overflow: hidden; background: rgba(20,20,26,0.6); }
+  .pv-banner { position: relative; height: 180px; background-size: cover; background-position: center; border-bottom: 3px solid rgba(0,0,0,0.3); }
+  .pv-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,10,14,0.1) 0%, rgba(10,10,14,0.6) 70%, rgba(20,20,26,1) 100%); }
+  .pv-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(38,38,46,1); margin: -60px auto 10px; display: block; position: relative; z-index: 2; background: linear-gradient(135deg, #2a2a34, #3a3a48); box-shadow: 0 0 30px var(--accent-glow); }
+  .pv-body { padding: 0 20px 24px; }
+  .pv-name { text-align: center; font-size: 26px; color: #f0f0f8; margin-bottom: 4px; font-weight: 700; letter-spacing: 0.5px; }
+  .pv-age { text-align: center; color: #8a8a9c; margin-bottom: 14px; font-size: 14px; }
+  .pv-bio { text-align: center; color: #b8b8cc; margin-bottom: 14px; font-size: 14px; line-height: 1.5; padding: 0 10px; }
+
+  /* Музыкальный плеер */
+  .music-player { margin: 16px auto; padding: 16px; background: linear-gradient(135deg, rgba(60,60,78,0.6), rgba(30,30,40,0.8)); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
+  .music-player .mp-label { font-size: 11.5px; letter-spacing: 2px; color: #8a8a9c; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .music-player .mp-track { font-size: 14px; color: #f0f0f8; font-weight: 600; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .music-player .mp-progress-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .music-player .mp-time { font-size: 11px; color: #8a8a9c; font-variant-numeric: tabular-nums; min-width: 36px; }
+  .music-player .mp-progress { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; position: relative; cursor: pointer; }
+  .music-player .mp-progress-filled { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 3px; transition: width 0.1s; box-shadow: 0 0 8px var(--accent-glow); }
+  .music-player .mp-progress-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--accent-glow); pointer-events: none; }
+  .music-player .mp-controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+  .music-player .mp-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(60,60,78,0.7); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s; }
+  .music-player .mp-btn:hover { background: rgba(150,150,180,0.5); transform: scale(1.06); }
+  .music-player .mp-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-color: transparent; box-shadow: 0 0 12px var(--accent-glow); color: #fff; }
+  .music-player .mp-play { width: 56px; height: 56px; font-size: 22px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border: none; box-shadow: 0 4px 16px var(--accent-glow); color: #fff; }
+  .music-player .mp-play:hover { transform: scale(1.08); box-shadow: 0 6px 22px var(--accent-glow); }
+  .music-player .mp-volume-wrap { display: flex; align-items: center; gap: 8px; }
+  .music-player .mp-volume-icon { font-size: 16px; cursor: pointer; }
+  .music-player .mp-volume { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; position: relative; cursor: pointer; }
+  .music-player .mp-volume-filled { height: 100%; background: var(--accent-light); border-radius: 2px; }
+  .music-player .mp-volume-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border-radius: 50%; background: #fff; pointer-events: none; }
+  .music-player .mp-embed { width: 100%; border-radius: 12px; overflow: hidden; margin-top: 8px; }
+
+  /* Выбор шрифта */
+  .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+  .font-option { position: relative; padding: 16px 10px; background: rgba(30,30,40,0.6); border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.25s; }
+  .font-option:hover { border-color: var(--accent); background: rgba(60,60,78,0.6); }
+  .font-option.active { border-color: var(--accent-light); box-shadow: 0 0 16px var(--accent-glow); }
+  .font-option .font-preview { font-size: 22px; color: #f0f0f8; }
+  .font-option .font-name { font-size: 10.5px; color: #8a8a9c; margin-top: 6px; letter-spacing: 1px; }
+  .font-option .font-name { font-family: 'Segoe UI', sans-serif !important; }
+  .font-option .font-preview { font-family: 'Segoe UI', sans-serif; }
 
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
   .theme-swatch { padding: 14px 8px; border-radius: 14px; cursor: pointer; text-align: center; border: 2px solid transparent; transition: all 0.25s; background: rgba(20,20,26,0.6); }
@@ -267,12 +326,6 @@
   .notif-item .notif-body strong { display: block; font-size: 14px; color: #f0f0f8; margin-bottom: 3px; }
   .notif-item .notif-body small { font-size: 11.5px; color: #8a8a9c; }
 
-  .pv-banner { width: calc(100% + 48px); height: 160px; margin: -28px -24px 0; background-size: cover; background-position: center; border-radius: 22px 22px 0 0; }
-  .pv-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(38,38,46,1); margin: -55px auto 10px; display: block; position: relative; z-index: 2; background: linear-gradient(135deg, #2a2a34, #3a3a48); }
-  .pv-name { text-align: center; font-size: 24px; color: #f0f0f8; margin-bottom: 4px; font-weight: 700; }
-  .pv-age { text-align: center; color: #8a8a9c; margin-bottom: 14px; font-size: 14px; }
-  .pv-bio { text-align: center; color: #b8b8cc; margin-bottom: 14px; font-size: 14px; line-height: 1.5; padding: 0 10px; }
-
   .comment-row { padding: 10px 14px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; }
   .comment-row .comment-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .comment-row .comment-head img { width: 32px; height: 32px; border-radius: 50%; }
@@ -316,6 +369,7 @@
     .contact-row { grid-template-columns: 100px 1fr; }
     .topbar { padding: 14px; }
     .theme-grid { grid-template-columns: repeat(2, 1fr); }
+    .music-player { padding: 12px; }
   }
 </style>
 </head>
@@ -355,7 +409,6 @@
 <div class="form-status" id="loginStatus"></div></form></div></div>
 
 <div class="modal" id="myProfileModal"><div class="modal-content wide"><button class="modal-close" id="closeMyProfile">✕</button><h2>Мой профиль</h2><div id="myProfileContent"></div></div></div>
-
 <div class="modal" id="viewProfileModal"><div class="modal-content wide"><button class="modal-close" id="closeViewProfile">✕</button><div id="viewProfileContent"></div></div></div>
 
 <div class="modal" id="pwModal"><div class="modal-content"><button class="modal-close" id="closePw">✕</button><h2>Смена пароля</h2><form id="pwForm">
@@ -369,12 +422,13 @@
 <label>Возраст<input type="number" name="age" required min="16" max="99"></label>
 <label>О себе<textarea name="bio" maxlength="200" rows="3"></textarea></label>
 <label>Контакт<div class="contact-row"><select name="contactType"><option value="telegram">Telegram</option><option value="discord">Discord</option></select><input type="text" name="contactValue" maxlength="60"></div></label>
-<label>🎵 Музыка профиля<input type="text" name="musicUrl" placeholder="https://soundcloud.com/... или youtube.com/... или .mp3"></label>
+<label>🎵 Музыка профиля (mp3 или ссылка)<input type="text" name="musicUrl" placeholder="https://... .mp3 или soundcloud.com/..."></label>
 <label>Новое фото<input type="file" name="photo" accept="image/*"></label>
 <button type="submit" class="submit-btn">Сохранить</button>
 <div class="form-status" id="editStatus"></div></form></div></div>
 
 <div class="modal" id="profileStyleModal"><div class="modal-content wide"><button class="modal-close" id="closeProfileStyle">✕</button><h2>Оформление профиля</h2><div id="profileStyleContent"></div></div></div>
+<div class="modal" id="fontModal"><div class="modal-content wide"><button class="modal-close" id="closeFont">✕</button><h2>Шрифт ника</h2><div id="fontContent"></div></div></div>
 
 <div class="modal" id="appearanceModal"><div class="modal-content"><button class="modal-close" id="closeAppearance">✕</button><h2>Оформление карточки</h2><div id="appearanceContent"></div></div></div>
 
@@ -406,25 +460,19 @@
 </div></div>
 
 <div class="modal" id="invModal"><div class="modal-content wide"><button class="modal-close" id="closeInv">✕</button><h2>Инвентарь</h2><div id="invContent"></div></div></div>
-
 <div class="modal" id="shopModal"><div class="modal-content wide"><button class="modal-close" id="closeShop">✕</button><h2>Магазин</h2><div class="market-tabs" id="shopTabs"></div><div id="shopContent"></div></div></div>
-
 <div class="modal" id="marketModal"><div class="modal-content wide"><button class="modal-close" id="closeMarket">✕</button><h2>Рынок скинов</h2>
 <div class="market-tabs"><button id="tabAll" class="active">Все лоты</button><button id="tabMy">Мои лоты</button></div>
 <div id="marketContent"></div></div></div>
-
 <div class="modal" id="dialogsModal"><div class="modal-content wide"><button class="modal-close" id="closeDialogs">✕</button><h2>Мои диалоги</h2><div id="dialogsContent"></div></div></div>
-
 <div class="modal" id="notifsModal"><div class="modal-content wide"><button class="modal-close" id="closeNotifs">✕</button><h2>🔔 Уведомления</h2>
 <button class="ghost-btn" id="readAllNotifs" style="margin-bottom:14px;">Прочитать все</button>
 <div id="notifsContent"></div></div></div>
-
 <div class="modal" id="addStoryModal"><div class="modal-content"><button class="modal-close" id="closeAddStory">✕</button><h2>📸 Новая история</h2><form id="addStoryForm">
 <label>Фото<input type="file" name="photo" accept="image/*" required></label>
 <label>Подпись<input type="text" name="caption" maxlength="200" placeholder="Что происходит?"></label>
 <button type="submit" class="submit-btn">Опубликовать (24 часа)</button>
 <div class="form-status" id="addStoryStatus"></div></form></div></div>
-
 <div class="modal" id="myStoriesModal"><div class="modal-content wide"><button class="modal-close" id="closeMyStories">✕</button><h2>📸 Мои истории</h2><div id="myStoriesContent"></div></div></div>
 
 <div class="story-viewer" id="storyViewer">
@@ -467,8 +515,24 @@ let currentChatUser = null;
 let unreadPollTimer, notifPollTimer, chatPollTimer;
 let adminTab = 'users';
 let shopTab = 'banners';
-let profileMusicAudio = null;
-let profileMusicIframePlaying = false;
+let currentAudio = null;
+let audioRepeat = false;
+let audioState = { current: 0, duration: 0, volume: 0.7, muted: false };
+
+const FONTS = [
+  { key: '',            name: 'Обычный',     css: '' },
+  { key: 'font-pixel',  name: 'Pixel',       css: 'font-pixel' },
+  { key: 'font-bebas',  name: 'Bebas',       css: 'font-bebas' },
+  { key: 'font-caveat', name: 'Caveat',      css: 'font-caveat' },
+  { key: 'font-russo',  name: 'Russo',       css: 'font-russo' },
+  { key: 'font-lobster',name: 'Lobster',     css: 'font-lobster' },
+  { key: 'font-pacifico',name:'Pacifico',    css: 'font-pacifico' },
+  { key: 'font-playfair',name:'Playfair',    css: 'font-playfair' },
+  { key: 'font-vt323',  name: 'VT323',       css: 'font-vt323' },
+  { key: 'font-monoton',name: 'Monoton',     css: 'font-monoton' },
+  { key: 'font-spray',  name: 'Spray',       css: 'font-spray' }
+];
+function fontClass(k) { if (!k) return ''; const f = FONTS.find(x => x.key === k); return f ? f.css : ''; }
 
 function getDeviceId() {
   let d = localStorage.getItem(DEVICE_KEY);
@@ -517,26 +581,10 @@ function buildContactLink(t, v) { const c = String(v).trim().replace(/^@/,''); i
 function contactLabel(t) { return t==='telegram'?'Telegram':'Discord'; }
 function contactIcon(t) { return t==='telegram'?'✈️':'🎮'; }
 function nickClass(s) { return s ? 'nick-' + s.replace('nick_','') : ''; }
-function timeAgo(iso) {
-  const s = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (s < 60) return 'только что';
-  if (s < 3600) return Math.floor(s/60) + ' мин назад';
-  if (s < 86400) return Math.floor(s/3600) + ' ч назад';
-  return new Date(iso).toLocaleDateString('ru-RU');
-}
-function onlineStatus(last_seen) {
-  if (!last_seen) return { cls: 'offline', text: 'давно' };
-  const s = (Date.now() - new Date(last_seen).getTime()) / 1000;
-  if (s < 300) return { cls: 'online', text: 'онлайн' };
-  if (s < 3600) return { cls: 'recent', text: 'был недавно' };
-  return { cls: 'offline', text: timeAgo(last_seen) };
-}
-function toast(text, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = text;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 3000);
-}
+function timeAgo(iso) { const s = (Date.now() - new Date(iso).getTime()) / 1000; if (s < 60) return 'только что'; if (s < 3600) return Math.floor(s/60) + ' мин назад'; if (s < 86400) return Math.floor(s/3600) + ' ч назад'; return new Date(iso).toLocaleDateString('ru-RU'); }
+function onlineStatus(last_seen) { if (!last_seen) return { cls: 'offline', text: 'давно' }; const s = (Date.now() - new Date(last_seen).getTime()) / 1000; if (s < 300) return { cls: 'online', text: 'онлайн' }; if (s < 3600) return { cls: 'recent', text: 'был недавно' }; return { cls: 'offline', text: timeAgo(last_seen) }; }
+function fmtTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return m + ':' + (sec < 10 ? '0' : '') + sec; }
+function toast(text, type = '') { const t = document.getElementById('toast'); t.textContent = text; t.className = 'toast show ' + type; setTimeout(() => t.className = 'toast', 3000); }
 
 async function uploadToCloudinary(file) {
   const fd = new FormData();
@@ -638,12 +686,13 @@ function createCard(p) {
   const likeCount = p.likes || 0;
   const isMine = String(p.id) === String(myId);
   const nk = nickClass(p.nick_style);
+  const fc = fontClass(p.profile_font);
   card.innerHTML = `
     <div class="online-dot ${on.cls}" title="${on.text}"></div>
     ${isMine ? '<div class="mine-badge">★ Ты</div>' : ''}
     ${photo}
     <div class="profile-info">
-      <h3 class="${nk}">${escapeHtml(p.name)} <span class="age">${p.age}</span></h3>
+      <h3 class="${nk} ${fc}">${escapeHtml(p.name)} <span class="age">${p.age}</span></h3>
       ${p.bio ? `<p>${escapeHtml(p.bio)}</p>` : ''}
       ${contact}
       <div class="like-row">
@@ -671,135 +720,156 @@ async function toggleLike(tid) {
 
 function getProfileThemeStyle(theme) {
   const map = {
-    theme_web: 'background: linear-gradient(135deg,#0d0d12,#050508), repeating-linear-gradient(60deg, rgba(200,200,220,0.05) 0px, rgba(200,200,220,0.05) 1px, transparent 1px, transparent 40px);',
-    theme_cosmos: 'background: radial-gradient(circle at 30% 40%, #3a1a6b, transparent 60%), radial-gradient(circle at 70% 60%, #1a3a6b, transparent 60%), #050510;',
-    theme_sunset: 'background: linear-gradient(135deg,#ff9a5c,#c45a1a);',
-    theme_fire: 'background: linear-gradient(135deg,#ff5c6e,#7a1a1a);',
-    theme_matrix: 'background: linear-gradient(135deg,#001505,#000300);',
-    theme_night: 'background: linear-gradient(135deg,#0a0a20,#020208);',
-    theme_sakura: 'background: linear-gradient(135deg,#ffd9ec,#c44a94);'
+    theme_web: 'linear-gradient(135deg,#0d0d12,#050508), repeating-linear-gradient(60deg, rgba(200,200,220,0.05) 0px, rgba(200,200,220,0.05) 1px, transparent 1px, transparent 40px)',
+    theme_cosmos: 'radial-gradient(circle at 30% 40%, #3a1a6b, transparent 60%), radial-gradient(circle at 70% 60%, #1a3a6b, transparent 60%), #050510',
+    theme_sunset: 'linear-gradient(135deg,#ff9a5c,#c45a1a)',
+    theme_fire: 'linear-gradient(135deg,#ff5c6e,#7a1a1a)',
+    theme_matrix: 'linear-gradient(135deg,#001505,#000300)',
+    theme_night: 'linear-gradient(135deg,#0a0a20,#020208)',
+    theme_sakura: 'linear-gradient(135deg,#ffd9ec,#c44a94)'
   };
   return map[theme] || '';
 }
 
-function stopProfileMusic() {
-  try {
-    const audio = document.getElementById('svAudio');
-    if (audio) { audio.pause(); audio.src = ''; }
-    const iframe = document.getElementById('svIframe');
-    if (iframe) iframe.innerHTML = '';
-    const wrap = document.getElementById('profileMusicEmbed');
-    if (wrap) wrap.innerHTML = '';
-    profileMusicAudio = null;
-    profileMusicIframePlaying = false;
-  } catch {}
+// === ПЛЕЕР ===
+function stopAllAudio() {
+  if (currentAudio) { try { currentAudio.pause(); } catch {} currentAudio = null; }
+  const wrap = document.getElementById('musicPlayerBody');
+  if (wrap) wrap.innerHTML = '';
 }
-
-function tryEmbedMusic(url, targetId) {
-  const wrap = document.getElementById(targetId);
+function buildPlayer(url, containerId) {
+  const wrap = document.getElementById(containerId);
   if (!wrap) return;
   wrap.innerHTML = '';
+  // iframe для SoundCloud/YouTube
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
   const sc = url.match(/soundcloud\.com\/(.+)/);
-  if (yt) {
+  if (yt || sc) {
     const ifr = document.createElement('iframe');
-    ifr.width = '280'; ifr.height = '80';
-    ifr.src = `https://www.youtube.com/embed/${yt[1]}?autoplay=1&loop=1&playlist=${yt[1]}`;
-    ifr.allow = 'autoplay; encrypted-media';
-    ifr.style.borderRadius = '10px';
-    ifr.style.border = 'none';
+    ifr.width = '100%'; ifr.height = '120';
+    ifr.style.border = 'none'; ifr.style.borderRadius = '12px';
+    ifr.allow = 'autoplay';
+    ifr.src = yt
+      ? `https://www.youtube.com/embed/${yt[1]}?autoplay=1&loop=1&playlist=${yt[1]}`
+      : `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false&color=%23a0a0b8`;
     wrap.appendChild(ifr);
-    return { type: 'iframe', el: ifr };
+    return;
   }
-  if (sc) {
-    const ifr = document.createElement('iframe');
-    ifr.width = '280'; ifr.height = '80';
-    ifr.scrolling = 'no'; ifr.frameborder = 'no'; ifr.allow = 'autoplay';
-    ifr.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false`;
-    wrap.appendChild(ifr);
-    return { type: 'iframe', el: ifr };
+  // свой плеер для mp3
+  const audio = new Audio(url);
+  audio.volume = audioState.volume;
+  audio.loop = audioRepeat;
+  currentAudio = audio;
+  wrap.innerHTML = `
+    <div class="music-player" style="margin:0;max-width:100%;">
+      <div class="mp-label">🎵 СЕЙЧАС ИГРАЕТ</div>
+      <div class="mp-track" id="mpTrackName">${escapeHtml(decodeURIComponent(url.split('/').pop() || 'Трек').slice(0, 60))}</div>
+      <div class="mp-progress-wrap">
+        <span class="mp-time" id="mpCur">0:00</span>
+        <div class="mp-progress" id="mpProgress"><div class="mp-progress-filled" id="mpFilled" style="width:0%"></div><div class="mp-progress-handle" id="mpHandle" style="left:0%"></div></div>
+        <span class="mp-time" id="mpDur">0:00</span>
+      </div>
+      <div class="mp-controls">
+        <button class="mp-btn" id="mpBack" title="-15 сек">⏪</button>
+        <button class="mp-btn mp-play" id="mpPlay">⏸</button>
+        <button class="mp-btn" id="mpFwd" title="+15 сек">⏩</button>
+        <button class="mp-btn ${audioRepeat ? 'active' : ''}" id="mpRepeat" title="Повтор">🔁</button>
+      </div>
+      <div class="mp-volume-wrap">
+        <span class="mp-volume-icon" id="mpVolIcon">🔊</span>
+        <div class="mp-volume" id="mpVolume"><div class="mp-volume-filled" id="mpVolFilled" style="width:${audioState.volume*100}%"></div><div class="mp-volume-handle" id="mpVolHandle" style="left:${audioState.volume*100}%"></div></div>
+      </div>
+    </div>
+  `;
+  const $ = id => document.getElementById(id);
+  function updateProgress() {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    $('mpFilled').style.width = pct + '%';
+    $('mpHandle').style.left = pct + '%';
+    $('mpCur').textContent = fmtTime(audio.currentTime);
   }
-  const audio = document.createElement('audio');
-  audio.src = url; audio.loop = true; audio.controls = true;
-  audio.style.width = '280px'; audio.style.borderRadius = '10px';
-  wrap.appendChild(audio);
+  audio.addEventListener('loadedmetadata', () => { $('mpDur').textContent = fmtTime(audio.duration); });
+  audio.addEventListener('timeupdate', updateProgress);
+  audio.addEventListener('ended', () => { if (audioRepeat) audio.play(); });
+  $('mpPlay').onclick = () => {
+    if (audio.paused) { audio.play(); $('mpPlay').textContent = '⏸'; }
+    else { audio.pause(); $('mpPlay').textContent = '▶'; }
+  };
+  $('mpBack').onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 15); };
+  $('mpFwd').onclick = () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); };
+  $('mpRepeat').onclick = () => { audioRepeat = !audioRepeat; audio.loop = audioRepeat; $('mpRepeat').classList.toggle('active', audioRepeat); };
+  $('mpProgress').onclick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = x * audio.duration;
+  };
+  $('mpVolume').onclick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audio.volume = x; audioState.volume = x;
+    $('mpVolFilled').style.width = x * 100 + '%';
+    $('mpVolHandle').style.left = x * 100 + '%';
+  };
+  $('mpVolIcon').onclick = () => {
+    audio.muted = !audio.muted;
+    $('mpVolIcon').textContent = audio.muted ? '🔇' : '🔊';
+  };
   audio.play().catch(() => {});
-  return { type: 'audio', el: audio };
+  setTimeout(() => { $('mpDur').textContent = fmtTime(audio.duration || 0); }, 500);
 }
 
+// === ПРОСМОТР ЧУЖОГО ПРОФИЛЯ ===
 async function openViewProfile(id) {
   const modal = document.getElementById('viewProfileModal');
   const c = document.getElementById('viewProfileContent');
   c.innerHTML = '<div class="empty-small">Загрузка...</div>';
   modal.classList.add('show');
-  stopProfileMusic();
+  stopAllAudio();
   try {
     const p = await api('/profiles/' + id);
     let mutual = false;
     if (myProfile && myProfile.id !== p.id) { try { const m = await api('/mutual/' + myProfile.id + '/' + p.id); mutual = m.mutual; } catch {} }
-    const themeStyle = getProfileThemeStyle(p.profile_theme);
-    const bannerStyle = p.profile_banner ? `background-image: url('${p.profile_banner}');` : themeStyle || 'background: rgba(30,30,40,0.6);';
+    const themeBg = getProfileThemeStyle(p.profile_theme);
+    const bannerStyle = p.profile_banner ? `background-image: url('${p.profile_banner}');` : (themeBg ? `background: ${themeBg};` : 'background: rgba(30,30,40,0.6);');
     const nk = nickClass(p.nick_style);
-    const avatar = p.photo ? `<img class="pv-avatar" src="${p.photo}">` : `<div class="pv-avatar" style="display:flex;align-items:center;justify-content:center;font-size:36px;color:#b0b0c4;">✦</div>`;
+    const fc = fontClass(p.profile_font);
+    const avatar = p.photo ? `<img class="pv-avatar" src="${p.photo}">` : `<div class="pv-avatar" style="display:flex;align-items:center;justify-content:center;font-size:44px;color:#b0b0c4;">✦</div>`;
     const contactLink = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
     const on = onlineStatus(p.last_seen);
     const giftsHTML = (p.show_gifts && p.gifts && p.gifts.length) ? `
       <div class="section-title">🎁 Подарки</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;">${p.gifts.map(g => `<div style="background:rgba(30,30,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px;text-align:center;min-width:80px;font-size:11px;"><div style="font-size:22px;">🎁</div>от ${escapeHtml(g.sender_name)}</div>`).join('')}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">${p.gifts.map(g => `<div style="background:rgba(30,30,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px;text-align:center;min-width:80px;font-size:11px;"><div style="font-size:22px;">🎁</div>от ${escapeHtml(g.sender_name)}</div>`).join('')}</div>
     ` : '';
-    const musicHTML = p.music_url ? `
-      <div style="text-align:center;margin:14px 0;">
-        <div style="font-size:13px;color:#8a8a9c;margin-bottom:8px;">🎵 Сейчас играет</div>
-        <div id="profileMusicEmbed" style="display:flex;justify-content:center;"></div>
-        <button id="musicToggleBtn" style="margin-top:8px;padding:8px 14px;border-radius:20px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd970;cursor:pointer;font-family:inherit;font-size:13px;">⏸ Пауза</button>
-      </div>
-    ` : '';
-    const storiesHTML = p.stories_count > 0 ? `
-      <div style="text-align:center;margin:10px 0;">
-        <button id="viewUserStoryBtn" style="padding:8px 16px;border-radius:20px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd970;cursor:pointer;font-family:inherit;font-size:13px;">📸 Смотреть истории (${p.stories_count})</button>
-      </div>
-    ` : '';
+    const musicHTML = p.music_url ? `<div id="musicPlayerBody"></div>` : '';
+    const storiesHTML = p.stories_count > 0 ? `<div style="text-align:center;margin:10px 0;"><button id="viewUserStoryBtn" class="contact-badge" style="cursor:pointer;">📸 Смотреть истории (${p.stories_count})</button></div>` : '';
     c.innerHTML = `
-      <div class="pv-banner" style="${bannerStyle}"></div>
-      ${avatar}
-      <div class="pv-name ${nk}">${escapeHtml(p.name)} ${p.is_premium ? '⭐' : ''}</div>
-      <div class="pv-age">${p.age} лет · <span style="color:${on.cls==='online'?'#4dd68a':on.cls==='recent'?'#ffd970':'#888'}">● ${on.text}</span></div>
-      ${p.bio ? `<div class="pv-bio">${escapeHtml(p.bio)}</div>` : ''}
-      ${p.contact_value ? `<div style="text-align:center;margin-bottom:12px;"><a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>${contactIcon(p.contact_type)} ${contactLabel(p.contact_type)}: ${escapeHtml(p.contact_value)}</a></div>` : ''}
-      ${storiesHTML}
-      ${musicHTML}
-      <div class="stat-row"><div class="stat-box"><div class="num">${p.likes || 0}</div><div class="label">Лайков</div></div></div>
-      ${giftsHTML}
-      <div class="section-title">Комментарии</div>
-      <div id="commentsBlock"></div>
-      <div class="modal-actions">
-        ${mutual && myProfile && myProfile.id !== p.id ? `<button class="premium" id="writeMsgBtn">💬 Написать</button>` : ''}
-        ${myProfile && myProfile.id !== p.id ? `<button id="giftBtn">🎁 Подарить</button>` : ''}
-        ${myProfile && myProfile.id === p.id ? `<button id="editSelfFromView">Редактировать</button>` : ''}
-        ${myProfile && myProfile.id !== p.id && !mutual ? `<button disabled style="opacity:0.5;">Взаимный лайк нужен для чата</button>` : ''}
+      <div class="pv-wrap">
+        <div class="pv-banner" style="${bannerStyle}"></div>
+        ${avatar}
+        <div class="pv-body">
+          <div class="pv-name ${nk} ${fc}">${escapeHtml(p.name)} ${p.is_premium ? '⭐' : ''}</div>
+          <div class="pv-age">${p.age} лет · <span style="color:${on.cls==='online'?'#4dd68a':on.cls==='recent'?'#ffd970':'#888'}">● ${on.text}</span></div>
+          ${p.bio ? `<div class="pv-bio">${escapeHtml(p.bio)}</div>` : ''}
+          ${p.contact_value ? `<div style="text-align:center;margin-bottom:12px;"><a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>${contactIcon(p.contact_type)} ${contactLabel(p.contact_type)}: ${escapeHtml(p.contact_value)}</a></div>` : ''}
+          ${storiesHTML}
+          ${musicHTML}
+          <div class="stat-row"><div class="stat-box"><div class="num">${p.likes || 0}</div><div class="label">Лайков</div></div></div>
+          ${giftsHTML}
+          <div class="section-title">Комментарии</div>
+          <div id="commentsBlock"></div>
+          <div class="modal-actions">
+            ${mutual && myProfile && myProfile.id !== p.id ? `<button class="premium" id="writeMsgBtn">💬 Написать</button>` : ''}
+            ${myProfile && myProfile.id !== p.id ? `<button id="giftBtn">🎁 Подарить</button>` : ''}
+            ${myProfile && myProfile.id === p.id ? `<button id="editSelfFromView">Редактировать</button>` : ''}
+          </div>
+        </div>
       </div>
     `;
-    if (p.music_url) {
-      const res = tryEmbedMusic(p.music_url, 'profileMusicEmbed');
-      profileMusicAudio = res.type === 'audio' ? res.el : null;
-      profileMusicIframePlaying = true;
-      const toggle = document.getElementById('musicToggleBtn');
-      if (toggle) toggle.onclick = () => {
-        if (profileMusicAudio) {
-          if (profileMusicIframePlaying) { profileMusicAudio.pause(); toggle.textContent = '▶ Играть'; }
-          else { profileMusicAudio.play(); toggle.textContent = '⏸ Пауза'; }
-          profileMusicIframePlaying = !profileMusicIframePlaying;
-        } else {
-          const wrap = document.getElementById('profileMusicEmbed');
-          if (profileMusicIframePlaying) { wrap.innerHTML = ''; toggle.textContent = '▶ Играть'; }
-          else { tryEmbedMusic(p.music_url, 'profileMusicEmbed'); toggle.textContent = '⏸ Пауза'; }
-          profileMusicIframePlaying = !profileMusicIframePlaying;
-        }
-      };
-    }
-    const wb = document.getElementById('writeMsgBtn'); if (wb) wb.onclick = () => { modal.classList.remove('show'); stopProfileMusic(); openChat(p); };
+    if (p.music_url) buildPlayer(p.music_url, 'musicPlayerBody');
+    const wb = document.getElementById('writeMsgBtn'); if (wb) wb.onclick = () => { modal.classList.remove('show'); stopAllAudio(); openChat(p); };
     const gb = document.getElementById('giftBtn'); if (gb) gb.onclick = () => openGift(p);
-    const eb = document.getElementById('editSelfFromView'); if (eb) eb.onclick = () => { modal.classList.remove('show'); stopProfileMusic(); openMyProfile(); };
+    const eb = document.getElementById('editSelfFromView'); if (eb) eb.onclick = () => { modal.classList.remove('show'); stopAllAudio(); openMyProfile(); };
     const vsb = document.getElementById('viewUserStoryBtn'); if (vsb) vsb.onclick = async () => { try { const list = await api('/stories/user/' + p.id); if (list.length) viewStory(list[0]); } catch {} };
     loadComments(p.id);
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
@@ -845,8 +915,10 @@ async function openMyProfile() {
 }
 function renderMyProfile(me, likedBy) {
   const c = document.getElementById('myProfileContent');
-  const banner = me.profile_banner ? `background-image: url('${me.profile_banner}');` : getProfileThemeStyle(me.profile_theme) || '';
+  const themeBg = getProfileThemeStyle(me.profile_theme);
+  const banner = me.profile_banner ? `background-image: url('${me.profile_banner}');` : (themeBg ? `background: ${themeBg};` : '');
   const nk = nickClass(me.nick_style);
+  const fc = fontClass(me.profile_font);
   const av = me.photo ? `<img src="${me.photo}">` : `<div class="big-avatar">✦</div>`;
   const contactLink = me.contact_value ? buildContactLink(me.contact_type, me.contact_value) : null;
   const refLink = me.ref_code ? `${location.origin}/?ref=${me.ref_code}` : '';
@@ -854,7 +926,7 @@ function renderMyProfile(me, likedBy) {
     <div class="profile-hero" style="${banner}">
       ${av}
       <div class="profile-hero-info">
-        <h3 class="${nk}">${escapeHtml(me.name)} <span class="age">${me.age}</span> ${me.is_premium ? '⭐' : ''}</h3>
+        <h3 class="${nk} ${fc}">${escapeHtml(me.name)} <span class="age">${me.age}</span> ${me.is_premium ? '⭐' : ''}</h3>
         ${me.bio ? `<p>${escapeHtml(me.bio)}</p>` : ''}
         ${me.contact_value ? `<a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank"` : ''}>${contactIcon(me.contact_type)} ${contactLabel(me.contact_type)}: ${escapeHtml(me.contact_value)}</a>` : ''}
       </div>
@@ -885,6 +957,7 @@ function renderMyProfile(me, likedBy) {
       <button id="myStoriesBtn">📸 Мои истории</button>
       <button id="addStoryBtn">+ История</button>
       <button id="editMyBtn">Редактировать</button>
+      <button id="fontBtn">✒️ Шрифт</button>
       <button id="changePwBtn">Пароль</button>
       <button class="premium" id="styleProfileBtn">🎨 Оформление</button>
       ${me.is_premium ? '<button class="premium" id="appearanceBtn">⭐ Карточка</button>' : ''}
@@ -894,6 +967,7 @@ function renderMyProfile(me, likedBy) {
   document.getElementById('myStoriesBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openMyStories(me.id); };
   document.getElementById('addStoryBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); document.getElementById('addStoryModal').classList.add('show'); };
   document.getElementById('editMyBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openEditForm(me); };
+  document.getElementById('fontBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openFontPicker(me); };
   document.getElementById('changePwBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); document.getElementById('pwModal').classList.add('show'); };
   document.getElementById('styleProfileBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openProfileStyle(me); };
   const ab = document.getElementById('appearanceBtn'); if (ab) ab.onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openAppearance(me); };
@@ -906,6 +980,33 @@ function renderMyProfile(me, likedBy) {
     try { await api('/profiles/' + me.id, { method:'DELETE' }); setToken(null); myProfile = null; document.getElementById('myProfileModal').classList.remove('show'); renderTopbar(); loadWall(); }
     catch (err) { toast(err.message, 'error'); }
   };
+}
+
+// === ШРИФТЫ ===
+function openFontPicker(me) {
+  document.getElementById('fontModal').classList.add('show');
+  const c = document.getElementById('fontContent');
+  c.innerHTML = `
+    <div style="font-size:13px;color:#b8b8cc;margin-bottom:12px;">Выбери шрифт для своего ника. Он применится ко всем твоим карточкам и профилю.</div>
+    <div class="font-grid" id="fontGrid"></div>
+  `;
+  const grid = document.getElementById('fontGrid');
+  FONTS.forEach(f => {
+    const isActive = (me.profile_font || '') === f.key;
+    const el = document.createElement('div');
+    el.className = 'font-option' + (isActive ? ' active' : '');
+    el.innerHTML = `<div class="font-preview ${f.css}">${escapeHtml(me.name)}</div><div class="font-name">${f.name}</div>`;
+    el.addEventListener('click', async () => {
+      try {
+        const updated = await api('/profiles/' + me.id + '/profile-font', { method:'POST', body: JSON.stringify({ font: f.key }) });
+        Object.assign(me, updated); myProfile = { ...myProfile, ...updated };
+        toast('Шрифт применён', 'success');
+        document.getElementById('fontModal').classList.remove('show');
+        loadWall(); renderTopbar();
+      } catch (err) { toast(err.message, 'error'); }
+    });
+    grid.appendChild(el);
+  });
 }
 
 async function openMyStories(userId) {
@@ -946,33 +1047,30 @@ function renderProfileStyle(me, shop) {
   const c = document.getElementById('profileStyleContent');
   function item(it, cat, isActive) {
     const isOwned = myOwned.has(it.key);
-    const preview = cat === 'themes' ? getProfileThemeStyle(it.key) : (cat === 'colors' ? `background:${it.value};` : (cat === 'chatbgs' ? 'background: linear-gradient(135deg,#1a1a22,#2e2e3a);' : (cat === 'nicks' ? '' : `background:${it.preview || 'rgba(30,30,40,0.6)'};`)));
+    const preview = cat === 'themes' ? `background: ${getProfileThemeStyle(it.key)};` : (cat === 'colors' ? `background:${it.value};` : (cat === 'chatbgs' ? 'background: linear-gradient(135deg,#1a1a22,#2e2e3a);' : (cat === 'nicks' ? '' : `background:${it.preview || 'rgba(30,30,40,0.6)'};`)));
     const icon = cat === 'nicks' ? it.icon : (cat === 'chatbgs' ? '💬' : '');
     if (!isOwned) return '';
     return `<div class="shop-item"><div class="preview" style="${preview}">${icon}</div><div class="shop-name">${escapeHtml(it.name)}</div><button class="${isActive?'owned':''}" data-cat="${cat}" data-key="${it.key}">${isActive?'✓ Надето':'Надеть'}</button></div>`;
   }
-  const bannerUpload = `
-    <div class="section-title">🖼️ Свой баннер</div>
+  const themeList = (shop.themes || []).map(it => item(it, 'themes', me.profile_theme === it.key)).filter(Boolean).join('');
+  const nickList = (shop.nicks || []).map(it => item(it, 'nicks', me.nick_style === it.key)).filter(Boolean).join('');
+  const colorList = (shop.colors || []).map(it => item(it, 'colors', me.profile_color === it.key)).filter(Boolean).join('');
+  const chatList = (shop.chatbgs || []).map(it => item(it, 'chatbgs', me.chat_bg === it.key)).filter(Boolean).join('');
+  c.innerHTML = `
+    <div class="section-title">🖼️ Свой фон профиля</div>
     <div style="padding:12px;background:rgba(30,30,40,0.6);border-radius:12px;margin-bottom:14px;">
       <input type="file" id="bannerUploadInput" accept="image/*" style="font-size:12px;color:#c8c8d6;">
       <div style="font-size:12px;color:#8a8a9c;margin-top:8px;">Загружается в Cloudinary. Текущий: ${me.profile_banner ? `<a href="${me.profile_banner}" target="_blank" style="color:#8ec0ff;">посмотреть</a>` : 'нет'}</div>
-      ${me.profile_banner ? '<button id="clearBannerBtn" style="margin-top:8px;padding:6px 12px;border-radius:8px;background:rgba(255,80,100,0.15);border:1px solid rgba(255,90,110,0.4);color:#ff9aa7;cursor:pointer;font-size:12px;">Убрать баннер</button>' : ''}
+      ${me.profile_banner ? '<button id="clearBannerBtn" style="margin-top:8px;padding:6px 12px;border-radius:8px;background:rgba(255,80,100,0.15);border:1px solid rgba(255,90,110,0.4);color:#ff9aa7;cursor:pointer;font-size:12px;">Убрать фон</button>' : ''}
     </div>
-  `;
-  const themes = (shop.themes || []).map(it => item(it, 'themes', me.profile_theme === it.key)).filter(Boolean).join('');
-  const nicks = (shop.nicks || []).map(it => item(it, 'nicks', me.nick_style === it.key)).filter(Boolean).join('');
-  const colors = (shop.colors || []).map(it => item(it, 'colors', me.profile_color === it.key)).filter(Boolean).join('');
-  const chatbgs = (shop.chatbgs || []).map(it => item(it, 'chatbgs', me.chat_bg === it.key)).filter(Boolean).join('');
-  c.innerHTML = `
-    ${bannerUpload}
     <div class="section-title">🎨 Темы профиля</div>
-    ${themes || '<div class="empty-small">Купи тему в магазине 🛍️</div>'}
+    ${themeList || '<div class="empty-small">Купи тему в магазине 🛍️</div>'}
     <div class="section-title">🌈 Цвет профиля</div>
-    ${colors || '<div class="empty-small">Купи цвет в магазине 🛍️</div>'}
+    ${colorList || '<div class="empty-small">Купи цвет в магазине 🛍️</div>'}
     <div class="section-title">💡 Стиль ника</div>
-    ${nicks || '<div class="empty-small">Купи стиль в магазине 🛍️</div>'}
+    ${nickList || '<div class="empty-small">Купи стиль в магазине 🛍️</div>'}
     <div class="section-title">💬 Фон чата</div>
-    ${chatbgs || '<div class="empty-small">Купи фон в магазине 🛍️</div>'}
+    ${chatList || '<div class="empty-small">Купи фон в магазине 🛍️</div>'}
     <button class="ghost-btn" id="clearStyleBtn" style="margin-top:14px;">Снять всё оформление</button>
   `;
   c.querySelectorAll('button[data-cat]').forEach(b => b.addEventListener('click', async () => {
@@ -999,13 +1097,13 @@ function renderProfileStyle(me, shop) {
   const bu = document.getElementById('bannerUploadInput');
   bu.addEventListener('change', async () => {
     const file = bu.files[0]; if (!file) return;
-    toast('Загружаем баннер...');
+    toast('Загружаем фон...');
     try {
       const url = await uploadToCloudinary(file);
       const updated = await api('/profiles/' + me.id + '/profile-style', { method:'POST', body: JSON.stringify({ profileBanner: url, profileTheme: me.profile_theme || '', profileColor: me.profile_color || '', nickStyle: me.nick_style || '', chatBg: me.chat_bg || '' }) });
       Object.assign(me, updated); myProfile = { ...myProfile, ...updated };
       renderProfileStyle(me, shop); loadWall();
-      toast('Баннер загружен', 'success');
+      toast('Фон загружен', 'success');
     } catch (err) { toast(err.message, 'error'); }
   });
   const cb = document.getElementById('clearBannerBtn');
@@ -1120,16 +1218,19 @@ async function openInventory() {
       const canSell = it.type === 'skin';
       return `<div class="inv-item"><div style="position:relative;">${icon}${it.count > 1 ? `<div class="inv-count">×${it.count}</div>` : ''}</div><div class="inv-name">${escapeHtml(it.name)}</div>${canSell ? `<button class="inv-sell-btn" data-skin="${it.key}">Продать</button>` : ''}</div>`;
     }).join('')}</div>`;
-    c.querySelectorAll('.inv-sell-btn').forEach(b => b.addEventListener('click', () => sellDialog(parseInt(b.dataset.skin))));
+    c.querySelectorAll('.inv-sell-btn').forEach(b => b.addEventListener('click', () => sellDialog(b.dataset.skin)));
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
 async function sellDialog(skinId) {
-  const p = prompt('За сколько вайдиков выставить?', '50');
-  if (!p) return;
-  const pp = parseInt(p);
-  if (!pp || pp < 1) { toast('Некорректная цена', 'error'); return; }
-  try { await api('/market/list', { method:'POST', body: JSON.stringify({ skinId, price: pp }) }); toast('Лот выставлен', 'success'); await openInventory(); }
-  catch (err) { toast(err.message, 'error'); }
+  const rawPrice = prompt('За сколько вайдиков выставить?', '50');
+  if (rawPrice === null) return;
+  const price = parseInt(String(rawPrice).trim());
+  if (!Number.isFinite(price) || price < 1 || price > 100000) { toast('Цена 1–100000', 'error'); return; }
+  try {
+    const r = await api('/market/list', { method: 'POST', body: JSON.stringify({ skinId: String(skinId), price }) });
+    toast('Лот выставлен за ' + price + ' 🪙', 'success');
+    await openInventory();
+  } catch (err) { toast(err.message, 'error'); }
 }
 
 async function openShop() {
@@ -1157,7 +1258,7 @@ async function renderShop() {
     const list = shop[shopTab] || [];
     c.innerHTML = `<div class="shop-grid">${list.map(it => {
       const isOwned = owned.includes(it.key);
-      const preview = shopTab === 'themes' ? getProfileThemeStyle(it.key) : (shopTab === 'colors' ? `background:${it.value};` : (shopTab === 'chatbgs' ? 'background:linear-gradient(135deg,#1a1a22,#2e2e3a);' : (shopTab === 'nicks' ? '' : `background:${it.preview || 'rgba(30,30,40,0.6)'};`)));
+      const preview = shopTab === 'themes' ? `background: ${getProfileThemeStyle(it.key)};` : (shopTab === 'colors' ? `background:${it.value};` : (shopTab === 'chatbgs' ? 'background:linear-gradient(135deg,#1a1a22,#2e2e3a);' : (shopTab === 'nicks' ? '' : `background:${it.preview || 'rgba(30,30,40,0.6)'};`)));
       const icon = it.icon || (shopTab === 'chatbgs' ? '💬' : '');
       return `<div class="shop-item"><div class="preview" style="${preview}">${icon}</div><div class="shop-name">${escapeHtml(it.name)}</div><div class="shop-price">${isOwned ? '✓ Куплено' : it.price + ' 🪙'}</div>${isOwned ? '<button class="owned" disabled>Куплено</button>' : `<button data-buy="${it.key}">Купить</button>`}</div>`;
     }).join('')}</div>`;
@@ -1437,7 +1538,8 @@ function renderTopbar() {
   const chip = document.createElement('div');
   chip.className = 'user-chip' + (myProfile.is_premium ? ' premium' : '');
   const nk = nickClass(myProfile.nick_style);
-  chip.innerHTML = (myProfile.photo ? `<img src="${myProfile.photo}">` : `<div class="avatar-placeholder">✦</div>`) + `<span class="${nk}">${escapeHtml(myProfile.name)}${myProfile.is_premium ? ' ⭐' : ''}</span>`;
+  const fc = fontClass(myProfile.profile_font);
+  chip.innerHTML = (myProfile.photo ? `<img src="${myProfile.photo}">` : `<div class="avatar-placeholder">✦</div>`) + `<span class="${nk} ${fc}">${escapeHtml(myProfile.name)}${myProfile.is_premium ? ' ⭐' : ''}</span>`;
   chip.addEventListener('click', openMyProfile);
   t.appendChild(chip);
   const lo = document.createElement('button'); lo.className = 'logout-btn'; lo.textContent = 'Выйти';
@@ -1459,6 +1561,7 @@ async function refreshUnreadDialogs() {
 }
 function logout() {
   if (!confirm('Выйти?')) return;
+  stopAllAudio();
   setToken(null); myProfile = null; myLikes = new Set();
   clearInterval(unreadPollTimer); clearInterval(notifPollTimer);
   renderTopbar(); loadWall();
@@ -1635,17 +1738,18 @@ async function loadAdmin() {
   }
 }
 
-['registerModal','loginModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','appearanceModal','themeModal','wheelModal','invModal','shopModal','marketModal','dialogsModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
+['registerModal','loginModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','fontModal','appearanceModal','themeModal','wheelModal','invModal','shopModal','marketModal','dialogsModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
   const m = document.getElementById(id); if (!m) return;
-  m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopProfileMusic(); } });
+  m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopAllAudio(); } });
 });
 document.getElementById('closeRegister').onclick = () => document.getElementById('registerModal').classList.remove('show');
 document.getElementById('closeLogin').onclick = () => document.getElementById('loginModal').classList.remove('show');
 document.getElementById('closeMyProfile').onclick = () => document.getElementById('myProfileModal').classList.remove('show');
-document.getElementById('closeViewProfile').onclick = () => { document.getElementById('viewProfileModal').classList.remove('show'); stopProfileMusic(); };
+document.getElementById('closeViewProfile').onclick = () => { document.getElementById('viewProfileModal').classList.remove('show'); stopAllAudio(); };
 document.getElementById('closePw').onclick = () => document.getElementById('pwModal').classList.remove('show');
 document.getElementById('closeEdit').onclick = () => document.getElementById('editModal').classList.remove('show');
 document.getElementById('closeProfileStyle').onclick = () => document.getElementById('profileStyleModal').classList.remove('show');
+document.getElementById('closeFont').onclick = () => document.getElementById('fontModal').classList.remove('show');
 document.getElementById('closeAppearance').onclick = () => document.getElementById('appearanceModal').classList.remove('show');
 document.getElementById('closeTheme').onclick = () => document.getElementById('themeModal').classList.remove('show');
 document.getElementById('closeWheel').onclick = () => document.getElementById('wheelModal').classList.remove('show');
