@@ -75,8 +75,6 @@ async function initDB() {
       `ALTER TABLE market ADD COLUMN IF NOT EXISTS item_key TEXT`
     ];
     for (const q of migr) await pool.query(q);
-
-    // Снимаем NOT NULL со старой колонки skin_id — чтобы новые записи не падали
     try { await pool.query(`ALTER TABLE inventory ALTER COLUMN skin_id DROP NOT NULL`); } catch {}
     try { await pool.query(`ALTER TABLE market ALTER COLUMN skin_id DROP NOT NULL`); } catch {}
     try { await pool.query(`UPDATE inventory SET item_key = skin_id::text WHERE item_key IS NULL AND skin_id IS NOT NULL`); } catch {}
@@ -85,6 +83,8 @@ async function initDB() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_msg_pair ON messages(sender_id, receiver_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, is_read);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_story_expires ON stories(expires_at);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_inv_user ON inventory(user_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_inv_key ON inventory(user_id, item_type, item_key);`);
     console.log('✅ Таблицы готовы');
   } catch (err) { console.error('❌ Ошибка initDB:', err.message); }
 }
@@ -144,6 +144,14 @@ const COLORS = [
   { key: 'color_purple', name: 'Фиолетовый', price: 150, value: '#b17aff' },
   { key: 'color_green', name: 'Зелёный', price: 150, value: '#4dd68a' }
 ];
+const BANNERS = [
+  { key: 'banner_web', name: 'Паутина', price: 300, preview: 'linear-gradient(135deg,#0d0d12,#050508)', icon: '🕸' },
+  { key: 'banner_sunset', name: 'Закат', price: 250, preview: 'linear-gradient(135deg,#ff9a5c,#c45a1a)', icon: '🌅' },
+  { key: 'banner_cosmos', name: 'Космос', price: 400, preview: 'linear-gradient(135deg,#1a0d33,#050510)', icon: '🌌' },
+  { key: 'banner_fire', name: 'Огонь', price: 350, preview: 'linear-gradient(135deg,#ff5c6e,#7a1a1a)', icon: '🔥' },
+  { key: 'banner_matrix', name: 'Матрица', price: 300, preview: 'linear-gradient(135deg,#001505,#000300)', icon: '🟢' }
+];
+
 const WHEEL_POOL = [
   ...SKINS.map(s => ({ type: 'skin', key: String(s.id), name: s.name, icon: s.photo, rarity: s.rarity })),
   ...PROFILE_THEMES.map(t => ({ type: 'theme', key: t.key, name: t.name, icon: '🎨', rarity: 'epic' })),
@@ -536,13 +544,13 @@ app.post('/api/wheel/spin', authUser, actionLimiter, async (req, res) => {
     await pool.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [COST, req.userId]);
     await pool.query('INSERT INTO wheel_spins (user_id, result_name, result_photo, result_skin_id) VALUES ($1,$2,$3,$4)',
       [req.userId, prize.name, prize.icon, prize.type === 'skin' ? parseInt(prize.key) : null]);
-    if (prize.type === 'skin') await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, 'skin', prize.key]);
+    if (prize.type === 'skin') await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, 'skin', String(prize.key)]);
     else if (prize.type === 'coins') await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [1000, req.userId]);
     else if (prize.type === 'premium') {
       if (prize.key === 'forever') await pool.query('UPDATE profiles SET is_premium=1, premium_until=NULL WHERE id=$1', [req.userId]);
       else await pool.query(`UPDATE profiles SET is_premium=1, premium_until=COALESCE(premium_until, CURRENT_TIMESTAMP) + INTERVAL '7 days' WHERE id=$1`, [req.userId]);
     } else if (['theme','nick','color','chatbg'].includes(prize.type)) {
-      await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, prize.type, prize.key]);
+      await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, prize.type, String(prize.key)]);
     }
     const nb = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
     await notify(req.userId, 'wheel', `🎰 Ты выбил: ${prize.name}`, null);
@@ -550,12 +558,13 @@ app.post('/api/wheel/spin', authUser, actionLimiter, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка прокрутки' }); }
 });
 
+// ============ ИНВЕНТАРЬ ============
 app.get('/api/inventory/:userId', async (req, res) => {
   try {
     const r = await pool.query('SELECT item_type, item_key, COUNT(*)::int AS count FROM inventory WHERE user_id=$1 GROUP BY item_type, item_key ORDER BY MAX(obtained_at) DESC', [parseInt(req.params.userId)]);
     const items = r.rows.map(x => {
-      if (x.item_type === 'skin') { const s = skinById(x.item_key); return s ? { ...s, type: 'skin', count: x.count } : null; }
-      const all = [...PROFILE_THEMES, ...CHAT_BGS, ...NICKS, ...COLORS];
+      if (x.item_type === 'skin') { const s = skinById(x.item_key); return s ? { ...s, type: 'skin', key: String(s.id), count: x.count } : null; }
+      const all = [...PROFILE_THEMES, ...CHAT_BGS, ...NICKS, ...COLORS, ...BANNERS];
       const found = all.find(a => a.key === x.item_key);
       return found ? { type: x.item_type, key: x.item_key, name: found.name, icon: found.icon || '🎨', rarity: x.item_type === 'theme' ? 'epic' : 'rare', count: x.count } : null;
     }).filter(Boolean);
@@ -567,22 +576,24 @@ app.get('/api/inventory/owned/:userId', authUser, async (req, res) => {
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
+// ============ ПОДАРКИ ============
 app.post('/api/gifts/send', authUser, actionLimiter, async (req, res) => {
   try {
     const rid = parseInt(req.body.receiverId);
     const { itemKey, itemType } = req.body;
     if (!rid || !itemKey || rid === req.userId) return res.status(400).json({ error: 'Некорректно' });
-    const it = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_key=$2 AND item_type=$3 LIMIT 1', [req.userId, itemKey, itemType || 'skin']);
+    const it = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_key=$2 AND item_type=$3 LIMIT 1', [req.userId, String(itemKey), String(itemType || 'skin')]);
     if (!it.rows.length) return res.status(400).json({ error: 'У тебя нет этого предмета' });
     await pool.query('DELETE FROM inventory WHERE id=$1', [it.rows[0].id]);
-    await pool.query('INSERT INTO gifts (sender_id, receiver_id, item_key, item_type) VALUES ($1,$2,$3,$4)', [req.userId, rid, itemKey, itemType || 'skin']);
-    await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [rid, itemType || 'skin', itemKey]);
+    await pool.query('INSERT INTO gifts (sender_id, receiver_id, item_key, item_type) VALUES ($1,$2,$3,$4)', [req.userId, rid, String(itemKey), String(itemType || 'skin')]);
+    await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [rid, String(itemType || 'skin'), String(itemKey)]);
     const me = await pool.query('SELECT name FROM profiles WHERE id=$1', [req.userId]);
     await notify(rid, 'gift', `🎁 ${me.rows[0]?.name || 'Кто-то'} подарил тебе подарок`, req.userId);
     res.json({ ok: true });
-  } catch (err) { res.status(500).json({ error: 'Ошибка подарка' }); }
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка подарка' }); }
 });
 
+// ============ ИСТОРИИ ============
 app.post('/api/stories', authUser, async (req, res) => {
   try {
     const photo = String(req.body.photo || '').slice(0, 500);
@@ -629,6 +640,7 @@ app.get('/api/stories/:id/views', authUser, async (req, res) => {
 });
 app.delete('/api/stories/cleanup', async (req, res) => { try { await pool.query('DELETE FROM stories WHERE expires_at <= CURRENT_TIMESTAMP'); res.json({ ok: true }); } catch { res.json({ ok: true }); } });
 
+// ============ КОММЕНТАРИИ ============
 app.get('/api/comments/:targetId', async (req, res) => {
   try { const r = await pool.query(`SELECT c.*, p.name, p.photo FROM comments c JOIN profiles p ON p.id=c.author_id WHERE c.target_id=$1 ORDER BY c.created_at DESC`, [parseInt(req.params.targetId)]); res.json(r.rows); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
@@ -654,25 +666,16 @@ app.delete('/api/comments/:id', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
+// ============ МАГАЗИН ============
 app.get('/api/shop', (req, res) => {
-  res.json({
-    banners: [
-      { key: 'banner_web', name: 'Паутина', price: 300, preview: 'linear-gradient(135deg,#0d0d12,#050508)', icon: '🕸' },
-      { key: 'banner_sunset', name: 'Закат', price: 250, preview: 'linear-gradient(135deg,#ff9a5c,#c45a1a)', icon: '🌅' },
-      { key: 'banner_cosmos', name: 'Космос', price: 400, preview: 'linear-gradient(135deg,#1a0d33,#050510)', icon: '🌌' },
-      { key: 'banner_fire', name: 'Огонь', price: 350, preview: 'linear-gradient(135deg,#ff5c6e,#7a1a1a)', icon: '🔥' },
-      { key: 'banner_matrix', name: 'Матрица', price: 300, preview: 'linear-gradient(135deg,#001505,#000300)', icon: '🟢' }
-    ],
-    nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS
-  });
+  res.json({ banners: BANNERS, nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS });
 });
+
 app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
   const client = await pool.connect();
   try {
     const { key, category } = req.body;
-    const all = { banners: [
-      {key:'banner_web',price:300},{key:'banner_sunset',price:250},{key:'banner_cosmos',price:400},{key:'banner_fire',price:350},{key:'banner_matrix',price:300}
-    ], nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS };
+    const all = { banners: BANNERS, nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS };
     const list = all[category] || [];
     const item = list.find(x => x.key === key);
     if (!item) return res.status(404).json({ error: 'Не найдено' });
@@ -682,33 +685,51 @@ app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
     const u = await client.query('SELECT vide FROM profiles WHERE id=$1 FOR UPDATE', [req.userId]);
     if ((u.rows[0].vide || 0) < item.price) { await client.query('ROLLBACK'); return res.status(400).json({ error: 'Мало вайдиков' }); }
     await client.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [item.price, req.userId]);
-    await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, category.slice(0,-1), key]);
+    const itemType = category === 'banners' ? 'banner' : category.slice(0,-1);
+    await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, itemType, String(key)]);
     await client.query('COMMIT');
     const nb = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
     res.json({ ok: true, balance: nb.rows[0].vide });
-  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка: ' + err.message }); }
   finally { client.release(); }
 });
 
+// ============ РЫНОК (ИСПРАВЛЕНО) ============
 app.get('/api/market', async (req, res) => {
   try { const r = await pool.query(`SELECT m.id, m.item_key, m.item_type, m.price, m.seller_id, m.created_at, p.name AS seller_name FROM market m JOIN profiles p ON p.id=m.seller_id WHERE m.is_sold=0 ORDER BY m.created_at DESC`); res.json(r.rows); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
+
 app.post('/api/market/list', authUser, actionLimiter, async (req, res) => {
   try {
-    const sid = parseInt(req.body.skinId), p = parseInt(req.body.price);
-    if (isNaN(sid) || !p || p < 1 || p > 100000) return res.status(400).json({ error: 'Некорректно' });
-    const it = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1', [req.userId, 'skin', String(sid)]);
-    if (!it.rows.length) return res.status(400).json({ error: 'Нет скина' });
+    const sid = String(req.body.skinId ?? '').trim();
+    const p = parseInt(req.body.price);
+    console.log('MARKET LIST REQ:', { sid, p, body: req.body, userId: req.userId });
+    if (!sid || !Number.isFinite(p) || p < 1 || p > 100000) {
+      return res.status(400).json({ error: 'Некорректные данные: skinId=' + sid + ', price=' + p });
+    }
+    const it = await pool.query(
+      'SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1',
+      [req.userId, 'skin', sid]
+    );
+    if (!it.rows.length) return res.status(400).json({ error: 'У тебя нет этого скина (искали key=' + sid + ')' });
     await pool.query('DELETE FROM inventory WHERE id=$1', [it.rows[0].id]);
-    const r = await pool.query('INSERT INTO market (seller_id, item_type, item_key, price) VALUES ($1,$2,$3,$4) RETURNING *', [req.userId, 'skin', String(sid), p]);
+    const r = await pool.query(
+      'INSERT INTO market (seller_id, item_type, item_key, price) VALUES ($1,$2,$3,$4) RETURNING *',
+      [req.userId, 'skin', sid, p]
+    );
     res.json(r.rows[0]);
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) {
+    console.error('market/list error:', err);
+    res.status(500).json({ error: 'Ошибка сервера: ' + err.message });
+  }
 });
+
 app.post('/api/market/buy', authUser, actionLimiter, async (req, res) => {
   const client = await pool.connect();
   try {
     const lotId = parseInt(req.body.lotId);
+    if (!lotId) return res.status(400).json({ error: 'Нет lotId' });
     await client.query('BEGIN');
     const lot = await client.query('SELECT * FROM market WHERE id=$1 AND is_sold=0 FOR UPDATE', [lotId]);
     if (!lot.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Продан' }); }
@@ -719,13 +740,14 @@ app.post('/api/market/buy', authUser, actionLimiter, async (req, res) => {
     await client.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [l.price, req.userId]);
     await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [l.price, l.seller_id]);
     await client.query('UPDATE market SET is_sold=1, buyer_id=$1 WHERE id=$2', [req.userId, lotId]);
-    await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, l.item_type, l.item_key]);
+    await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, String(l.item_type), String(l.item_key)]);
     await client.query('COMMIT');
     const nb = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
     res.json({ ok: true, balance: nb.rows[0].vide });
-  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка' }); }
   finally { client.release(); }
 });
+
 app.post('/api/market/cancel', authUser, async (req, res) => {
   try {
     const lotId = parseInt(req.body.lotId);
@@ -733,12 +755,17 @@ app.post('/api/market/cancel', authUser, async (req, res) => {
     if (!l.rows.length) return res.status(404).json({ error: 'Нет' });
     if (l.rows[0].seller_id !== req.userId) return res.status(403).json({ error: 'Не твой' });
     await pool.query('DELETE FROM market WHERE id=$1', [lotId]);
-    await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, l.rows[0].item_type, l.rows[0].item_key]);
+    await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, String(l.rows[0].item_type), String(l.rows[0].item_key)]);
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-app.get('/api/market/my/:userId', async (req, res) => { try { const r = await pool.query('SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC', [parseInt(req.params.userId)]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 
+app.get('/api/market/my/:userId', async (req, res) => {
+  try { const r = await pool.query('SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC', [parseInt(req.params.userId)]); res.json(r.rows); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+});
+
+// ============ АДМИНКА ============
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
   try { if (req.body.password !== ADMIN_PASSWORD) return res.status(403).json({ error: 'Неверный пароль' }); res.json({ token: makeAdminToken() }); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
