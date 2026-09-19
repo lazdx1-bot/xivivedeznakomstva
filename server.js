@@ -16,7 +16,7 @@ if (!process.env.DATABASE_URL) { console.error('❌ НЕТ DATABASE_URL!'); proc
 if (!process.env.JWT_SECRET) { console.error('❌ НЕТ JWT_SECRET!'); process.exit(1); }
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '148823242001';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '148823242161';
 const ADMIN_JWT_SECRET = JWT_SECRET + ':admin';
 
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
@@ -78,14 +78,14 @@ async function initDB() {
     for (const q of migr) await pool.query(q);
     try { await pool.query(`ALTER TABLE inventory ALTER COLUMN skin_id DROP NOT NULL`); } catch {}
     try { await pool.query(`ALTER TABLE market ALTER COLUMN skin_id DROP NOT NULL`); } catch {}
-    try { await pool.query(`UPDATE inventory SET item_key = skin_id::text WHERE item_key IS NULL AND skin_id IS NOT NULL`); } catch {}
-    try { await pool.query(`UPDATE market SET item_key = skin_id::text WHERE item_key IS NULL AND skin_id IS NOT NULL`); } catch {}
 
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_msg_pair ON messages(sender_id, receiver_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, is_read);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_story_expires ON stories(expires_at);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_inv_user ON inventory(user_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_inv_key ON inventory(user_id, item_type, item_key);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_likes_liker ON likes(liker_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_likes_target ON likes(target_id);`);
     console.log('✅ Таблицы готовы');
   } catch (err) { console.error('❌ Ошибка initDB:', err.message); }
 }
@@ -402,7 +402,6 @@ app.post('/api/profiles/:id/profile-style', authUser, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// === Шрифт ника ===
 app.post('/api/profiles/:id/profile-font', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
@@ -437,7 +436,31 @@ app.post('/api/like', authUser, actionLimiter, async (req, res) => {
 });
 app.get('/api/likes/:userId', async (req, res) => { try { const r = await pool.query('SELECT target_id FROM likes WHERE liker_id=$1', [parseInt(req.params.userId)]); res.json(r.rows.map(x => x.target_id)); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 app.get('/api/liked-by/:userId', async (req, res) => { try { const r = await pool.query(`SELECT p.id, p.name, p.age, p.bio, p.photo, p.contact_type, p.contact_value FROM profiles p JOIN likes l ON l.liker_id=p.id WHERE l.target_id=$1 ORDER BY l.created_at DESC`, [parseInt(req.params.userId)]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
-app.get('/api/mutual/:a/:b', async (req, res) => { try { const a = parseInt(req.params.a), b = parseInt(req.params.b); const r = await pool.query(`SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=$2 UNION SELECT 1 FROM likes WHERE liker_id=$2 AND target_id=$1`, [a, b]); res.json({ mutual: r.rows.length >= 2 }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+app.get('/api/mutual/:a/:b', async (req, res) => { try { const a = parseInt(req.params.a), b = parseInt(req.params.b); const r = await pool.query(`SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=$2 UNION SELECT 1 FROM likes WHERE liker_id=$2 AND target_id=$1`, [a, b]); res.json({ mutual: r.rows.length >= 2, any: r.rows.length >= 1 }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+
+// === СПИСОК ТЕХ, КОМУ МОЖНО НАПИСАТЬ ===
+app.get('/api/messages/writable/:userId', authUser, async (req, res) => {
+  try {
+    if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' });
+    const me = req.userId;
+    // все, у кого есть хотя бы один лайк в любую сторону (кроме себя), и с кем ещё не было сообщений
+    const r = await pool.query(`
+      SELECT DISTINCT p.id, p.name, p.age, p.photo, p.profile_theme, p.profile_font, p.nick_style, p.last_seen
+      FROM profiles p
+      WHERE p.id <> $1
+        AND (
+          EXISTS (SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=p.id)
+          OR EXISTS (SELECT 1 FROM likes WHERE liker_id=p.id AND target_id=$1)
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM messages WHERE (sender_id=$1 AND receiver_id=p.id) OR (sender_id=p.id AND receiver_id=$1)
+        )
+      ORDER BY p.last_seen DESC NULLS LAST
+      LIMIT 100
+    `, [me]);
+    res.json(r.rows);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
 
 app.get('/api/messages/dialogs/:userId', authUser, async (req, res) => {
   try {
@@ -706,32 +729,18 @@ app.get('/api/market', async (req, res) => {
   try { const r = await pool.query(`SELECT m.id, m.item_key, m.item_type, m.price, m.seller_id, m.created_at, p.name AS seller_name FROM market m JOIN profiles p ON p.id=m.seller_id WHERE m.is_sold=0 ORDER BY m.created_at DESC`); res.json(r.rows); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-
 app.post('/api/market/list', authUser, actionLimiter, async (req, res) => {
   try {
     const sid = String(req.body.skinId ?? '').trim();
     const p = parseInt(req.body.price);
-    console.log('MARKET LIST REQ:', { sid, p, body: req.body, userId: req.userId });
-    if (!sid || !Number.isFinite(p) || p < 1 || p > 100000) {
-      return res.status(400).json({ error: 'Некорректные данные: skinId=' + sid + ', price=' + p });
-    }
-    const it = await pool.query(
-      'SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1',
-      [req.userId, 'skin', sid]
-    );
-    if (!it.rows.length) return res.status(400).json({ error: 'У тебя нет этого скина (искали key=' + sid + ')' });
+    if (!sid || !Number.isFinite(p) || p < 1 || p > 100000) return res.status(400).json({ error: 'Некорректные данные' });
+    const it = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1', [req.userId, 'skin', sid]);
+    if (!it.rows.length) return res.status(400).json({ error: 'У тебя нет этого скина' });
     await pool.query('DELETE FROM inventory WHERE id=$1', [it.rows[0].id]);
-    const r = await pool.query(
-      'INSERT INTO market (seller_id, item_type, item_key, price) VALUES ($1,$2,$3,$4) RETURNING *',
-      [req.userId, 'skin', sid, p]
-    );
+    const r = await pool.query('INSERT INTO market (seller_id, item_type, item_key, price) VALUES ($1,$2,$3,$4) RETURNING *', [req.userId, 'skin', sid, p]);
     res.json(r.rows[0]);
-  } catch (err) {
-    console.error('market/list error:', err);
-    res.status(500).json({ error: 'Ошибка сервера: ' + err.message });
-  }
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка сервера' }); }
 });
-
 app.post('/api/market/buy', authUser, actionLimiter, async (req, res) => {
   const client = await pool.connect();
   try {
@@ -754,7 +763,6 @@ app.post('/api/market/buy', authUser, actionLimiter, async (req, res) => {
   } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка' }); }
   finally { client.release(); }
 });
-
 app.post('/api/market/cancel', authUser, async (req, res) => {
   try {
     const lotId = parseInt(req.body.lotId);
@@ -766,12 +774,12 @@ app.post('/api/market/cancel', authUser, async (req, res) => {
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-
 app.get('/api/market/my/:userId', async (req, res) => {
   try { const r = await pool.query('SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC', [parseInt(req.params.userId)]); res.json(r.rows); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
+// === АДМИНКА ===
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
   try { if (req.body.password !== ADMIN_PASSWORD) return res.status(403).json({ error: 'Неверный пароль' }); res.json({ token: makeAdminToken() }); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
