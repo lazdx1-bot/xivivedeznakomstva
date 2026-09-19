@@ -925,6 +925,7 @@ async function cleanupStaleBattles() {
     for (const row of r.rows) {
       await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [row.bet, row.creator_id]);
       await notify(row.creator_id, 'battle', '⏱ Комната кейс-батла отменена (никто не зашёл). Ставка возвращена.', null);
+      await pool.query('DELETE FROM battle_rooms WHERE id=$1', [row.id]);
     }
   } catch (e) { console.error('battle cleanup:', e.message); }
 }
@@ -971,6 +972,27 @@ app.get('/api/battle/list', authUser, async (req, res) => {
       ORDER BY b.created_at DESC LIMIT 50
     `, [req.userId]);
     res.json(r.rows);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.get('/api/battle/my-active', authUser, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT b.code, b.bet, b.rounds, b.status, b.creator_id, b.opponent_id, b.updated_at,
+        cp.name AS creator_name, op.name AS opponent_name
+      FROM battle_rooms b
+      LEFT JOIN profiles cp ON cp.id = b.creator_id
+      LEFT JOIN profiles op ON op.id = b.opponent_id
+      WHERE (b.creator_id = $1 OR b.opponent_id = $1) AND b.status IN ('waiting','active')
+      ORDER BY b.updated_at DESC LIMIT 10
+    `, [req.userId]);
+    res.json(r.rows.map(row => ({
+      code: row.code, bet: row.bet, rounds: row.rounds, status: row.status,
+      creatorId: row.creator_id, opponentId: row.opponent_id,
+      creatorName: row.creator_name, opponentName: row.opponent_name,
+      isMineCreator: row.creator_id === req.userId,
+      updatedAt: row.updated_at
+    })));
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
 });
 
@@ -1149,6 +1171,7 @@ app.post('/api/battle/leave', authUser, async (req, res) => {
   const client = await pool.connect();
   try {
     const code = sanitize(req.body.code, 10).toUpperCase();
+    if (!code) { client.release(); return res.status(400).json({ error: 'Нет кода' }); }
     await client.query('BEGIN');
     const rr = await client.query('SELECT * FROM battle_rooms WHERE code=$1 FOR UPDATE', [code]);
     if (!rr.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Нет' }); }
@@ -1159,20 +1182,106 @@ app.post('/api/battle/leave', authUser, async (req, res) => {
     if (r.status === 'waiting') {
       if (!isCreator) { await client.query('ROLLBACK'); return res.status(403).json({ error: 'Только создатель может отменить' }); }
       await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bet, r.creator_id]);
-      await client.query(`UPDATE battle_rooms SET status='cancelled', updated_at=CURRENT_TIMESTAMP WHERE id=$1`, [r.id]);
+      await client.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
     } else if (r.status === 'active') {
       const winnerId = isCreator ? r.opponent_id : r.creator_id;
       await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bank, winnerId]);
-      await client.query(`UPDATE battle_rooms SET status='finished', winner_id=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2`, [winnerId, r.id]);
+      const loserDrops = isCreator ? (r.creator_drops || []) : (r.opponent_drops || []);
+      for (const d of loserDrops) {
+        if (d.type === 'skin' || ['theme','nick','color','chatbg'].includes(d.type)) {
+          const del = await client.query(`DELETE FROM inventory WHERE id IN (SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1) RETURNING id`, [req.userId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+          if (del.rows.length) {
+            await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [winnerId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+          }
+        }
+      }
       await notify(winnerId, 'battle', `🏆 Соперник сбежал из кейс-батла. Ты забираешь банк +${r.bank} 🪙`, null);
+      await client.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
     } else {
-      await client.query('ROLLBACK');
-      return res.json({ ok: true });
+      await client.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
     }
     await client.query('COMMIT');
     res.json({ ok: true });
   } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка' }); }
   finally { client.release(); }
+});
+
+app.post('/api/battle/abandon', authUser, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const code = sanitize(req.body.code, 10).toUpperCase();
+    if (!code) { client.release(); return res.json({ ok: true }); }
+    await client.query('BEGIN');
+    const rr = await client.query('SELECT * FROM battle_rooms WHERE code=$1 FOR UPDATE', [code]);
+    if (!rr.rows.length) { await client.query('ROLLBACK'); return res.json({ ok: true }); }
+    const r = rr.rows[0];
+    const isCreator = r.creator_id === req.userId;
+    const isOpponent = r.opponent_id === req.userId;
+    if (!isCreator && !isOpponent) { await client.query('ROLLBACK'); return res.json({ ok: true }); }
+    if (r.status === 'waiting' && isCreator) {
+      await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bet, r.creator_id]);
+      await client.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
+    } else if (r.status === 'active') {
+      const winnerId = isCreator ? r.opponent_id : r.creator_id;
+      if (winnerId) {
+        await client.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bank, winnerId]);
+        const loserDrops = isCreator ? (r.creator_drops || []) : (r.opponent_drops || []);
+        for (const d of loserDrops) {
+          if (d.type === 'skin' || ['theme','nick','color','chatbg'].includes(d.type)) {
+            const del = await client.query(`DELETE FROM inventory WHERE id IN (SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1) RETURNING id`, [req.userId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+            if (del.rows.length) {
+              await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [winnerId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+            }
+          }
+        }
+        await notify(winnerId, 'battle', `🏆 Соперник отключился. Ты забираешь банк +${r.bank} 🪙`, null);
+      }
+      await client.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
+    } else {
+      await client.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
+    }
+    await client.query('COMMIT');
+    res.json({ ok: true });
+  } catch (err) { await client.query('ROLLBACK').catch(()=>{}); res.json({ ok: true }); }
+  finally { client.release(); }
+});
+
+app.get('/api/battle/abandon-beacon', async (req, res) => {
+  try {
+    const code = String(req.query.code || '').toUpperCase();
+    const token = String(req.query.token || '');
+    if (!code || !token) return res.json({ ok: true });
+    let userId = null;
+    try { const p = jwt.verify(token, JWT_SECRET); if (p.type === 'user') userId = p.uid; } catch { return res.json({ ok: true }); }
+    if (!userId) return res.json({ ok: true });
+    const rr = await pool.query(`SELECT * FROM battle_rooms WHERE code=$1 AND status IN ('waiting','active')`, [code]);
+    if (!rr.rows.length) return res.json({ ok: true });
+    const r = rr.rows[0];
+    const isCreator = r.creator_id === userId;
+    const isOpponent = r.opponent_id === userId;
+    if (!isCreator && !isOpponent) return res.json({ ok: true });
+    if (r.status === 'waiting' && isCreator) {
+      await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bet, r.creator_id]);
+      await pool.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
+    } else if (r.status === 'active') {
+      const winnerId = isCreator ? r.opponent_id : r.creator_id;
+      if (winnerId) {
+        await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [r.bank, winnerId]);
+        const loserDrops = isCreator ? (r.creator_drops || []) : (r.opponent_drops || []);
+        for (const d of loserDrops) {
+          if (d.type === 'skin' || ['theme','nick','color','chatbg'].includes(d.type)) {
+            const del = await pool.query(`DELETE FROM inventory WHERE id IN (SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1) RETURNING id`, [userId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+            if (del.rows.length) {
+              await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [winnerId, d.type === 'skin' ? 'skin' : d.type, String(d.key)]);
+            }
+          }
+        }
+        await notify(winnerId, 'battle', `🏆 Соперник отключился. Ты забираешь банк +${r.bank} 🪙`, null);
+      }
+      await pool.query('DELETE FROM battle_rooms WHERE id=$1', [r.id]);
+    }
+    res.json({ ok: true });
+  } catch (err) { console.error(err); res.json({ ok: true }); }
 });
 
 // === АДМИНКА ===
