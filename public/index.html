@@ -29,7 +29,6 @@
   @keyframes bgShift { 0%{background-position:0% 0%,100% 100%,50% 50%,0 0}50%{background-position:100% 50%,0% 50%,20% 80%,0 0}100%{background-position:0% 0%,100% 100%,50% 50%,0 0} }
   body::before { content: ''; position: fixed; top:-20%; left:-20%; width:140%; height:140%; background: radial-gradient(circle at 30% 30%, var(--float-1), transparent 40%), radial-gradient(circle at 70% 70%, var(--float-2), transparent 45%); animation: floatGlow 22s ease-in-out infinite alternate; pointer-events: none; z-index: 0; }
   @keyframes floatGlow { 0%{transform:translate(0,0) scale(1)}50%{transform:translate(6%,-4%) scale(1.08)}100%{transform:translate(-5%,5%) scale(1.03)} }
-
   body.fx-web { background:#050508; background-image: repeating-linear-gradient(60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px), repeating-linear-gradient(-60deg, rgba(200,200,220,0.035) 0px, rgba(200,200,220,0.035) 1px, transparent 1px, transparent 60px); animation: none; }
   body.fx-web::before { animation: none; }
   .web-corner { position: fixed; width: 340px; height: 340px; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 0.6s; background-size: contain; background-repeat: no-repeat; }
@@ -39,7 +38,7 @@
   .web-corner.bl { bottom: 0; left: 0; transform: scaleY(-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   .web-corner.br { bottom: 0; right: 0; transform: scale(-1,-1); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='white' stroke-width='0.7'><path d='M0 0 L200 0 M0 0 L0 200 M0 0 L141 141 M0 0 L100 173 M0 0 L173 100 M0 0 L60 190 M0 0 L190 60'/><path d='M20 0 Q14 14 0 20 M50 0 Q35 35 0 50 M90 0 Q63 63 0 90 M140 0 Q99 99 0 140 M190 0 Q134 134 0 190'/></g></svg>"); }
   body.fx-glass { background: #0a0a10; }
-  body.fx-glass .topbar, body.fx-glass .profile-card, body.fx-glass .modal-content, body.fx-glass .liker-row, body.fx-glass .stat-box, body.fx-glass .profile-hero, body.fx-glass .admin-user-row, body.fx-glass .settings-item { background: rgba(255,255,255,0.06) !important; backdrop-filter: blur(22px) saturate(180%) !important; -webkit-backdrop-filter: blur(22px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.14) !important; }
+  body.fx-glass .topbar, body.fx-glass .profile-card, body.fx-glass .modal-content, body.fx-glass .liker-row, body.fx-glass .stat-box, body.fx-glass .profile-hero, body.fx-glass .admin-user-row, body.fx-glass .settings-item, body.fx-glass .shame-card { background: rgba(255,255,255,0.06) !important; backdrop-filter: blur(22px) saturate(180%) !important; -webkit-backdrop-filter: blur(22px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.14) !important; }
   .snow-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2; display: none; }
   body.fx-snow .snow-layer { display: block; }
   .snowflake { position: absolute; top: -10px; color: #fff; font-size: 14px; opacity: 0.7; animation: fall linear infinite; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
@@ -48,13 +47,11 @@
   body.fx-stars .stars-layer { display: block; }
   .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; box-shadow: 0 0 6px #fff; animation: twinkle 3s ease-in-out infinite; }
   @keyframes twinkle { 0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.3)} }
-
   .topbar { position: relative; z-index: 5; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 14px; background: linear-gradient(180deg, rgba(60,60,72,0.5), rgba(30,30,38,0.1)); border-bottom: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(14px); flex-wrap: wrap; }
   .brand-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; }
   .brand { font-size: 24px; letter-spacing: 4px; background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light)); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 5s linear infinite; font-weight: 700; }
   @keyframes shimmer { 0%{background-position:-200% 0}100%{background-position:200% 0} }
   .brand-gif { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; box-shadow: 0 0 12px var(--accent-glow); border: 1px solid rgba(255,255,255,0.15); }
-
   .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .theme-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; font-size: 18px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; position: relative; }
   .theme-btn:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: translateY(-2px); }
@@ -67,9 +64,13 @@
   .vide-badge:hover { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,180,0,0.25)); box-shadow: 0 0 18px rgba(255,215,0,0.4); }
   .settings-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); color: #e8e8f0; font-size: 20px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; }
   .settings-btn:hover { background: rgba(150,150,180,0.5); box-shadow: 0 0 18px var(--accent-glow); transform: rotate(45deg); }
-
   .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
-
+  .main-tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+  .main-tabs button { padding: 12px 28px; font-size: 14px; letter-spacing: 1px; border-radius: 30px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.4); color: #d8d8e4; transition: all 0.25s; }
+  .main-tabs button:hover { background: rgba(150,150,180,0.4); }
+  .main-tabs button.active { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 60%, transparent), color-mix(in srgb, var(--accent-dark) 60%, transparent)); color: #fff; border-color: color-mix(in srgb, var(--accent-light) 60%, transparent); box-shadow: 0 0 24px var(--accent-glow); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
   .stories-strip { display: flex; gap: 12px; overflow-x: auto; padding: 12px 0 20px; scrollbar-width: none; }
   .stories-strip::-webkit-scrollbar { display: none; }
   .story-bubble { flex-shrink: 0; width: 78px; text-align: center; cursor: pointer; }
@@ -85,7 +86,6 @@
   .story-viewer .sv-header img { width: 36px; height: 36px; border-radius: 50%; }
   .story-viewer .sv-caption { position: absolute; bottom: 60px; left: 20px; right: 20px; color: #fff; font-size: 15px; text-shadow: 0 2px 8px rgba(0,0,0,0.9); }
   .story-viewer .sv-views { position: absolute; bottom: 20px; left: 20px; color: #d8d8e4; font-size: 13px; }
-
   .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
   .profile-card { position: relative; border-radius: 18px; overflow: hidden; background: rgba(38,38,46,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 12px 30px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; animation: cardIn 0.4s; display: flex; flex-direction: column; cursor: pointer; }
   .profile-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px var(--accent-glow); }
@@ -115,13 +115,11 @@
   .like-btn:hover { background: rgba(255,90,110,0.15); border-color: rgba(255,90,110,0.4); color: #ff8a99; }
   .like-btn.liked { background: rgba(255,90,110,0.2); border-color: rgba(255,90,110,0.55); color: #ff8a99; }
   .like-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
   .nick-neon { text-shadow: 0 0 6px currentColor, 0 0 14px currentColor; }
   .nick-fire { background: linear-gradient(90deg,#ff9a00,#ff3c00,#ff9a00); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
   .nick-ice { color: #a5e9ff; text-shadow: 0 0 8px rgba(165,233,255,0.8); }
   .nick-rgb { background: linear-gradient(90deg,#ff0050,#ffb400,#00dc50,#008cff,#ff0050); background-size: 400% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 4s linear infinite; }
   .nick-gold { color: #ffd970; text-shadow: 0 0 10px rgba(255,215,0,0.7); font-weight: 700; }
-
   .font-pixel { font-family: 'Press Start 2P', monospace; letter-spacing: 0 !important; font-size: 0.85em; }
   .font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
   .font-caveat { font-family: 'Caveat', cursive; font-size: 1.15em; }
@@ -132,7 +130,25 @@
   .font-vt323 { font-family: 'VT323', monospace; font-size: 1.2em; }
   .font-monoton { font-family: 'Monoton', cursive; letter-spacing: 3px; }
   .font-spray { font-family: 'Rubik Spray Paint', cursive; }
-
+  .shame-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .shame-card { position: relative; background: rgba(38,38,46,0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; animation: cardIn 0.4s; }
+  .shame-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 22px rgba(255,90,110,0.3); }
+  .shame-photo { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #1a1a22; }
+  .shame-photo-placeholder { width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 60px; color: rgba(200,200,220,0.2); background: linear-gradient(135deg, #22222c, #2e2e3a); }
+  .shame-body { padding: 14px 16px 16px; }
+  .shame-target { display: inline-block; padding: 4px 10px; font-size: 11.5px; letter-spacing: 1px; color: #ff7a88; background: rgba(255,90,110,0.15); border: 1px solid rgba(255,90,110,0.35); border-radius: 12px; text-transform: uppercase; margin-bottom: 8px; }
+  .shame-text { font-size: 14px; color: #e8e8f0; line-height: 1.5; word-break: break-word; }
+  .shame-footer { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .shame-footer img, .shame-footer .mini-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #b0b0c4; }
+  .shame-footer .sf-info { flex: 1; }
+  .shame-footer .sf-info strong { display: block; font-size: 13px; color: #f0f0f8; }
+  .shame-footer .sf-info small { font-size: 11px; color: #8a8a9c; }
+  .shame-footer button { padding: 6px 10px; font-size: 11.5px; border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.55); color: #d8d8e4; transition: all 0.25s; }
+  .shame-footer button:hover { background: rgba(150,150,180,0.5); }
+  .shame-footer button.report { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
+  .shame-footer button.del { color: #ff9aa7; border-color: rgba(255,90,110,0.4); }
+  .shame-add-btn { display: block; margin: 0 auto 20px; padding: 14px 32px; font-size: 15px; letter-spacing: 1px; color: #fff; background: linear-gradient(135deg, rgba(255,90,110,0.55), rgba(196,69,105,0.55)); border: 1px solid rgba(255,90,110,0.5); border-radius: 30px; cursor: pointer; backdrop-filter: blur(12px); transition: all 0.3s; font-family: inherit; }
+  .shame-add-btn:hover { box-shadow: 0 0 28px rgba(255,90,110,0.5); transform: translateY(-2px); }
   .modal { position: fixed; inset: 0; background: rgba(10,10,14,0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; animation: fadeIn 0.25s; }
   .modal.show { display: flex; }
   @keyframes fadeIn { from{opacity:0}to{opacity:1} }
@@ -141,7 +157,6 @@
   @keyframes modalIn { from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)} }
   .modal-content h2 { font-size: 20px; letter-spacing: 2px; margin-bottom: 20px; color: #e8e8f5; text-align: center; text-transform: uppercase; font-weight: 500; }
   .modal-close { position: absolute; top: 14px; right: 16px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #c8c8d6; font-size: 16px; cursor: pointer; z-index: 2; }
-
   form label { display: block; font-size: 13px; color: #b0b0c4; margin-bottom: 14px; letter-spacing: 0.5px; }
   form input, form textarea, form select { width: 100%; margin-top: 6px; padding: 11px 14px; font-size: 14px; color: #f0f0f8; background: rgba(20,20,26,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; outline: none; transition: all 0.25s; resize: vertical; font-family: inherit; }
   form input:focus, form textarea:focus, form select:focus { border-color: color-mix(in srgb, var(--accent) 70%, transparent); box-shadow: 0 0 0 3px var(--accent-glow); }
@@ -156,26 +171,21 @@
   .form-status { margin-top: 12px; text-align: center; font-size: 13px; min-height: 18px; color: #a8a8c0; }
   .form-status.error { color: #ff7a88; }
   .form-status.success { color: #9fe0b0; }
-
   .stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
   .stat-box { flex: 1; text-align: center; padding: 14px 10px; background: rgba(30,30,40,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; }
   .stat-box .num { font-size: 24px; font-weight: 600; color: #e8e8f5; }
   .stat-box .label { font-size: 11.5px; color: #8a8a9c; text-transform: uppercase; margin-top: 4px; }
   .section-title { font-size: 13px; letter-spacing: 2px; color: #b8b8cc; text-transform: uppercase; margin: 20px 0 12px; font-weight: 500; }
-
   .liker-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; flex-wrap: wrap; }
   .liker-row img, .liker-row .mini-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #b0b0c4; flex-shrink: 0; }
   .liker-row .liker-info { flex: 1; min-width: 0; }
   .liker-row .liker-info strong { display: block; font-size: 14.5px; color: #f0f0f8; }
   .empty-small { text-align: center; padding: 20px; font-size: 13.5px; color: #7a7a8c; background: rgba(30,30,40,0.4); border: 1px dashed rgba(255,255,255,0.08); border-radius: 12px; }
-
   .modal-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
   .modal-actions button { flex: 1; min-width: 100px; padding: 12px; font-size: 13.5px; border-radius: 12px; cursor: pointer; font-family: inherit; transition: all 0.25s; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.55); color: #e8e8f0; }
   .modal-actions button:hover { background: rgba(150,150,180,0.55); }
   .modal-actions button.danger { color: #ff9aa7; border-color: rgba(255,90,110,0.3); }
   .modal-actions button.premium { color: #ffd970; border-color: rgba(255,215,0,0.35); }
-
-  /* === Настройки === */
   .settings-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .settings-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; cursor: pointer; transition: all 0.25s; font-family: inherit; color: #e8e8f0; font-size: 14px; text-align: left; }
   .settings-item:hover { background: rgba(60,60,78,0.6); border-color: var(--accent); transform: translateX(4px); box-shadow: 0 0 18px var(--accent-glow); }
@@ -188,7 +198,6 @@
   .settings-item.danger:hover { border-color: rgba(255,90,110,0.6); background: rgba(255,80,100,0.1); }
   .settings-section-title { font-size: 11.5px; letter-spacing: 2px; color: #8a8a9c; text-transform: uppercase; margin: 16px 0 8px; font-weight: 500; }
   .settings-section-title:first-child { margin-top: 0; }
-
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
   .theme-swatch { padding: 14px 8px; border-radius: 14px; cursor: pointer; text-align: center; border: 2px solid transparent; transition: all 0.25s; background: rgba(20,20,26,0.6); }
   .theme-swatch:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(170,170,200,0.3); }
@@ -198,7 +207,6 @@
   .custom-theme-row { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .custom-theme-row input[type="color"] { width: 48px; height: 44px; padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(20,20,26,0.7); cursor: pointer; margin: 0; }
   .custom-theme-row button { flex: 1; padding: 10px; font-size: 13px; color: #e8e8f0; background: rgba(60,60,78,0.55); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; cursor: pointer; font-family: inherit; }
-
   .fx-list { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); }
   .fx-list h4 { font-size: 11.5px; letter-spacing: 2px; color: #b8b8cc; text-transform: uppercase; margin-bottom: 10px; }
   .fx-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -208,7 +216,6 @@
   .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #b0b0c4; transition: all 0.25s; }
   .switch.on { background: rgba(255,215,0,0.35); border-color: rgba(255,215,0,0.6); }
   .switch.on::after { left: 22px; background: #ffd970; }
-
   .wheel-wrap { position: relative; width: 100%; height: 120px; margin: 0 0 20px; overflow: hidden; border-radius: 14px; background: rgba(20,20,26,0.8); border: 2px solid rgba(255,215,0,0.4); box-shadow: 0 0 30px rgba(255,215,0,0.2) inset; }
   .wheel-line { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 3px; height: 100%; background: linear-gradient(180deg, #ffd970, #ff8c00); z-index: 5; box-shadow: 0 0 18px rgba(255,215,0,0.9); }
   .wheel-line::before, .wheel-line::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; }
@@ -227,12 +234,10 @@
   .wheel-prize-chip { padding: 4px 10px; border-radius: 12px; font-size: 11px; border: 1px solid rgba(255,255,255,0.15); background: rgba(60,60,78,0.5); color: #d8d8e4; }
   .wheel-prize-chip.legendary { border-color: rgba(255,215,0,0.6); color: #ffd970; }
   .wheel-prize-chip.mythic { border-color: rgba(255,46,92,0.7); color: #ff6b8a; }
-
   .spin-btn { width: 100%; padding: 16px; font-size: 16px; letter-spacing: 1px; color: #1a1a22; font-weight: 700; background: linear-gradient(135deg, #ffd970, #ffb400); border: none; border-radius: 12px; cursor: pointer; transition: all 0.25s; font-family: inherit; }
   .spin-btn:hover:not(:disabled) { box-shadow: 0 0 28px rgba(255,215,0,0.6); transform: translateY(-2px); }
   .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .wheel-result-msg { text-align: center; font-size: 15px; margin-top: 12px; color: #ffd970; min-height: 22px; font-weight: 600; }
-
   .inv-grid, .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
   .inv-item, .shop-item { position: relative; background: rgba(30,30,40,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px; text-align: center; transition: all 0.25s; }
   .inv-item:hover, .shop-item:hover { border-color: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
@@ -247,7 +252,6 @@
   .shop-item button:disabled { opacity: 0.5; cursor: not-allowed; }
   .shop-item button.owned { background: rgba(155,240,180,0.2); border-color: rgba(155,240,180,0.5); color: #9fe0b0; }
   .shop-item .preview { width: 100%; height: 70px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; background: rgba(20,20,26,0.4); }
-
   .market-lot { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; }
   .market-lot .lot-info { flex: 1; min-width: 0; }
   .market-lot .lot-info strong { display: block; font-size: 14px; color: #f0f0f8; }
@@ -257,7 +261,6 @@
   .market-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .market-tabs button { flex: 1; min-width: 80px; padding: 10px; font-size: 13px; border-radius: 10px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,255,255,0.12); background: rgba(60,60,78,0.4); color: #d8d8e4; transition: all 0.25s; }
   .market-tabs button.active { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.5); color: #ffd970; }
-
   .chat-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; cursor: pointer; transition: all 0.25s; margin-bottom: 8px; }
   .chat-item:hover { background: rgba(50,50,68,0.7); border-color: var(--accent); }
   .chat-item img, .chat-item .mini-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #b0b0c4; flex-shrink: 0; }
@@ -265,7 +268,6 @@
   .chat-item-info strong { display: block; font-size: 14.5px; color: #f0f0f8; }
   .chat-item-info small { display: block; font-size: 12.5px; color: #8a8a9c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .chat-item-unread { min-width: 22px; height: 22px; padding: 0 6px; background: #ff4d6d; color: #fff; border-radius: 11px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
-
   .chat-window { position: fixed; inset: 0; background: rgba(10,10,14,0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 110; padding: 20px; }
   .chat-window.show { display: flex; }
   .chat-window-content { position: relative; width: 100%; max-width: 500px; height: 90vh; max-height: 700px; display: flex; flex-direction: column; border-radius: 22px; background: rgba(38,38,46,0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; }
@@ -286,31 +288,26 @@
   .chat-input-row { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(30,30,40,0.6); flex-shrink: 0; }
   .chat-input-row input { flex: 1; margin: 0; padding: 11px 14px; font-size: 14px; color: #f0f0f8; background: rgba(20,20,26,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; outline: none; font-family: inherit; }
   .chat-input-row button { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; font-size: 18px; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); flex-shrink: 0; }
-
   .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; }
   .notif-item.unread { background: rgba(91,157,255,0.1); border-color: rgba(91,157,255,0.35); }
   .notif-item .notif-icon { font-size: 22px; flex-shrink: 0; }
   .notif-item .notif-body { flex: 1; }
   .notif-item .notif-body strong { display: block; font-size: 14px; color: #f0f0f8; margin-bottom: 3px; }
   .notif-item .notif-body small { font-size: 11.5px; color: #8a8a9c; }
-
   .comment-row { padding: 10px 14px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; }
   .comment-row .comment-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .comment-row .comment-head img { width: 32px; height: 32px; border-radius: 50%; }
   .comment-row .comment-head strong { font-size: 13px; color: #f0f0f8; }
   .comment-row .comment-head small { font-size: 11px; color: #8a8a9c; }
   .comment-row .comment-head button { margin-left: auto; background: none; border: none; color: #ff9aa7; cursor: pointer; font-size: 12px; }
-
   .pv-wrap { position: relative; border-radius: 22px; overflow: hidden; background: rgba(20,20,26,0.6); }
-  .pv-banner { position: relative; height: 180px; background-size: cover; background-position: center; border-bottom: 3px solid rgba(0,0,0,0.3); }
+  .pv-banner { position: relative; background-size: cover; background-position: center; border-bottom: 3px solid rgba(0,0,0,0.3); }
   .pv-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,10,14,0.1) 0%, rgba(10,10,14,0.6) 70%, rgba(20,20,26,1) 100%); }
-  .pv-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(38,38,46,1); margin: -60px auto 10px; display: block; position: relative; z-index: 2; background: linear-gradient(135deg, #2a2a34, #3a3a48); box-shadow: 0 0 30px var(--accent-glow); }
+  .pv-avatar { border-radius: 50%; object-fit: cover; margin: -60px auto 10px; display: block; position: relative; z-index: 2; background: linear-gradient(135deg, #2a2a34, #3a3a48); }
   .pv-body { padding: 0 20px 24px; }
-  .pv-name { text-align: center; font-size: 26px; color: #f0f0f8; margin-bottom: 4px; font-weight: 700; letter-spacing: 0.5px; }
-  .pv-age { text-align: center; color: #8a8a9c; margin-bottom: 14px; font-size: 14px; }
-  .pv-bio { text-align: center; color: #b8b8cc; margin-bottom: 14px; font-size: 14px; line-height: 1.5; padding: 0 10px; }
-
-  /* Музыкальный плеер */
+  .pv-name { margin-bottom: 4px; font-weight: 700; letter-spacing: 0.5px; }
+  .pv-age { color: #8a8a9c; margin-bottom: 14px; font-size: 14px; }
+  .pv-bio { color: #b8b8cc; margin-bottom: 14px; font-size: 14px; line-height: 1.5; padding: 0 10px; }
   .music-player { margin: 16px auto; padding: 16px; background: linear-gradient(135deg, rgba(60,60,78,0.6), rgba(30,30,40,0.8)); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
   .music-player .mp-label { font-size: 11.5px; letter-spacing: 2px; color: #8a8a9c; text-transform: uppercase; margin-bottom: 10px; }
   .music-player .mp-track { font-size: 14px; color: #f0f0f8; font-weight: 600; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -324,20 +321,23 @@
   .music-player .mp-btn:hover { background: rgba(150,150,180,0.5); transform: scale(1.06); }
   .music-player .mp-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-color: transparent; box-shadow: 0 0 12px var(--accent-glow); color: #fff; }
   .music-player .mp-play { width: 56px; height: 56px; font-size: 22px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border: none; box-shadow: 0 4px 16px var(--accent-glow); color: #fff; }
-  .music-player .mp-play:hover { transform: scale(1.08); box-shadow: 0 6px 22px var(--accent-glow); }
+  .music-player .mp-play:hover { transform: scale(1.08); }
   .music-player .mp-volume-wrap { display: flex; align-items: center; gap: 8px; }
   .music-player .mp-volume-icon { font-size: 16px; cursor: pointer; }
   .music-player .mp-volume { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; position: relative; cursor: pointer; }
   .music-player .mp-volume-filled { height: 100%; background: var(--accent-light); border-radius: 2px; }
   .music-player .mp-volume-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border-radius: 50%; background: #fff; pointer-events: none; }
-
   .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
-  .font-option { position: relative; padding: 16px 10px; background: rgba(30,30,40,0.6); border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.25s; }
+  .font-option { padding: 16px 10px; background: rgba(30,30,40,0.6); border: 2px solid rgba(255,255,255,0.08); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.25s; }
   .font-option:hover { border-color: var(--accent); background: rgba(60,60,78,0.6); }
   .font-option.active { border-color: var(--accent-light); box-shadow: 0 0 16px var(--accent-glow); }
   .font-option .font-preview { font-size: 22px; color: #f0f0f8; }
   .font-option .font-name { font-size: 10.5px; color: #8a8a9c; margin-top: 6px; letter-spacing: 1px; }
-
+  .layout-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .layout-row label { font-size: 13px; color: #d8d8e4; margin: 0; }
+  .layout-row input[type="range"] { width: 140px; accent-color: var(--accent); }
+  .layout-row select, .layout-row input[type="color"] { background: rgba(20,20,26,0.7); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: #f0f0f8; padding: 6px 8px; font-family: inherit; font-size: 13px; }
+  .layout-row input[type="color"] { width: 44px; height: 34px; padding: 2px; cursor: pointer; }
   .admin-user-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(30,30,40,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 8px; flex-wrap: wrap; }
   .admin-user-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: #ff5c6e; cursor: pointer; }
   .admin-user-row img, .admin-user-row .mini-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, #2a2a34, #3a3a48); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #b0b0c4; }
@@ -359,25 +359,23 @@
   .admin-bulk-bar { display: flex; gap: 10px; padding: 12px; margin-bottom: 14px; background: rgba(255,80,100,0.08); border: 1px solid rgba(255,90,110,0.3); border-radius: 12px; flex-wrap: wrap; align-items: center; }
   .admin-bulk-bar button { padding: 8px 14px; font-size: 12.5px; border-radius: 8px; cursor: pointer; font-family: inherit; border: 1px solid rgba(255,90,110,0.5); background: rgba(255,80,100,0.15); color: #ff9aa7; font-weight: 600; }
   .admin-bulk-bar span { font-size: 13px; color: #d8d8e4; }
-
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(38,38,46,0.95); backdrop-filter: blur(20px); padding: 14px 24px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 50px rgba(0,0,0,0.6); z-index: 999; transition: transform 0.4s; font-size: 14px; color: #f0f0f8; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: rgba(155,240,180,0.5); }
   .toast.error { border-color: rgba(255,90,110,0.5); }
-
   .brand-footer { position: fixed; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 11px; letter-spacing: 5px; color: rgba(200,200,220,0.22); z-index: 0; pointer-events: none; }
-
   .add-btn { display: block; margin: 0 auto 30px; padding: 14px 32px; font-size: 15px; letter-spacing: 1px; color: #e8e8f0; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--accent-dark) 55%, transparent)); border: 1px solid rgba(255,255,255,0.12); border-radius: 30px; cursor: pointer; backdrop-filter: blur(12px); transition: all 0.3s; font-family: inherit; }
   .add-btn:hover { box-shadow: 0 0 28px var(--accent-glow); transform: translateY(-2px); }
-
   @media (max-width: 480px) {
     .brand { font-size: 20px; letter-spacing: 3px; }
     .wall { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+    .shame-feed { grid-template-columns: 1fr; }
     .profile-info h3 { font-size: 16px; }
     .contact-row { grid-template-columns: 100px 1fr; }
     .topbar { padding: 14px; }
     .theme-grid { grid-template-columns: repeat(2, 1fr); }
     .theme-btn, .settings-btn { width: 38px; height: 38px; font-size: 16px; }
+    .main-tabs button { padding: 10px 18px; font-size: 13px; }
   }
 </style>
 </head>
@@ -395,12 +393,26 @@
 </header>
 
 <main class="container">
-  <div class="stories-strip" id="storiesStrip"></div>
-  <button class="add-btn" id="openForm" style="display:none;">+ Создать анкету</button>
-  <div class="wall" id="wall"></div>
+  <div class="main-tabs">
+    <button id="tabWallBtn" class="active">🏠 Стена</button>
+    <button id="tabShameBtn">🪧 Доска позора</button>
+  </div>
+
+  <!-- СТЕНА -->
+  <div class="tab-content active" id="tabWall">
+    <div class="stories-strip" id="storiesStrip"></div>
+    <button class="add-btn" id="openForm" style="display:none;">+ Создать анкету</button>
+    <div class="wall" id="wall"></div>
+  </div>
+
+  <!-- ДОСКА ПОЗОРА -->
+  <div class="tab-content" id="tabShame">
+    <button class="shame-add-btn" id="openShameForm">+ Добавить на доску</button>
+    <div class="shame-feed" id="shameFeed"></div>
+  </div>
 </main>
 
-<!-- Модалки -->
+<!-- МОДАЛКИ -->
 <div class="modal" id="registerModal"><div class="modal-content"><button class="modal-close" id="closeRegister">✕</button><h2>Создать анкету</h2><form id="registerForm">
 <label>Имя (логин)<input type="text" name="name" required maxlength="40" autocomplete="username"></label>
 <label>Пароль<input type="password" name="password" required minlength="6" maxlength="100" autocomplete="new-password"></label>
@@ -417,7 +429,6 @@
 <button type="submit" class="submit-btn">Войти</button>
 <div class="form-status" id="loginStatus"></div></form></div></div>
 
-<!-- НАСТРОЙКИ -->
 <div class="modal" id="settingsModal"><div class="modal-content wide"><button class="modal-close" id="closeSettings">✕</button><h2>⚙️ Настройки</h2><div class="settings-grid" id="settingsGrid"></div></div></div>
 
 <div class="modal" id="myProfileModal"><div class="modal-content wide"><button class="modal-close" id="closeMyProfile">✕</button><h2>Мой профиль</h2><div id="myProfileContent"></div></div></div>
@@ -440,6 +451,7 @@
 <div class="form-status" id="editStatus"></div></form></div></div>
 
 <div class="modal" id="profileStyleModal"><div class="modal-content wide"><button class="modal-close" id="closeProfileStyle">✕</button><h2>Оформление профиля</h2><div id="profileStyleContent"></div></div></div>
+<div class="modal" id="layoutModal"><div class="modal-content wide"><button class="modal-close" id="closeLayout">✕</button><h2>📐 Раскладка профиля</h2><div id="layoutContent"></div></div></div>
 <div class="modal" id="fontModal"><div class="modal-content wide"><button class="modal-close" id="closeFont">✕</button><h2>Шрифт ника</h2><div id="fontContent"></div></div></div>
 <div class="modal" id="appearanceModal"><div class="modal-content"><button class="modal-close" id="closeAppearance">✕</button><h2>Оформление карточки</h2><div id="appearanceContent"></div></div></div>
 <div class="modal" id="themeModal"><div class="modal-content wide"><button class="modal-close" id="closeTheme">✕</button><h2>Тема и эффекты</h2>
@@ -451,6 +463,17 @@
 <div class="fx-row"><div class="fx-label">❄️ Снег</div><div class="switch" id="fxSnow"></div></div>
 <div class="fx-row"><div class="fx-label">✨ Звёзды</div><div class="switch" id="fxStars"></div></div>
 </div></div></div>
+
+<div class="modal" id="shamePostModal"><div class="modal-content"><button class="modal-close" id="closeShamePost">✕</button><h2>🪧 Пост на доску</h2><form id="shameForm">
+<label>Фото (не обязательно)<input type="file" name="photo" accept="image/*"></label>
+<label>Про кого (ник, имя)
+  <input type="text" name="targetName" maxlength="60" placeholder="Как его зовут?">
+</label>
+<label>Что случилось
+  <textarea name="text" required maxlength="500" rows="5" placeholder="Опиши ситуацию..."></textarea>
+</label>
+<button type="submit" class="submit-btn">Опубликовать</button>
+<div class="form-status" id="shameStatus"></div></form></div></div>
 
 <div class="modal" id="wheelModal"><div class="modal-content wide"><button class="modal-close" id="closeWheel">✕</button><h2>🎰 XIVIVIDE Кейс</h2>
 <div class="wheel-wrap"><div class="wheel-line"></div><div class="wheel-track" id="wheelTrack"></div></div>
@@ -475,11 +498,8 @@
 <div class="market-tabs"><button id="tabAll" class="active">Все лоты</button><button id="tabMy">Мои лоты</button></div>
 <div id="marketContent"></div></div></div>
 
-<div class="modal" id="dialogsModal"><div class="modal-content wide"><button class="modal-close" id="closeDialogs">✕</button><h2>Мои диалоги</h2>
-<div id="dialogsContent"></div></div></div>
-
-<div class="modal" id="newChatModal"><div class="modal-content wide"><button class="modal-close" id="closeNewChat">✕</button><h2>Написать новому</h2>
-<div id="newChatContent"></div></div></div>
+<div class="modal" id="dialogsModal"><div class="modal-content wide"><button class="modal-close" id="closeDialogs">✕</button><h2>Мои диалоги</h2><div id="dialogsContent"></div></div></div>
+<div class="modal" id="newChatModal"><div class="modal-content wide"><button class="modal-close" id="closeNewChat">✕</button><h2>Написать новому</h2><div id="newChatContent"></div></div></div>
 
 <div class="modal" id="notifsModal"><div class="modal-content wide"><button class="modal-close" id="closeNotifs">✕</button><h2>🔔 Уведомления</h2>
 <button class="ghost-btn" id="readAllNotifs" style="margin-bottom:14px;">Прочитать все</button>
@@ -550,6 +570,28 @@ const FONTS = [
   { key: 'font-spray', name: 'Spray', css: 'font-spray' }
 ];
 function fontClass(k) { if (!k) return ''; const f = FONTS.find(x => x.key === k); return f ? f.css : ''; }
+
+const DEFAULT_LAYOUT = {
+  bannerHeight: 180,
+  bannerPosition: 'center',
+  avatarSize: 110,
+  avatarPosition: 'center',
+  avatarBorderColor: '',
+  avatarBorderWidth: 4,
+  avatarGlow: false,
+  panelColor: '',
+  panelOpacity: 100,
+  panelRadius: 22,
+  textAlign: 'center',
+  elementOrder: ['bio', 'contact', 'music', 'stories', 'stats']
+};
+function getLayout(profile) {
+  if (!profile || !profile.profile_layout) return { ...DEFAULT_LAYOUT };
+  try {
+    const parsed = JSON.parse(profile.profile_layout);
+    return { ...DEFAULT_LAYOUT, ...parsed };
+  } catch { return { ...DEFAULT_LAYOUT }; }
+}
 
 function getDeviceId() {
   let d = localStorage.getItem(DEVICE_KEY);
@@ -670,6 +712,110 @@ function spawnSnow() { const l = document.getElementById('snowLayer'); l.innerHT
 function spawnStars() { const l = document.getElementById('starsLayer'); l.innerHTML = ''; for (let i=0;i<80;i++){ const e=document.createElement('div'); e.className='star'; e.style.left=Math.random()*100+'%'; e.style.top=Math.random()*100+'%'; e.style.animationDelay=(-Math.random()*3)+'s'; l.appendChild(e); } }
 ['fxWeb','fxGlass','fxSnow','fxStars'].forEach(id => document.getElementById(id).addEventListener('click', () => { const fx=getFx(); const k=id.replace('fx','').toLowerCase(); setFx(k, !fx[k]); }));
 
+// === ВКЛАДКИ ===
+function switchTab(name) {
+  document.querySelectorAll('.main-tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  if (name === 'wall') {
+    document.getElementById('tabWallBtn').classList.add('active');
+    document.getElementById('tabWall').classList.add('active');
+  } else {
+    document.getElementById('tabShameBtn').classList.add('active');
+    document.getElementById('tabShame').classList.add('active');
+    loadShameFeed();
+  }
+}
+document.getElementById('tabWallBtn').onclick = () => switchTab('wall');
+document.getElementById('tabShameBtn').onclick = () => switchTab('shame');
+
+// === ДОСКА ПОЗОРА ===
+async function loadShameFeed() {
+  const feed = document.getElementById('shameFeed');
+  feed.innerHTML = '<div class="empty-small" style="grid-column:1/-1;">Загрузка...</div>';
+  try {
+    const list = await api('/shame');
+    if (!list.length) { feed.innerHTML = '<div class="empty-small" style="grid-column:1/-1;">Пока пусто. Будь первым, кто выложит кого-то на доску.</div>'; return; }
+    feed.innerHTML = '';
+    list.forEach(p => feed.appendChild(createShameCard(p)));
+  } catch (err) {
+    feed.innerHTML = `<div class="empty-small" style="grid-column:1/-1;">${escapeHtml(err.message)}</div>`;
+  }
+}
+function createShameCard(p) {
+  const card = document.createElement('div');
+  card.className = 'shame-card';
+  const photoHTML = p.photo
+    ? `<img class="shame-photo" src="${p.photo}" alt="" loading="lazy">`
+    : `<div class="shame-photo-placeholder">🪧</div>`;
+  const av = p.author_photo ? `<img src="${p.author_photo}">` : `<div class="mini-avatar">✦</div>`;
+  const isMine = myProfile && String(p.author_id) === String(myProfile.id);
+  const nk = nickClass(p.nick_style);
+  const fc = fontClass(p.profile_font);
+  card.innerHTML = `
+    ${photoHTML}
+    <div class="shame-body">
+      ${p.target_name ? `<div class="shame-target">${escapeHtml(p.target_name)}</div>` : ''}
+      <div class="shame-text">${escapeHtml(p.text)}</div>
+      <div class="shame-footer">
+        ${av}
+        <div class="sf-info">
+          <strong class="${nk} ${fc}">${escapeHtml(p.author_name)}</strong>
+          <small>${timeAgo(p.created_at)}</small>
+        </div>
+        ${isMine ? '<button class="del">Удалить</button>' : '<button class="report">⚠️ Жалоба</button>'}
+      </div>
+    </div>
+  `;
+  if (isMine) {
+    card.querySelector('.del').onclick = async () => {
+      if (!confirm('Удалить пост?')) return;
+      try { await api('/shame/' + p.id, { method: 'DELETE' }); toast('Удалено', 'success'); loadShameFeed(); }
+      catch (err) { toast(err.message, 'error'); }
+    };
+  } else {
+    card.querySelector('.report').onclick = async () => {
+      if (!confirm('Пожаловаться на пост?')) return;
+      try { await api('/shame/' + p.id + '/report', { method: 'POST' }); toast('Жалоба отправлена', 'success'); }
+      catch (err) { toast(err.message, 'error'); }
+    };
+  }
+  return card;
+}
+
+document.getElementById('openShameForm').onclick = () => {
+  if (!myProfile) { toast('Войди, чтобы постить', 'error'); return; }
+  document.getElementById('shamePostModal').classList.add('show');
+};
+document.getElementById('closeShamePost').onclick = () => document.getElementById('shamePostModal').classList.remove('show');
+
+document.getElementById('shameForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const st = document.getElementById('shameStatus');
+  const btn = form.querySelector('.submit-btn');
+  btn.disabled = true;
+  st.textContent = 'Публикуем...'; st.className = 'form-status';
+  try {
+    const fd = new FormData(form);
+    const photoFile = fd.get('photo');
+    if (photoFile && photoFile.size > 0) {
+      st.textContent = 'Загружаем фото...';
+      const url = await uploadToCloudinary(photoFile);
+      fd.delete('photo');
+      fd.append('photoUrl', url);
+    }
+    await api('/shame', { method: 'POST', body: fd });
+    st.textContent = 'Опубликовано!'; st.className = 'form-status success';
+    setTimeout(() => {
+      document.getElementById('shamePostModal').classList.remove('show');
+      form.reset();
+      loadShameFeed();
+    }, 500);
+  } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
+  finally { btn.disabled = false; }
+});
+ 
+// === СТЕНА ===
 async function loadWall() {
   try {
     const profiles = await api('/profiles');
@@ -735,6 +881,7 @@ async function toggleLike(tid) {
   } catch (err) { toast(err.message, 'error'); }
 }
 
+// === ТЕМЫ ПРОФИЛЯ ===
 function getProfileThemeStyle(theme) {
   const map = {
     theme_web: 'linear-gradient(135deg,#0d0d12,#050508), repeating-linear-gradient(60deg, rgba(200,200,220,0.05) 0px, rgba(200,200,220,0.05) 1px, transparent 1px, transparent 40px)',
@@ -748,6 +895,7 @@ function getProfileThemeStyle(theme) {
   return map[theme] || '';
 }
 
+// === ПЛЕЕР ===
 function stopAllAudio() {
   if (currentAudio) { try { currentAudio.pause(); } catch {} currentAudio = null; }
   const wrap = document.getElementById('musicPlayerBody');
@@ -784,10 +932,10 @@ function buildPlayer(url, containerId) {
         <span class="mp-time" id="mpDur">0:00</span>
       </div>
       <div class="mp-controls">
-        <button class="mp-btn" id="mpBack" title="-15 сек">⏪</button>
+        <button class="mp-btn" id="mpBack">⏪</button>
         <button class="mp-btn mp-play" id="mpPlay">⏸</button>
-        <button class="mp-btn" id="mpFwd" title="+15 сек">⏩</button>
-        <button class="mp-btn ${audioRepeat ? 'active' : ''}" id="mpRepeat" title="Повтор">🔁</button>
+        <button class="mp-btn" id="mpFwd">⏩</button>
+        <button class="mp-btn ${audioRepeat ? 'active' : ''}" id="mpRepeat">🔁</button>
       </div>
       <div class="mp-volume-wrap">
         <span class="mp-volume-icon" id="mpVolIcon">🔊</span>
@@ -806,31 +954,78 @@ function buildPlayer(url, containerId) {
   audio.addEventListener('loadedmetadata', () => { $('mpDur').textContent = fmtTime(audio.duration); });
   audio.addEventListener('timeupdate', updateProgress);
   audio.addEventListener('ended', () => { if (audioRepeat) audio.play(); });
-  $('mpPlay').onclick = () => {
-    if (audio.paused) { audio.play(); $('mpPlay').textContent = '⏸'; }
-    else { audio.pause(); $('mpPlay').textContent = '▶'; }
-  };
+  $('mpPlay').onclick = () => { if (audio.paused) { audio.play(); $('mpPlay').textContent = '⏸'; } else { audio.pause(); $('mpPlay').textContent = '▶'; } };
   $('mpBack').onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 15); };
   $('mpFwd').onclick = () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); };
   $('mpRepeat').onclick = () => { audioRepeat = !audioRepeat; audio.loop = audioRepeat; $('mpRepeat').classList.toggle('active', audioRepeat); };
-  $('mpProgress').onclick = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    audio.currentTime = x * audio.duration;
-  };
-  $('mpVolume').onclick = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    audio.volume = x; audioState.volume = x;
-    $('mpVolFilled').style.width = x * 100 + '%';
-    $('mpVolHandle').style.left = x * 100 + '%';
-  };
-  $('mpVolIcon').onclick = () => {
-    audio.muted = !audio.muted;
-    $('mpVolIcon').textContent = audio.muted ? '🔇' : '🔊';
-  };
+  $('mpProgress').onclick = (e) => { const rect = e.currentTarget.getBoundingClientRect(); audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration; };
+  $('mpVolume').onclick = (e) => { const rect = e.currentTarget.getBoundingClientRect(); const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); audio.volume = x; audioState.volume = x; $('mpVolFilled').style.width = x * 100 + '%'; $('mpVolHandle').style.left = x * 100 + '%'; };
+  $('mpVolIcon').onclick = () => { audio.muted = !audio.muted; $('mpVolIcon').textContent = audio.muted ? '🔇' : '🔊'; };
   audio.play().catch(() => {});
   setTimeout(() => { $('mpDur').textContent = fmtTime(audio.duration || 0); }, 500);
+}
+
+// === ПРОСМОТР ПРОФИЛЯ ===
+function buildProfileHTML(p, opts = {}) {
+  const layout = getLayout(p);
+  const themeBg = getProfileThemeStyle(p.profile_theme);
+  let bannerCSS = '';
+  if (p.profile_banner) bannerCSS = `background-image: url('${p.profile_banner}'); background-position: center ${layout.bannerPosition};`;
+  else if (themeBg) bannerCSS = `background: ${themeBg};`;
+  else bannerCSS = 'background: rgba(30,30,40,0.6);';
+  const avatarPos = layout.avatarPosition;
+  const avatarSize = layout.avatarSize;
+  const borderColor = layout.avatarBorderColor || 'transparent';
+  const borderWidth = layout.avatarBorderWidth;
+  const glowCSS = layout.avatarGlow ? `box-shadow: 0 0 30px ${borderColor || 'var(--accent-glow)'};` : '';
+  const avatarHTML = p.photo
+    ? `<img class="pv-avatar" src="${p.photo}" style="width:${avatarSize}px;height:${avatarSize}px;border:${borderWidth}px solid ${borderColor};${glowCSS};">`
+    : `<div class="pv-avatar" style="width:${avatarSize}px;height:${avatarSize}px;border:${borderWidth}px solid ${borderColor};${glowCSS}display:flex;align-items:center;justify-content:center;font-size:${Math.round(avatarSize/3)}px;color:#b0b0c4;">✦</div>`;
+  const textAlign = layout.textAlign;
+  const panelColor = layout.panelColor;
+  const panelOpacity = layout.panelOpacity / 100;
+  const panelRadius = layout.panelRadius;
+  const panelStyle = panelColor ? `background: ${hexToRgba(panelColor, panelOpacity)}; border-radius: ${panelRadius}px; padding: 20px;` : '';
+
+  const on = onlineStatus(p.last_seen);
+  const nk = nickClass(p.nick_style);
+  const fc = fontClass(p.profile_font);
+  const contactLink = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
+
+  const blocks = {
+    bio: p.bio ? `<div class="pv-bio" style="text-align:${textAlign};">${escapeHtml(p.bio)}</div>` : '',
+    contact: p.contact_value ? `<div style="text-align:${textAlign};margin:14px 0;"><a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>${contactIcon(p.contact_type)} ${contactLabel(p.contact_type)}: ${escapeHtml(p.contact_value)}</a></div>` : '',
+    music: p.music_url ? `<div id="musicPlayerBody"></div>` : '',
+    stories: p.stories_count > 0 ? `<div style="text-align:center;margin:10px 0;"><button id="viewUserStoryBtn" class="contact-badge" style="cursor:pointer;">📸 Смотреть истории (${p.stories_count})</button></div>` : '',
+    stats: `<div class="stat-row"><div class="stat-box"><div class="num">${p.likes || 0}</div><div class="label">Лайков</div></div></div>`
+  };
+  const orderedBlocks = layout.elementOrder.map(k => blocks[k] || '').join('');
+
+  const giftsHTML = (p.show_gifts && p.gifts && p.gifts.length) ? `
+    <div class="section-title">🎁 Подарки</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">${p.gifts.map(g => `<div style="background:rgba(30,30,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px;text-align:center;min-width:80px;font-size:11px;"><div style="font-size:22px;">🎁</div>от ${escapeHtml(g.sender_name)}</div>`).join('')}</div>
+  ` : '';
+
+  return `
+    <div class="pv-wrap">
+      <div class="pv-banner" style="${bannerCSS} height:${layout.bannerHeight}px;"></div>
+      ${avatarHTML}
+      <div class="pv-body" style="${panelStyle}">
+        <div class="pv-name ${nk} ${fc}" style="font-size:${Math.round(avatarSize/4.2)}px;text-align:${textAlign};">${escapeHtml(p.name)} ${p.is_premium ? '⭐' : ''}</div>
+        <div class="pv-age" style="text-align:${textAlign};">${p.age} лет · <span style="color:${on.cls==='online'?'#4dd68a':on.cls==='recent'?'#ffd970':'#888'}">● ${on.text}</span></div>
+        ${orderedBlocks}
+        ${giftsHTML}
+        <div class="section-title">Комментарии</div>
+        <div id="commentsBlock"></div>
+        <div class="modal-actions">
+          ${opts.showWriteBtn ? `<button class="premium" id="writeMsgBtn">💬 Написать</button>` : ''}
+          ${opts.showGiftBtn ? `<button id="giftBtn">🎁 Подарить</button>` : ''}
+          ${opts.showEditBtn ? `<button id="editSelfFromView">Редактировать</button>` : ''}
+          ${opts.showNoLikeHint ? `<button disabled style="opacity:0.5;">Лайкни, чтобы написать</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 async function openViewProfile(id) {
@@ -845,43 +1040,14 @@ async function openViewProfile(id) {
     if (myProfile && myProfile.id !== p.id) {
       try { const m = await api('/mutual/' + myProfile.id + '/' + p.id); anyLike = m.any; } catch {}
     }
-    const themeBg = getProfileThemeStyle(p.profile_theme);
-    const bannerStyle = p.profile_banner ? `background-image: url('${p.profile_banner}');` : (themeBg ? `background: ${themeBg};` : 'background: rgba(30,30,40,0.6);');
-    const nk = nickClass(p.nick_style);
-    const fc = fontClass(p.profile_font);
-    const avatar = p.photo ? `<img class="pv-avatar" src="${p.photo}">` : `<div class="pv-avatar" style="display:flex;align-items:center;justify-content:center;font-size:44px;color:#b0b0c4;">✦</div>`;
-    const contactLink = p.contact_value ? buildContactLink(p.contact_type, p.contact_value) : null;
-    const on = onlineStatus(p.last_seen);
-    const giftsHTML = (p.show_gifts && p.gifts && p.gifts.length) ? `
-      <div class="section-title">🎁 Подарки</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">${p.gifts.map(g => `<div style="background:rgba(30,30,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px;text-align:center;min-width:80px;font-size:11px;"><div style="font-size:22px;">🎁</div>от ${escapeHtml(g.sender_name)}</div>`).join('')}</div>
-    ` : '';
-    const musicHTML = p.music_url ? `<div id="musicPlayerBody"></div>` : '';
-    const storiesHTML = p.stories_count > 0 ? `<div style="text-align:center;margin:10px 0;"><button id="viewUserStoryBtn" class="contact-badge" style="cursor:pointer;">📸 Смотреть истории (${p.stories_count})</button></div>` : '';
-    c.innerHTML = `
-      <div class="pv-wrap">
-        <div class="pv-banner" style="${bannerStyle}"></div>
-        ${avatar}
-        <div class="pv-body">
-          <div class="pv-name ${nk} ${fc}">${escapeHtml(p.name)} ${p.is_premium ? '⭐' : ''}</div>
-          <div class="pv-age">${p.age} лет · <span style="color:${on.cls==='online'?'#4dd68a':on.cls==='recent'?'#ffd970':'#888'}">● ${on.text}</span></div>
-          ${p.bio ? `<div class="pv-bio">${escapeHtml(p.bio)}</div>` : ''}
-          ${p.contact_value ? `<div style="text-align:center;margin-bottom:12px;"><a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank" rel="noopener"` : ''}>${contactIcon(p.contact_type)} ${contactLabel(p.contact_type)}: ${escapeHtml(p.contact_value)}</a></div>` : ''}
-          ${storiesHTML}
-          ${musicHTML}
-          <div class="stat-row"><div class="stat-box"><div class="num">${p.likes || 0}</div><div class="label">Лайков</div></div></div>
-          ${giftsHTML}
-          <div class="section-title">Комментарии</div>
-          <div id="commentsBlock"></div>
-          <div class="modal-actions">
-            ${myProfile && myProfile.id !== p.id && anyLike ? `<button class="premium" id="writeMsgBtn">💬 Написать</button>` : ''}
-            ${myProfile && myProfile.id !== p.id ? `<button id="giftBtn">🎁 Подарить</button>` : ''}
-            ${myProfile && myProfile.id === p.id ? `<button id="editSelfFromView">Редактировать</button>` : ''}
-            ${myProfile && myProfile.id !== p.id && !anyLike ? `<button disabled style="opacity:0.5;">Лайкни, чтобы написать</button>` : ''}
-          </div>
-        </div>
-      </div>
-    `;
+    const isMine = myProfile && myProfile.id === p.id;
+    const opts = {
+      showWriteBtn: myProfile && !isMine && anyLike,
+      showGiftBtn: myProfile && !isMine,
+      showEditBtn: isMine,
+      showNoLikeHint: myProfile && !isMine && !anyLike
+    };
+    c.innerHTML = buildProfileHTML(p, opts);
     if (p.music_url) buildPlayer(p.music_url, 'musicPlayerBody');
     const wb = document.getElementById('writeMsgBtn'); if (wb) wb.onclick = () => { modal.classList.remove('show'); stopAllAudio(); openChat(p); };
     const gb = document.getElementById('giftBtn'); if (gb) gb.onclick = () => openGift(p);
@@ -920,6 +1086,7 @@ async function loadComments(tid) {
   } catch (err) { block.innerHTML = ''; }
 }
 
+// === МОЙ ПРОФИЛЬ ===
 async function openMyProfile() {
   if (!myProfile) return;
   try {
@@ -929,20 +1096,32 @@ async function openMyProfile() {
     document.getElementById('myProfileModal').classList.add('show');
   } catch (err) { toast(err.message, 'error'); }
 }
+
 function renderMyProfile(me, likedBy) {
   const c = document.getElementById('myProfileContent');
+  const layout = getLayout(me);
   const themeBg = getProfileThemeStyle(me.profile_theme);
-  const banner = me.profile_banner ? `background-image: url('${me.profile_banner}');` : (themeBg ? `background: ${themeBg};` : '');
+  let bannerCSS = '';
+  if (me.profile_banner) bannerCSS = `background-image: url('${me.profile_banner}'); background-position: center ${layout.bannerPosition};`;
+  else if (themeBg) bannerCSS = `background: ${themeBg};`;
   const nk = nickClass(me.nick_style);
   const fc = fontClass(me.profile_font);
-  const av = me.photo ? `<img src="${me.photo}">` : `<div class="big-avatar">✦</div>`;
+  const avatarSize = layout.avatarSize;
+  const borderColor = layout.avatarBorderColor || 'transparent';
+  const borderWidth = layout.avatarBorderWidth;
+  const glowCSS = layout.avatarGlow ? `box-shadow: 0 0 30px ${borderColor || 'var(--accent-glow)'};` : '';
+  const av = me.photo
+    ? `<img src="${me.photo}" style="width:${avatarSize}px;height:${avatarSize}px;border-radius:50%;object-fit:cover;border:${borderWidth}px solid ${borderColor};${glowCSS}flex-shrink:0;">`
+    : `<div style="width:${avatarSize}px;height:${avatarSize}px;border-radius:50%;background:linear-gradient(135deg,#2a2a34,#3a3a48);display:flex;align-items:center;justify-content:center;font-size:${Math.round(avatarSize/3)}px;color:#b0b0c4;border:${borderWidth}px solid ${borderColor};${glowCSS}flex-shrink:0;">✦</div>`;
   const contactLink = me.contact_value ? buildContactLink(me.contact_type, me.contact_value) : null;
   const refLink = me.ref_code ? `${location.origin}/?ref=${me.ref_code}` : '';
+  const textAlign = layout.textAlign;
+
   c.innerHTML = `
-    <div class="profile-hero" style="${banner}">
+    <div class="profile-hero" style="${bannerCSS} height:${layout.bannerHeight}px;">
       ${av}
-      <div class="profile-hero-info">
-        <h3 class="${nk} ${fc}">${escapeHtml(me.name)} <span class="age">${me.age}</span> ${me.is_premium ? '⭐' : ''}</h3>
+      <div class="profile-hero-info" style="text-align:${textAlign};">
+        <h3 class="${nk} ${fc}" style="font-size:${Math.round(avatarSize/4.2)}px;">${escapeHtml(me.name)} <span class="age">${me.age}</span> ${me.is_premium ? '⭐' : ''}</h3>
         ${me.bio ? `<p>${escapeHtml(me.bio)}</p>` : ''}
         ${me.contact_value ? `<a class="contact-badge" ${contactLink ? `href="${contactLink}" target="_blank"` : ''}>${contactIcon(me.contact_type)} ${contactLabel(me.contact_type)}: ${escapeHtml(me.contact_value)}</a>` : ''}
       </div>
@@ -957,7 +1136,7 @@ function renderMyProfile(me, likedBy) {
         ${refLink}
         <button style="margin-left:8px;padding:6px 12px;border-radius:8px;background:rgba(155,240,180,0.2);border:1px solid rgba(155,240,180,0.5);color:#9fe0b0;cursor:pointer;font-size:11px;" onclick="navigator.clipboard.writeText('${refLink}');toast('Скопировано','success')">Копировать</button>
       </div>
-      <div style="font-size:12px;color:#8a8a9c;margin-bottom:14px;">За 3 приглашённых друзей ты получишь <b style="color:#ffd970">+300 🪙</b></div>
+      <div style="font-size:12px;color:#8a8a9c;margin-bottom:14px;">За 3 приглашённых друзей — <b style="color:#ffd970">+300 🪙</b></div>
     ` : ''}
     <div class="section-title">Кто тебя лайкнул</div>
     ${likedBy.length === 0 ? '<div class="empty-small">Пока никто</div>' : likedBy.map(p => {
@@ -977,6 +1156,7 @@ function renderMyProfile(me, likedBy) {
       <button id="addStoryBtn">+ История</button>
       <button id="editMyBtn">Редактировать</button>
       <button id="fontBtn">✒️ Шрифт</button>
+      <button id="layoutBtn">📐 Раскладка</button>
       <button id="changePwBtn">Пароль</button>
       <button class="premium" id="styleProfileBtn">🎨 Оформление</button>
       ${me.is_premium ? '<button class="premium" id="appearanceBtn">⭐ Карточка</button>' : ''}
@@ -987,6 +1167,7 @@ function renderMyProfile(me, likedBy) {
   document.getElementById('addStoryBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); document.getElementById('addStoryModal').classList.add('show'); };
   document.getElementById('editMyBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openEditForm(me); };
   document.getElementById('fontBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openFontPicker(me); };
+  document.getElementById('layoutBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openLayoutEditor(me); };
   document.getElementById('changePwBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); document.getElementById('pwModal').classList.add('show'); };
   document.getElementById('styleProfileBtn').onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openProfileStyle(me); };
   const ab = document.getElementById('appearanceBtn'); if (ab) ab.onclick = () => { document.getElementById('myProfileModal').classList.remove('show'); openAppearance(me); };
@@ -1009,13 +1190,114 @@ async function openChatFromLike(userId) {
   } catch (err) { toast(err.message, 'error'); }
 }
 
+// === РЕДАКТОР РАСКЛАДКИ ===
+function openLayoutEditor(me) {
+  document.getElementById('layoutModal').classList.add('show');
+  const c = document.getElementById('layoutContent');
+  const layout = getLayout(me);
+  c.innerHTML = `
+    <div class="section-title">Баннер</div>
+    <div class="layout-row">
+      <label>Высота: <span id="lhVal">${layout.bannerHeight}px</span></label>
+      <input type="range" id="lhInput" min="60" max="300" value="${layout.bannerHeight}" step="10">
+    </div>
+    <div class="layout-row">
+      <label>Позиция картинки</label>
+      <select id="lbpInput">
+        <option value="top" ${layout.bannerPosition==='top'?'selected':''}>Верх</option>
+        <option value="center" ${layout.bannerPosition==='center'?'selected':''}>Центр</option>
+        <option value="bottom" ${layout.bannerPosition==='bottom'?'selected':''}>Низ</option>
+      </select>
+    </div>
+    <div class="section-title">Аватар</div>
+    <div class="layout-row">
+      <label>Размер: <span id="asVal">${layout.avatarSize}px</span></label>
+      <input type="range" id="asInput" min="60" max="180" value="${layout.avatarSize}" step="5">
+    </div>
+    <div class="layout-row">
+      <label>Позиция</label>
+      <select id="apInput">
+        <option value="left" ${layout.avatarPosition==='left'?'selected':''}>Слева</option>
+        <option value="center" ${layout.avatarPosition==='center'?'selected':''}>Центр</option>
+        <option value="right" ${layout.avatarPosition==='right'?'selected':''}>Справа</option>
+      </select>
+    </div>
+    <div class="layout-row">
+      <label>Цвет обводки</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="color" id="abcInput" value="${layout.avatarBorderColor || '#a0a0b8'}">
+        <button type="button" id="clearBorderBtn" style="padding:6px 10px;font-size:11px;border-radius:6px;background:rgba(60,60,78,0.5);border:1px solid rgba(255,255,255,0.1);color:#d8d8e4;cursor:pointer;font-family:inherit;">Убрать</button>
+      </div>
+    </div>
+    <div class="layout-row">
+      <label>Толщина: <span id="abwVal">${layout.avatarBorderWidth}px</span></label>
+      <input type="range" id="abwInput" min="0" max="8" value="${layout.avatarBorderWidth}" step="1">
+    </div>
+    <div class="layout-row">
+      <label>Свечение вокруг авы</label>
+      <div class="switch ${layout.avatarGlow ? 'on' : ''}" id="glowSwitch"></div>
+    </div>
+    <div class="section-title">Плашка профиля</div>
+    <div class="layout-row">
+      <label>Цвет плашки</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="color" id="pcInput" value="${layout.panelColor || '#26262e'}">
+        <button type="button" id="clearPanelBtn" style="padding:6px 10px;font-size:11px;border-radius:6px;background:rgba(60,60,78,0.5);border:1px solid rgba(255,255,255,0.1);color:#d8d8e4;cursor:pointer;font-family:inherit;">Прозрачно</button>
+      </div>
+    </div>
+    <div class="layout-row">
+      <label>Прозрачность: <span id="poVal">${layout.panelOpacity}%</span></label>
+      <input type="range" id="poInput" min="0" max="100" value="${layout.panelOpacity}" step="5">
+    </div>
+    <div class="layout-row">
+      <label>Скругление: <span id="prVal">${layout.panelRadius}px</span></label>
+      <input type="range" id="prInput" min="0" max="40" value="${layout.panelRadius}" step="2">
+    </div>
+    <div class="section-title">Текст</div>
+    <div class="layout-row">
+      <label>Выравнивание</label>
+      <select id="taInput">
+        <option value="left" ${layout.textAlign==='left'?'selected':''}>Слева</option>
+        <option value="center" ${layout.textAlign==='center'?'selected':''}>Центр</option>
+        <option value="right" ${layout.textAlign==='right'?'selected':''}>Справа</option>
+      </select>
+    </div>
+    <button class="submit-btn" id="saveLayoutBtn" style="margin-top:18px;">Сохранить</button>
+    <div class="form-status" id="layoutStatus"></div>
+  `;
+  let state = { ...layout };
+  const $ = id => document.getElementById(id);
+  $('lhInput').oninput = e => { state.bannerHeight = parseInt(e.target.value); $('lhVal').textContent = state.bannerHeight + 'px'; };
+  $('lbpInput').onchange = e => { state.bannerPosition = e.target.value; };
+  $('asInput').oninput = e => { state.avatarSize = parseInt(e.target.value); $('asVal').textContent = state.avatarSize + 'px'; };
+  $('apInput').onchange = e => { state.avatarPosition = e.target.value; };
+  $('abcInput').oninput = e => { state.avatarBorderColor = e.target.value; };
+  $('clearBorderBtn').onclick = () => { state.avatarBorderColor = ''; toast('Цвет обводки убран'); };
+  $('abwInput').oninput = e => { state.avatarBorderWidth = parseInt(e.target.value); $('abwVal').textContent = state.avatarBorderWidth + 'px'; };
+  $('glowSwitch').onclick = (e) => { state.avatarGlow = !state.avatarGlow; e.target.classList.toggle('on', state.avatarGlow); };
+  $('pcInput').oninput = e => { state.panelColor = e.target.value; };
+  $('clearPanelBtn').onclick = () => { state.panelColor = ''; toast('Плашка прозрачна'); };
+  $('poInput').oninput = e => { state.panelOpacity = parseInt(e.target.value); $('poVal').textContent = state.panelOpacity + '%'; };
+  $('prInput').oninput = e => { state.panelRadius = parseInt(e.target.value); $('prVal').textContent = state.panelRadius + 'px'; };
+  $('taInput').onchange = e => { state.textAlign = e.target.value; };
+  $('saveLayoutBtn').onclick = async () => {
+    const st = $('layoutStatus');
+    st.textContent = 'Сохраняем...';
+    try {
+      const updated = await api('/profiles/' + me.id + '/profile-layout', { method:'POST', body: JSON.stringify({ layout: state }) });
+      Object.assign(me, updated); myProfile = { ...myProfile, ...updated };
+      st.textContent = 'Сохранено!';
+      st.className = 'form-status success';
+      setTimeout(() => { document.getElementById('layoutModal').classList.remove('show'); loadWall(); openMyProfile(); }, 500);
+    } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
+  };
+}
+
+// === ШРИФТЫ ===
 function openFontPicker(me) {
   document.getElementById('fontModal').classList.add('show');
   const c = document.getElementById('fontContent');
-  c.innerHTML = `
-    <div style="font-size:13px;color:#b8b8cc;margin-bottom:12px;">Выбери шрифт для своего ника.</div>
-    <div class="font-grid" id="fontGrid"></div>
-  `;
+  c.innerHTML = `<div style="font-size:13px;color:#b8b8cc;margin-bottom:12px;">Выбери шрифт для своего ника.</div><div class="font-grid" id="fontGrid"></div>`;
   const grid = document.getElementById('fontGrid');
   FONTS.forEach(f => {
     const isActive = (me.profile_font || '') === f.key;
@@ -1035,6 +1317,7 @@ function openFontPicker(me) {
   });
 }
 
+// === ИСТОРИИ ===
 async function openMyStories(userId) {
   document.getElementById('myStoriesModal').classList.add('show');
   const c = document.getElementById('myStoriesContent');
@@ -1042,15 +1325,7 @@ async function openMyStories(userId) {
   try {
     const list = await api('/stories/user/' + userId);
     if (!list.length) { c.innerHTML = '<div class="empty-small">У тебя нет активных историй</div>'; return; }
-    c.innerHTML = list.map(s => `
-      <div class="comment-row" style="cursor:pointer;" data-sid="${s.id}">
-        <div class="comment-head">
-          <img src="${s.photo}">
-          <strong>${s.caption ? escapeHtml(s.caption) : 'Без подписи'}</strong>
-          <small>${timeAgo(s.created_at)} · ${s.views} 👁</small>
-        </div>
-      </div>
-    `).join('');
+    c.innerHTML = list.map(s => `<div class="comment-row" style="cursor:pointer;" data-sid="${s.id}"><div class="comment-head"><img src="${s.photo}"><strong>${s.caption ? escapeHtml(s.caption) : 'Без подписи'}</strong><small>${timeAgo(s.created_at)} · ${s.views} 👁</small></div></div>`).join('');
     c.querySelectorAll('.comment-row').forEach(el => el.addEventListener('click', () => {
       const s = list.find(x => x.id === parseInt(el.dataset.sid));
       if (s) viewStory(s);
@@ -1058,6 +1333,7 @@ async function openMyStories(userId) {
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
 
+// === ОФОРМЛЕНИЕ ПРОФИЛЯ ===
 async function openProfileStyle(me) {
   document.getElementById('profileStyleModal').classList.add('show');
   const c = document.getElementById('profileStyleContent');
@@ -1142,6 +1418,7 @@ function renderProfileStyle(me, shop) {
   };
 }
 
+// === ОФОРМЛЕНИЕ КАРТОЧКИ ===
 function openAppearance(me) {
   const c = document.getElementById('appearanceContent');
   c.innerHTML = `
@@ -1174,6 +1451,7 @@ function openAppearance(me) {
   document.getElementById('appearanceModal').classList.add('show');
 }
 
+// === КЕЙС ===
 async function openWheel() {
   if (!myProfile) return;
   document.getElementById('wheelModal').classList.add('show');
@@ -1230,6 +1508,7 @@ async function loadWheelHistory() {
 }
 document.getElementById('spinBtn').addEventListener('click', spinWheel);
 
+// === ИНВЕНТАРЬ ===
 async function openInventory() {
   if (!myProfile) return;
   document.getElementById('invModal').classList.add('show');
@@ -1259,6 +1538,7 @@ async function sellDialog(skinId) {
   } catch (err) { toast(err.message, 'error'); }
 }
 
+// === МАГАЗИН ===
 async function openShop() {
   document.getElementById('shopModal').classList.add('show');
   renderShopTabs(); renderShop();
@@ -1297,6 +1577,7 @@ async function renderShop() {
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
 
+// === РЫНОК ===
 let marketTab = 'all';
 async function openMarket() {
   if (!myProfile) return;
@@ -1334,7 +1615,7 @@ async function openDialogs() {
   list.innerHTML = '<div class="empty-small">Загрузка...</div>';
   try {
     const dialogs = await api('/messages/dialogs/' + myProfile.id);
-    if (!dialogs.length) { list.innerHTML = '<div class="empty-small">Пока нет диалогов. Нажми «+ Новый чат», чтобы начать.</div>'; return; }
+    if (!dialogs.length) { list.innerHTML = '<div class="empty-small">Пока нет диалогов. Нажми «+ Новый чат».</div>'; return; }
     list.innerHTML = dialogs.map(d => {
       const av = d.user.photo ? `<img src="${d.user.photo}">` : `<div class="mini-avatar">✦</div>`;
       const last = d.last ? (d.last.sender_id === myProfile.id ? 'Ты: ' : '') + escapeHtml(d.last.text.slice(0, 50)) : '—';
@@ -1346,7 +1627,6 @@ async function openDialogs() {
     }));
   } catch (err) { list.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
-
 async function openNewChat() {
   document.getElementById('newChatModal').classList.add('show');
   const c = document.getElementById('newChatContent');
@@ -1365,7 +1645,6 @@ async function openNewChat() {
     }));
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
-
 function openChat(user) {
   currentChatUser = user;
   document.getElementById('chatWindow').classList.add('show');
@@ -1426,7 +1705,7 @@ async function openNotifs() {
   try {
     const r = await api('/notifications/' + myProfile.id);
     if (!r.list.length) { c.innerHTML = '<div class="empty-small">Уведомлений нет</div>'; return; }
-    const icons = { like: '❤️', message: '💬', gift: '🎁', comment: '💬', ref: '🤝', wheel: '🎰' };
+    const icons = { like: '❤️', message: '💬', gift: '🎁', comment: '💬', ref: '🤝', wheel: '🎰', report: '⚠️' };
     c.innerHTML = r.list.map(n => `<div class="notif-item ${n.is_read ? '' : 'unread'}"><div class="notif-icon">${icons[n.type] || '🔔'}</div><div class="notif-body"><strong>${escapeHtml(n.text)}</strong><small>${timeAgo(n.created_at)}</small></div></div>`).join('');
     refreshNotifBadge();
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
@@ -1446,6 +1725,7 @@ document.getElementById('readAllNotifs').addEventListener('click', async () => {
   try { await api('/notifications/read-all', { method:'POST' }); openNotifs(); } catch (err) { toast(err.message, 'error'); }
 });
 
+// === БОНУС ===
 async function openBonus() {
   if (!myProfile) return;
   document.getElementById('bonusModal').classList.add('show');
@@ -1454,7 +1734,7 @@ async function openBonus() {
   try {
     const s = await api('/daily-bonus/status');
     if (s.available) {
-      c.innerHTML = `<div style="font-size:60px;margin:10px;">🎁</div><div style="font-size:14px;color:#c8c8d6;margin-bottom:14px;">Серия: ${s.streak} дн.</div><div style="font-size:12px;color:#8a8a9c;margin-bottom:18px;">За 7 дней подряд — бонус 100 🪙</div><button class="submit-btn" id="claimBonusBtn">Получить бонус</button>`;
+      c.innerHTML = `<div style="font-size:60px;margin:10px;">🎁</div><div style="font-size:14px;color:#c8c8d6;margin-bottom:14px;">Серия: ${s.streak} дн.</div><div style="font-size:12px;color:#8a8a9c;margin-bottom:18px;">За 7 дней подряд — 100 🪙</div><button class="submit-btn" id="claimBonusBtn">Получить бонус</button>`;
       document.getElementById('claimBonusBtn').onclick = async () => {
         try {
           const r = await api('/daily-bonus', { method:'POST' });
@@ -1469,6 +1749,7 @@ async function openBonus() {
   } catch (err) { c.innerHTML = `<div class="empty-small">${escapeHtml(err.message)}</div>`; }
 }
 
+// === ПОДАРКИ ===
 async function openGift(user) {
   if (!myProfile) return;
   document.getElementById('giftModal').classList.add('show');
@@ -1478,7 +1759,7 @@ async function openGift(user) {
     const items = await api('/inventory/' + myProfile.id);
     const giftable = items.filter(x => x.type === 'skin' || x.type === 'theme' || x.type === 'nick' || x.type === 'color' || x.type === 'chatbg');
     if (!giftable.length) { c.innerHTML = '<div class="empty-small">У тебя нет предметов для подарка</div>'; return; }
-    c.innerHTML = `<div style="font-size:13px;color:#b8b8cc;margin-bottom:12px;">Ты даришь подарок для <b>${escapeHtml(user.name)}</b>. Выбери предмет:</div><div class="inv-grid">${giftable.map(it => `<div class="inv-item" data-gift="${it.key}" data-type="${it.type}" style="cursor:pointer;"><div class="inv-icon">${it.photo && it.photo.startsWith('http') ? `<img src="${it.photo}">` : (it.icon || '🎨')}</div><div class="inv-name">${escapeHtml(it.name)}</div></div>`).join('')}</div>`;
+    c.innerHTML = `<div style="font-size:13px;color:#b8b8cc;margin-bottom:12px;">Даришь подарок для <b>${escapeHtml(user.name)}</b>:</div><div class="inv-grid">${giftable.map(it => `<div class="inv-item" data-gift="${it.key}" data-type="${it.type}" style="cursor:pointer;"><div class="inv-icon">${it.photo && it.photo.startsWith('http') ? `<img src="${it.photo}">` : (it.icon || '🎨')}</div><div class="inv-name">${escapeHtml(it.name)}</div></div>`).join('')}</div>`;
     c.querySelectorAll('.inv-item').forEach(el => el.addEventListener('click', async () => {
       if (!confirm(`Подарить ${el.querySelector('.inv-name').textContent}?`)) return;
       try {
@@ -1564,13 +1845,14 @@ function openSettings() {
   g.innerHTML = `
     <div class="settings-section-title">Оформление</div>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');document.getElementById('themeModal').classList.add('show')"><div class="si-icon">🎨</div><div class="si-label"><strong>Тема и эффекты</strong><small>Цвет, паутина, снег, звёзды</small></div><div class="si-arrow">›</div></button>
-    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openFontPicker(myProfile)"><div class="si-icon">✒️</div><div class="si-label"><strong>Шрифт ника</strong><small>Pixel, Bebas, Caveat, Russo и др.</small></div><div class="si-arrow">›</div></button>
+    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openFontPicker(myProfile)"><div class="si-icon">✒️</div><div class="si-label"><strong>Шрифт ника</strong><small>Pixel, Bebas, Caveat и др.</small></div><div class="si-arrow">›</div></button>
+    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openLayoutEditor(myProfile)"><div class="si-icon">📐</div><div class="si-label"><strong>Раскладка профиля</strong><small>Баннер, аватар, цвет плашки</small></div><div class="si-arrow">›</div></button>
 
     <div class="settings-section-title">Игровое</div>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openBonus()"><div class="si-icon">🎁</div><div class="si-label"><strong>Ежедневный бонус</strong><small>+5 🪙 каждый день</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openWheel()"><div class="si-icon">🎰</div><div class="si-label"><strong>Кейс XIVIVIDE</strong><small>Крутить за 100 🪙</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openInventory()"><div class="si-icon">🎒</div><div class="si-label"><strong>Инвентарь</strong><small>Скины, темы, ник-эффекты</small></div><div class="si-arrow">›</div></button>
-    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openShop()"><div class="si-icon">🛍️</div><div class="si-label"><strong>Магазин</strong><small>Темы, баннеры, фоны, ник</small></div><div class="si-arrow">›</div></button>
+    <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openShop()"><div class="si-icon">🛍️</div><div class="si-label"><strong>Магазин</strong><small>Темы, баннеры, фоны</small></div><div class="si-arrow">›</div></button>
     <button class="settings-item" onclick="document.getElementById('settingsModal').classList.remove('show');openMarket()"><div class="si-icon">🏪</div><div class="si-label"><strong>Рынок</strong><small>Продать и купить скины</small></div><div class="si-arrow">›</div></button>
 
     <div class="settings-section-title">Социальное</div>
@@ -1599,6 +1881,10 @@ function renderTopbar() {
     document.getElementById('openForm').style.display = 'block';
     return;
   }
+  // Диалоги
+  const dialogsBtn = document.createElement('button'); dialogsBtn.className = 'theme-btn'; dialogsBtn.title = 'Мои диалоги'; dialogsBtn.textContent = '💬'; dialogsBtn.id = 'dialogsBtn';
+  dialogsBtn.addEventListener('click', openDialogs);
+  t.appendChild(dialogsBtn);
   // Уведомления
   const notifBtn = document.createElement('button'); notifBtn.className = 'theme-btn'; notifBtn.title = 'Уведомления'; notifBtn.textContent = '🔔'; notifBtn.id = 'notifBtn';
   notifBtn.addEventListener('click', openNotifs);
@@ -1626,8 +1912,11 @@ async function refreshUnreadDialogs() {
   if (!myProfile) return;
   try {
     const r = await api('/messages/unread/' + myProfile.id);
-    const btn = document.getElementById('notifBtn'); // переиспользуем
-    // ставим бейдж отдельно на кнопку диалогов в настройках — не критично
+    const btn = document.getElementById('dialogsBtn');
+    if (!btn) return;
+    let b = btn.querySelector('.badge');
+    if (r.count > 0) { if (b) b.textContent = r.count; else { b = document.createElement('span'); b.className = 'badge'; b.textContent = r.count; btn.appendChild(b); } }
+    else if (b) b.remove();
   } catch {}
 }
 function logout() {
@@ -1658,7 +1947,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     if (!r.ok) throw new Error(data.error || 'Ошибка');
     setToken(data.token); myProfile = data.profile;
     st.textContent = 'Готово!'; st.className = 'form-status success';
-    setTimeout(() => { document.getElementById('registerModal').classList.remove('show'); form.reset(); renderTopbar(); loadWall(); startPolling(); }, 500);
+    setTimeout(() => { document.getElementById('registerModal').classList.remove('show'); form.reset(); renderTopbar(); loadWall(); loadStories(); startPolling(); }, 500);
   } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
   finally { btn.disabled = false; }
 });
@@ -1671,7 +1960,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await api('/login', { method:'POST', body: JSON.stringify({ name: fd.get('name'), password: fd.get('password') }) });
     setToken(data.token); myProfile = data.profile;
     st.textContent = 'Готово!'; st.className = 'form-status success';
-    setTimeout(() => { document.getElementById('loginModal').classList.remove('show'); form.reset(); renderTopbar(); loadWall(); startPolling(); }, 400);
+    setTimeout(() => { document.getElementById('loginModal').classList.remove('show'); form.reset(); renderTopbar(); loadWall(); loadStories(); startPolling(); }, 400);
   } catch (err) { st.textContent = err.message; st.className = 'form-status error'; }
   finally { btn.disabled = false; }
 });
@@ -1716,6 +2005,7 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
   finally { btn.disabled = false; }
 });
 
+// === АДМИНКА ===
 async function openAdmin() {
   document.getElementById('adminModal').classList.add('show');
   if (!getAdminToken()) {
@@ -1733,7 +2023,7 @@ async function loadAdmin() {
   const c = document.getElementById('adminContent');
   c.innerHTML = '<div class="empty-small">Загрузка...</div>';
   try {
-    const tabs = `<div class="admin-tabs"><button data-tab="users" class="${adminTab==='users'?'active':''}">👥 Аккаунты</button><button data-tab="bans" class="${adminTab==='bans'?'active':''}">🚫 Баны</button><button data-tab="msgs" class="${adminTab==='msgs'?'active':''}">💬 Сообщения</button></div>`;
+    const tabs = `<div class="admin-tabs"><button data-tab="users" class="${adminTab==='users'?'active':''}">👥 Аккаунты</button><button data-tab="bans" class="${adminTab==='bans'?'active':''}">🚫 Баны</button><button data-tab="msgs" class="${adminTab==='msgs'?'active':''}">💬 Сообщения</button><button data-tab="shame" class="${adminTab==='shame'?'active':''}">🪧 Доска</button></div>`;
     if (adminTab === 'users') {
       const users = await apiAdmin('/admin/users', { method:'POST', body: JSON.stringify({}) });
       const bulk = `<div class="admin-bulk-bar"><span>Выбрано: <b id="selectedCount">0</b></span><button id="bulkBanBtn">🚫 Забанить</button><button id="bulkDeleteBtn">🗑 Удалить</button></div>`;
@@ -1791,7 +2081,7 @@ async function loadAdmin() {
       c.innerHTML = tabs + (bans.length === 0 ? '<div class="empty-small">Пусто</div>' : bans.map(b => `<div class="admin-user-row"><div class="admin-user-info"><strong>${b.ip ? '🚫 IP: ' + escapeHtml(b.ip) : ''}${b.device_id ? ' 📱 ' + escapeHtml(b.device_id.slice(0,16)) + '…' : ''}</strong><small>${escapeHtml(b.reason || '')} · ${new Date(b.created_at).toLocaleString('ru-RU')}</small></div><div class="admin-actions"><button data-unban="${b.id}">Разбанить</button></div></div>`).join(''));
       document.querySelectorAll('.admin-tabs button').forEach(b => b.onclick = () => { adminTab = b.dataset.tab; loadAdmin(); });
       c.querySelectorAll('button[data-unban]').forEach(b => b.onclick = async () => { if (!confirm('Снять?')) return; await apiAdmin('/admin/unban', { method:'POST', body: JSON.stringify({ banId: parseInt(b.dataset.unban) }) }); loadAdmin(); });
-    } else {
+    } else if (adminTab === 'msgs') {
       const dialogs = await apiAdmin('/admin/messages/dialogs', { method:'POST', body: JSON.stringify({}) });
       c.innerHTML = tabs + (dialogs.length === 0 ? '<div class="empty-small">Пусто</div>' : dialogs.map(d => `<div class="admin-user-row"><div class="admin-user-info"><strong>${escapeHtml(d.a.name)} ↔ ${escapeHtml(d.b.name)}</strong><small>Сообщений: ${d.total} · ${new Date(d.last_at).toLocaleString('ru-RU')}</small></div><div class="admin-actions"><button data-a="${d.a.id}" data-b="${d.b.id}">Открыть</button></div></div>`).join(''));
       document.querySelectorAll('.admin-tabs button').forEach(b => b.onclick = () => { adminTab = b.dataset.tab; loadAdmin(); });
@@ -1802,6 +2092,15 @@ async function loadAdmin() {
         cont.innerHTML = msgs.map(m => `<div style="padding:8px 12px;margin-bottom:6px;border-radius:10px;background:${m.sender_id === a ? 'rgba(91,157,255,0.15)' : 'rgba(255,215,0,0.12)'}"><div style="font-size:11px;color:#8a8a9c;">#${m.sender_id} → #${m.receiver_id} · ${new Date(m.created_at).toLocaleString('ru-RU')}</div><div style="font-size:13px;color:#f0f0f8;">${escapeHtml(m.text)}</div></div>`).join('');
         document.getElementById('adminDialogModal').classList.add('show');
       });
+    } else if (adminTab === 'shame') {
+      const posts = await apiAdmin('/admin/shame/list', { method:'POST', body: JSON.stringify({}) });
+      c.innerHTML = tabs + (posts.length === 0 ? '<div class="empty-small">Пусто</div>' : posts.map(p => `<div class="admin-user-row">${p.photo ? `<img src="${p.photo}" style="width:60px;height:60px;border-radius:8px;">` : '<div class="mini-avatar">🪧</div>'}<div class="admin-user-info"><strong>${escapeHtml(p.target_name || 'Без имени')}</strong><small>${escapeHtml((p.text || '').slice(0, 80))} · от ${escapeHtml(p.author_name)} · ${new Date(p.created_at).toLocaleString('ru-RU')}</small></div><div class="admin-actions"><button class="danger" data-del-shame="${p.id}">Удалить</button></div></div>`).join(''));
+      document.querySelectorAll('.admin-tabs button').forEach(b => b.onclick = () => { adminTab = b.dataset.tab; loadAdmin(); });
+      c.querySelectorAll('button[data-del-shame]').forEach(b => b.onclick = async () => {
+        if (!confirm('Удалить пост с доски?')) return;
+        try { await apiAdmin('/admin/shame/delete/' + b.dataset.delShame, { method:'POST', body: JSON.stringify({}) }); toast('Удалено', 'success'); loadAdmin(); if (document.getElementById('tabShame').classList.contains('active')) loadShameFeed(); }
+        catch (err) { toast(err.message, 'error'); }
+      });
     }
   } catch (err) {
     document.getElementById('adminContent').innerHTML = `<div class="form-status error">${escapeHtml(err.message)}</div>`;
@@ -1810,7 +2109,7 @@ async function loadAdmin() {
 }
 
 // === ЗАКРЫТИЕ МОДАЛОК ===
-['registerModal','loginModal','settingsModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','fontModal','appearanceModal','themeModal','wheelModal','invModal','shopModal','marketModal','dialogsModal','newChatModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
+['registerModal','loginModal','settingsModal','myProfileModal','viewProfileModal','pwModal','editModal','profileStyleModal','layoutModal','fontModal','appearanceModal','themeModal','shamePostModal','wheelModal','invModal','shopModal','marketModal','dialogsModal','newChatModal','notifsModal','addStoryModal','myStoriesModal','adminModal','adminDialogModal','bonusModal','giftModal'].forEach(id => {
   const m = document.getElementById(id); if (!m) return;
   m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('show'); if (m.id === 'viewProfileModal') stopAllAudio(); } });
 });
@@ -1822,9 +2121,11 @@ document.getElementById('closeViewProfile').onclick = () => { document.getElemen
 document.getElementById('closePw').onclick = () => document.getElementById('pwModal').classList.remove('show');
 document.getElementById('closeEdit').onclick = () => document.getElementById('editModal').classList.remove('show');
 document.getElementById('closeProfileStyle').onclick = () => document.getElementById('profileStyleModal').classList.remove('show');
+document.getElementById('closeLayout').onclick = () => document.getElementById('layoutModal').classList.remove('show');
 document.getElementById('closeFont').onclick = () => document.getElementById('fontModal').classList.remove('show');
 document.getElementById('closeAppearance').onclick = () => document.getElementById('appearanceModal').classList.remove('show');
 document.getElementById('closeTheme').onclick = () => document.getElementById('themeModal').classList.remove('show');
+document.getElementById('closeShamePost').onclick = () => document.getElementById('shamePostModal').classList.remove('show');
 document.getElementById('closeWheel').onclick = () => document.getElementById('wheelModal').classList.remove('show');
 document.getElementById('closeInv').onclick = () => document.getElementById('invModal').classList.remove('show');
 document.getElementById('closeShop').onclick = () => document.getElementById('shopModal').classList.remove('show');
