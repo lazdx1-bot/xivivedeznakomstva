@@ -9,8 +9,7 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-app.set('trust proxy', 1); // для Render
-
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.DATABASE_URL) { console.error('❌ НЕТ DATABASE_URL!'); process.exit(1); }
@@ -23,45 +22,22 @@ const ADMIN_JWT_SECRET = JWT_SECRET + ':admin';
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 
 async function initDB() {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS profiles (
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
-        age INTEGER NOT NULL,
-        bio TEXT DEFAULT '',
-        contact_type TEXT DEFAULT 'telegram',
-        contact_value TEXT DEFAULT '',
-        photo TEXT,
-        vide INTEGER DEFAULT 100,
-        password_hash TEXT,
-        reg_ip TEXT,
-        device_id TEXT,
-        is_admin INTEGER DEFAULT 0,
-        is_premium INTEGER DEFAULT 0,
-        premium_until TIMESTAMP,
-        card_color TEXT DEFAULT '',
-        card_bg TEXT DEFAULT '',
-        card_rgb INTEGER DEFAULT 0,
-        card_pinned INTEGER DEFAULT 0,
-        profile_banner TEXT DEFAULT '',
-        profile_theme TEXT DEFAULT '',
-        profile_color TEXT DEFAULT '',
-        nick_style TEXT DEFAULT '',
-        chat_bg TEXT DEFAULT '',
-        music_url TEXT DEFAULT '',
-        ref_code TEXT UNIQUE,
-        invited_by INTEGER,
-        last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        bonus_streak INTEGER DEFAULT 0,
-        last_bonus_date DATE,
-        show_gifts INTEGER DEFAULT 0,
+        id SERIAL PRIMARY KEY, name TEXT NOT NULL, age INTEGER NOT NULL, bio TEXT DEFAULT '',
+        contact_type TEXT DEFAULT 'telegram', contact_value TEXT DEFAULT '', photo TEXT,
+        vide INTEGER DEFAULT 100, password_hash TEXT, reg_ip TEXT, device_id TEXT,
+        is_admin INTEGER DEFAULT 0, is_premium INTEGER DEFAULT 0, premium_until TIMESTAMP,
+        card_color TEXT DEFAULT '', card_bg TEXT DEFAULT '', card_rgb INTEGER DEFAULT 0, card_pinned INTEGER DEFAULT 0,
+        profile_banner TEXT DEFAULT '', profile_theme TEXT DEFAULT '', profile_color TEXT DEFAULT '',
+        nick_style TEXT DEFAULT '', chat_bg TEXT DEFAULT '', music_url TEXT DEFAULT '',
+        ref_code TEXT UNIQUE, invited_by INTEGER,
+        last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, bonus_streak INTEGER DEFAULT 0,
+        last_bonus_date DATE, show_gifts INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -79,7 +55,6 @@ async function initDB() {
     await pool.query(`CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, target_id INTEGER NOT NULL, author_id INTEGER NOT NULL, text TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await pool.query(`CREATE TABLE IF NOT EXISTS daily_bonus (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, date DATE NOT NULL, amount INTEGER NOT NULL, UNIQUE(user_id, date));`);
 
-    // Миграции
     const migr = [
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS premium_until TIMESTAMP`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_banner TEXT DEFAULT ''`,
@@ -94,7 +69,6 @@ async function initDB() {
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bonus_streak INTEGER DEFAULT 0`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_bonus_date DATE`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS show_gifts INTEGER DEFAULT 0`,
-      // inventory / market — КРИТИЧНО
       `ALTER TABLE inventory ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'skin'`,
       `ALTER TABLE inventory ADD COLUMN IF NOT EXISTS item_key TEXT`,
       `ALTER TABLE market ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'skin'`,
@@ -102,7 +76,9 @@ async function initDB() {
     ];
     for (const q of migr) await pool.query(q);
 
-    // попытка перенести старые skin_id → item_key (если колонка skin_id ещё есть)
+    // Снимаем NOT NULL со старой колонки skin_id — чтобы новые записи не падали
+    try { await pool.query(`ALTER TABLE inventory ALTER COLUMN skin_id DROP NOT NULL`); } catch {}
+    try { await pool.query(`ALTER TABLE market ALTER COLUMN skin_id DROP NOT NULL`); } catch {}
     try { await pool.query(`UPDATE inventory SET item_key = skin_id::text WHERE item_key IS NULL AND skin_id IS NOT NULL`); } catch {}
     try { await pool.query(`UPDATE market SET item_key = skin_id::text WHERE item_key IS NULL AND skin_id IS NOT NULL`); } catch {}
 
@@ -141,34 +117,33 @@ const SKINS = [
 function skinById(id) { return SKINS.find(s => s.id === parseInt(id)); }
 
 const PROFILE_THEMES = [
-  { key: 'theme_web',     name: 'Паутина',   price: 300 },
-  { key: 'theme_cosmos',  name: 'Космос',    price: 350 },
-  { key: 'theme_sunset',  name: 'Закат',     price: 250 },
-  { key: 'theme_fire',    name: 'Огонь',     price: 300 },
-  { key: 'theme_matrix',  name: 'Матрица',   price: 300 },
-  { key: 'theme_night',   name: 'Ночь',      price: 200 },
-  { key: 'theme_sakura',  name: 'Сакура',    price: 250 }
+  { key: 'theme_web', name: 'Паутина', price: 300 },
+  { key: 'theme_cosmos', name: 'Космос', price: 350 },
+  { key: 'theme_sunset', name: 'Закат', price: 250 },
+  { key: 'theme_fire', name: 'Огонь', price: 300 },
+  { key: 'theme_matrix', name: 'Матрица', price: 300 },
+  { key: 'theme_night', name: 'Ночь', price: 200 },
+  { key: 'theme_sakura', name: 'Сакура', price: 250 }
 ];
 const CHAT_BGS = [
-  { key: 'chat_web',    name: 'Паутина', price: 150 },
-  { key: 'chat_night',  name: 'Ночь',    price: 150 },
-  { key: 'chat_forest', name: 'Лес',     price: 150 },
-  { key: 'chat_clouds', name: 'Облака',  price: 150 }
+  { key: 'chat_web', name: 'Паутина', price: 150 },
+  { key: 'chat_night', name: 'Ночь', price: 150 },
+  { key: 'chat_forest', name: 'Лес', price: 150 },
+  { key: 'chat_clouds', name: 'Облака', price: 150 }
 ];
 const NICKS = [
-  { key: 'nick_neon', name: 'Неон',    price: 200, icon: '💡' },
-  { key: 'nick_fire', name: 'Огонь',   price: 250, icon: '🔥' },
-  { key: 'nick_ice',  name: 'Лёд',     price: 250, icon: '❄️' },
-  { key: 'nick_rgb',  name: 'RGB',     price: 400, icon: '🌈' },
-  { key: 'nick_gold', name: 'Золото',  price: 300, icon: '👑' }
+  { key: 'nick_neon', name: 'Неон', price: 200, icon: '💡' },
+  { key: 'nick_fire', name: 'Огонь', price: 250, icon: '🔥' },
+  { key: 'nick_ice', name: 'Лёд', price: 250, icon: '❄️' },
+  { key: 'nick_rgb', name: 'RGB', price: 400, icon: '🌈' },
+  { key: 'nick_gold', name: 'Золото', price: 300, icon: '👑' }
 ];
 const COLORS = [
-  { key: 'color_red',    name: 'Красный',    price: 150, value: '#ff5c6e' },
-  { key: 'color_blue',   name: 'Синий',      price: 150, value: '#5b9dff' },
+  { key: 'color_red', name: 'Красный', price: 150, value: '#ff5c6e' },
+  { key: 'color_blue', name: 'Синий', price: 150, value: '#5b9dff' },
   { key: 'color_purple', name: 'Фиолетовый', price: 150, value: '#b17aff' },
-  { key: 'color_green',  name: 'Зелёный',    price: 150, value: '#4dd68a' }
+  { key: 'color_green', name: 'Зелёный', price: 150, value: '#4dd68a' }
 ];
-
 const WHEEL_POOL = [
   ...SKINS.map(s => ({ type: 'skin', key: String(s.id), name: s.name, icon: s.photo, rarity: s.rarity })),
   ...PROFILE_THEMES.map(t => ({ type: 'theme', key: t.key, name: t.name, icon: '🎨', rarity: 'epic' })),
@@ -176,45 +151,33 @@ const WHEEL_POOL = [
   ...NICKS.map(n => ({ type: 'nick', key: n.key, name: n.name, icon: n.icon, rarity: 'rare' })),
   ...COLORS.map(c => ({ type: 'color', key: c.key, name: c.name, icon: '🎨', rarity: 'common' }))
 ];
-
 function rollWheel() {
-  const special = Math.random() * 100;
-  if (special < 1) return { type: 'premium', key: 'forever', name: 'Премиум НАВСЕГДА', icon: '👑', rarity: 'mythic' };
-  if (special < 4) return { type: 'premium', key: '7days', name: 'Премиум на 7 дней', icon: '⭐', rarity: 'legendary' };
-  if (special < 8) return { type: 'coins', key: '1000', name: '1000 вайдиков', icon: '🪙', rarity: 'legendary' };
+  const s = Math.random() * 100;
+  if (s < 1) return { type: 'premium', key: 'forever', name: 'Премиум НАВСЕГДА', icon: '👑', rarity: 'mythic' };
+  if (s < 4) return { type: 'premium', key: '7days', name: 'Премиум на 7 дней', icon: '⭐', rarity: 'legendary' };
+  if (s < 8) return { type: 'coins', key: '1000', name: '1000 вайдиков', icon: '🪙', rarity: 'legendary' };
   const r = Math.random() * 100;
   let acc = 0, picked = 'common';
   for (const [rar, ch] of [['legendary', 4], ['epic', 12], ['rare', 28], ['common', 56]]) {
-    acc += ch;
-    if (r < acc) { picked = rar; break; }
+    acc += ch; if (r < acc) { picked = rar; break; }
   }
   const p = WHEEL_POOL.filter(x => x.rarity === picked);
   return p[Math.floor(Math.random() * p.length)] || WHEEL_POOL[0];
 }
 
-function sanitize(str, maxLen = 500) {
-  if (typeof str !== 'string') return '';
-  return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen);
-}
-function getIp(req) {
-  const raw = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString();
-  return raw.split(',')[0].trim().slice(0, 64);
-}
+function sanitize(str, maxLen = 500) { if (typeof str !== 'string') return ''; return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen); }
+function getIp(req) { const raw = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString(); return raw.split(',')[0].trim().slice(0, 64); }
 function getDeviceId(req) { return String(req.headers['x-device-id'] || req.body.deviceId || '').slice(0, 128); }
-
 function makeUserToken(id) { return jwt.sign({ uid: id, type: 'user' }, JWT_SECRET, { expiresIn: '30d' }); }
 function makeAdminToken() { return jwt.sign({ type: 'admin' }, ADMIN_JWT_SECRET, { expiresIn: '12h' }); }
-
 function authUser(req, res, next) {
-  const a = req.headers.authorization || '';
-  const t = a.startsWith('Bearer ') ? a.slice(7) : null;
+  const a = req.headers.authorization || ''; const t = a.startsWith('Bearer ') ? a.slice(7) : null;
   if (!t) return res.status(401).json({ error: 'Нужна авторизация' });
   try { const p = jwt.verify(t, JWT_SECRET); if (p.type !== 'user') throw 0; req.userId = p.uid; next(); }
   catch { return res.status(401).json({ error: 'Сессия истекла' }); }
 }
 function authAdmin(req, res, next) {
-  const a = req.headers.authorization || '';
-  const t = a.startsWith('Bearer ') ? a.slice(7) : null;
+  const a = req.headers.authorization || ''; const t = a.startsWith('Bearer ') ? a.slice(7) : null;
   if (!t) return res.status(401).json({ error: 'Нужна авторизация админа' });
   try { const p = jwt.verify(t, ADMIN_JWT_SECRET); if (p.type !== 'admin') throw 0; next(); }
   catch { return res.status(401).json({ error: 'Сессия админа истекла' }); }
@@ -237,87 +200,59 @@ async function checkBan(req, res, next) {
   } catch { next(); }
 }
 ['/api/register','/api/login','/api/profiles','/api/like','/api/messages'].forEach(p => app.use(p, checkBan));
-
-async function touchSeen(userId) {
-  try { await pool.query('UPDATE profiles SET last_seen = CURRENT_TIMESTAMP WHERE id=$1', [userId]); } catch {}
-}
+async function touchSeen(userId) { try { await pool.query('UPDATE profiles SET last_seen = CURRENT_TIMESTAMP WHERE id=$1', [userId]); } catch {} }
 
 function pickProfile(row) {
-  return {
-    id: row.id, name: row.name, age: row.age, bio: row.bio,
+  return { id: row.id, name: row.name, age: row.age, bio: row.bio,
     contact_type: row.contact_type, contact_value: row.contact_value,
     photo: row.photo, vide: row.vide, is_premium: row.is_premium, premium_until: row.premium_until,
     card_color: row.card_color, card_bg: row.card_bg, card_rgb: row.card_rgb, card_pinned: row.card_pinned,
     profile_banner: row.profile_banner, profile_theme: row.profile_theme, profile_color: row.profile_color,
     nick_style: row.nick_style, chat_bg: row.chat_bg, music_url: row.music_url,
-    ref_code: row.ref_code, show_gifts: row.show_gifts, last_seen: row.last_seen, created_at: row.created_at
-  };
+    ref_code: row.ref_code, show_gifts: row.show_gifts, last_seen: row.last_seen, created_at: row.created_at };
 }
 
-// ============ РЕГИСТРАЦИЯ ============
 app.post('/api/register', registerLimiter, upload.single('photo'), async (req, res) => {
   try {
     const { name, age, bio, contactType, contactValue, password, ref } = req.body;
-    const cleanName = sanitize(name, 40);
-    const cleanBio = sanitize(bio, 200);
-    const cleanContact = sanitize(contactValue, 60);
+    const cleanName = sanitize(name, 40), cleanBio = sanitize(bio, 200), cleanContact = sanitize(contactValue, 60);
     const cleanCT = ['telegram','discord'].includes(contactType) ? contactType : 'telegram';
-    const ageN = parseInt(age);
-    const ip = getIp(req), dev = getDeviceId(req);
-
+    const ageN = parseInt(age); const ip = getIp(req), dev = getDeviceId(req);
     if (!cleanName || cleanName.length < 2) return res.status(400).json({ error: 'Имя минимум 2 символа' });
     if (!ageN || ageN < 16 || ageN > 99) return res.status(400).json({ error: 'Возраст 16–99' });
     if (!password || password.length < 6) return res.status(400).json({ error: 'Пароль 6+ символов' });
-
     if (ip) { const d = await pool.query('SELECT id FROM profiles WHERE reg_ip=$1 LIMIT 1', [ip]); if (d.rows.length) return res.status(403).json({ error: 'С этого IP уже есть анкета.' }); }
     if (dev) { const d = await pool.query('SELECT id FROM profiles WHERE device_id=$1 LIMIT 1', [dev]); if (d.rows.length) return res.status(403).json({ error: 'С этого устройства уже есть анкета.' }); }
-    const exist = await pool.query('SELECT id FROM profiles WHERE LOWER(name)=LOWER($1)', [cleanName]);
-    if (exist.rows.length) return res.status(400).json({ error: 'Имя занято.' });
-
+    const ex = await pool.query('SELECT id FROM profiles WHERE LOWER(name)=LOWER($1)', [cleanName]);
+    if (ex.rows.length) return res.status(400).json({ error: 'Имя занято.' });
     const hash = await bcrypt.hash(password, 10);
     const photo = req.body.photoUrl || (req.file ? `/uploads/${req.file.filename}` : null);
-
     let inviterId = null;
-    if (ref) {
-      const inviter = await pool.query('SELECT id FROM profiles WHERE ref_code=$1', [sanitize(ref, 20)]);
-      if (inviter.rows.length) inviterId = inviter.rows[0].id;
-    }
-
+    if (ref) { const inv = await pool.query('SELECT id FROM profiles WHERE ref_code=$1', [sanitize(ref, 20)]); if (inv.rows.length) inviterId = inv.rows[0].id; }
     const myRef = randomRef();
     const result = await pool.query(`
       INSERT INTO profiles (name, age, bio, contact_type, contact_value, photo, password_hash, vide, reg_ip, device_id, ref_code, invited_by)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,100,$8,$9,$10,$11)
-      RETURNING *
+      VALUES ($1,$2,$3,$4,$5,$6,$7,100,$8,$9,$10,$11) RETURNING *
     `, [cleanName, ageN, cleanBio, cleanCT, cleanContact, photo, hash, ip || null, dev || null, myRef, inviterId]);
-
     const profile = result.rows[0];
-
     if (inviterId) {
       const cnt = await pool.query('SELECT COUNT(*)::int AS c FROM profiles WHERE invited_by=$1', [inviterId]);
-      if (cnt.rows[0].c === 3) {
-        await pool.query('UPDATE profiles SET vide = vide + 300 WHERE id=$1', [inviterId]);
-        await notify(inviterId, 'ref', '🎉 3 друга пришли по твоей ссылке! +300 🪙', null);
-      } else {
-        await notify(inviterId, 'ref', '👥 По твоей ссылке зарегистрировался новый юзер', profile.id);
-      }
+      if (cnt.rows[0].c === 3) { await pool.query('UPDATE profiles SET vide = vide + 300 WHERE id=$1', [inviterId]); await notify(inviterId, 'ref', '🎉 3 друга пришли по твоей ссылке! +300 🪙', null); }
+      else await notify(inviterId, 'ref', '👥 По твоей ссылке зарегистрировался новый юзер', profile.id);
     }
-
-    const token = makeUserToken(profile.id);
-    res.json({ profile: pickProfile(profile), token });
+    res.json({ profile: pickProfile(profile), token: makeUserToken(profile.id) });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка регистрации' }); }
 });
 
 app.post('/api/login', loginLimiter, async (req, res) => {
   try {
-    const { name, password } = req.body;
-    const cleanName = sanitize(name, 40);
-    if (!cleanName || !password) return res.status(400).json({ error: 'Введи имя и пароль' });
+    const cleanName = sanitize(req.body.name, 40);
+    if (!cleanName || !req.body.password) return res.status(400).json({ error: 'Введи имя и пароль' });
     const r = await pool.query('SELECT * FROM profiles WHERE LOWER(name)=LOWER($1)', [cleanName]);
     if (!r.rows.length) return res.status(401).json({ error: 'Неверное имя или пароль' });
     const row = r.rows[0];
     if (!row.password_hash) return res.status(401).json({ error: 'У анкеты нет пароля' });
-    const ok = await bcrypt.compare(password, row.password_hash);
-    if (!ok) return res.status(401).json({ error: 'Неверное имя или пароль' });
+    if (!await bcrypt.compare(req.body.password, row.password_hash)) return res.status(401).json({ error: 'Неверное имя или пароль' });
     await touchSeen(row.id);
     res.json({ profile: pickProfile(row), token: makeUserToken(row.id) });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка входа' }); }
@@ -345,7 +280,6 @@ app.post('/api/change-password', authUser, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ ПРОФИЛИ ============
 app.get('/api/profiles', async (req, res) => {
   try {
     const r = await pool.query(`
@@ -353,8 +287,7 @@ app.get('/api/profiles', async (req, res) => {
              card_color, card_bg, card_rgb, card_pinned, profile_banner, profile_theme, profile_color, nick_style,
              last_seen, show_gifts, created_at,
              (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
-      FROM profiles
-      ORDER BY card_pinned DESC, created_at DESC
+      FROM profiles ORDER BY card_pinned DESC, created_at DESC
     `);
     res.json(r.rows);
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
@@ -375,7 +308,6 @@ app.get('/api/profiles/:id', async (req, res) => {
       const g = await pool.query(`SELECT g.*, p.name AS sender_name, p.photo AS sender_photo FROM gifts g JOIN profiles p ON p.id=g.sender_id WHERE g.receiver_id=$1 ORDER BY g.created_at DESC LIMIT 50`, [id]);
       profile.gifts = g.rows;
     } else profile.gifts = [];
-    // истории пользователя
     const st = await pool.query('SELECT COUNT(*)::int AS c FROM stories WHERE user_id=$1 AND expires_at > CURRENT_TIMESTAMP', [id]);
     profile.stories_count = st.rows[0].c;
     res.json(profile);
@@ -431,29 +363,21 @@ app.post('/api/profiles/:id/appearance', authUser, async (req, res) => {
       [safe(cardColor), safe(cardBg), cardRgb !== undefined ? (cardRgb?1:0) : null, cardPinned !== undefined ? (cardPinned?1:0) : null, req.userId]);
     const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [req.userId]);
     res.json(pickProfile(r.rows[0]));
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
 app.post('/api/profiles/:id/profile-style', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
     const { profileBanner, profileTheme, profileColor, nickStyle, chatBg } = req.body;
-    async function checkOwn(key) {
-      if (!key) return true;
-      const o = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_key=$2 LIMIT 1', [req.userId, key]);
-      return o.rows.length > 0;
-    }
+    async function checkOwn(key) { if (!key) return true; const o = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_key=$2 LIMIT 1', [req.userId, key]); return o.rows.length > 0; }
     if (profileTheme && !await checkOwn(profileTheme)) return res.status(403).json({ error: 'Тема не куплена' });
     if (nickStyle && !await checkOwn(nickStyle)) return res.status(403).json({ error: 'Стиль не куплен' });
     if (profileColor && !await checkOwn(profileColor)) return res.status(403).json({ error: 'Цвет не куплен' });
     if (chatBg && !await checkOwn(chatBg)) return res.status(403).json({ error: 'Фон чата не куплен' });
     await pool.query(`
-      UPDATE profiles SET
-        profile_banner = COALESCE($1, profile_banner),
-        profile_theme  = COALESCE($2, profile_theme),
-        profile_color  = COALESCE($3, profile_color),
-        nick_style     = COALESCE($4, nick_style),
-        chat_bg        = COALESCE($5, chat_bg)
+      UPDATE profiles SET profile_banner=COALESCE($1,profile_banner), profile_theme=COALESCE($2,profile_theme),
+        profile_color=COALESCE($3,profile_color), nick_style=COALESCE($4,nick_style), chat_bg=COALESCE($5,chat_bg)
       WHERE id=$6
     `, [
       profileBanner !== undefined ? String(profileBanner).slice(0, 500) : null,
@@ -465,7 +389,7 @@ app.post('/api/profiles/:id/profile-style', authUser, async (req, res) => {
     ]);
     const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [req.userId]);
     res.json(pickProfile(r.rows[0]));
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
 app.post('/api/profiles/:id/toggle-gifts', authUser, async (req, res) => {
@@ -473,43 +397,27 @@ app.post('/api/profiles/:id/toggle-gifts', authUser, async (req, res) => {
     if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
     const r = await pool.query('UPDATE profiles SET show_gifts = 1 - show_gifts WHERE id=$1 RETURNING show_gifts', [req.userId]);
     res.json({ show_gifts: r.rows[0].show_gifts });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ ЛАЙКИ ============
 app.post('/api/like', authUser, actionLimiter, async (req, res) => {
   try {
     const tid = parseInt(req.body.targetId);
     if (!tid || tid === req.userId) return res.status(400).json({ error: 'Некорректно' });
     const ex = await pool.query('SELECT * FROM likes WHERE liker_id=$1 AND target_id=$2', [req.userId, tid]);
-    if (ex.rows.length) {
-      await pool.query('DELETE FROM likes WHERE liker_id=$1 AND target_id=$2', [req.userId, tid]);
-      res.json({ liked: false });
-    } else {
+    if (ex.rows.length) { await pool.query('DELETE FROM likes WHERE liker_id=$1 AND target_id=$2', [req.userId, tid]); res.json({ liked: false }); }
+    else {
       await pool.query('INSERT INTO likes (liker_id, target_id) VALUES ($1,$2)', [req.userId, tid]);
       const me = await pool.query('SELECT name FROM profiles WHERE id=$1', [req.userId]);
       await notify(tid, 'like', `❤️ ${me.rows[0]?.name || 'Кто-то'} лайкнул твою анкету`, req.userId);
       res.json({ liked: true });
     }
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
-});
-app.get('/api/likes/:userId', async (req, res) => {
-  try { const r = await pool.query('SELECT target_id FROM likes WHERE liker_id=$1', [parseInt(req.params.userId)]); res.json(r.rows.map(x => x.target_id)); }
-  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
-});
-app.get('/api/liked-by/:userId', async (req, res) => {
-  try { const r = await pool.query(`SELECT p.id, p.name, p.age, p.bio, p.photo, p.contact_type, p.contact_value FROM profiles p JOIN likes l ON l.liker_id=p.id WHERE l.target_id=$1 ORDER BY l.created_at DESC`, [parseInt(req.params.userId)]); res.json(r.rows); }
-  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
-});
-app.get('/api/mutual/:a/:b', async (req, res) => {
-  try {
-    const a = parseInt(req.params.a), b = parseInt(req.params.b);
-    const r = await pool.query(`SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=$2 UNION SELECT 1 FROM likes WHERE liker_id=$2 AND target_id=$1`, [a, b]);
-    res.json({ mutual: r.rows.length >= 2 });
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
+app.get('/api/likes/:userId', async (req, res) => { try { const r = await pool.query('SELECT target_id FROM likes WHERE liker_id=$1', [parseInt(req.params.userId)]); res.json(r.rows.map(x => x.target_id)); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+app.get('/api/liked-by/:userId', async (req, res) => { try { const r = await pool.query(`SELECT p.id, p.name, p.age, p.bio, p.photo, p.contact_type, p.contact_value FROM profiles p JOIN likes l ON l.liker_id=p.id WHERE l.target_id=$1 ORDER BY l.created_at DESC`, [parseInt(req.params.userId)]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+app.get('/api/mutual/:a/:b', async (req, res) => { try { const a = parseInt(req.params.a), b = parseInt(req.params.b); const r = await pool.query(`SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=$2 UNION SELECT 1 FROM likes WHERE liker_id=$2 AND target_id=$1`, [a, b]); res.json({ mutual: r.rows.length >= 2 }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 
-// ============ СООБЩЕНИЯ ============
 app.get('/api/messages/dialogs/:userId', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' });
@@ -525,14 +433,11 @@ app.get('/api/messages/dialogs/:userId', authUser, async (req, res) => {
     }
     dialogs.sort((a,b) => new Date(b.last ? b.last.created_at : 0) - new Date(a.last ? a.last.created_at : 0));
     res.json(dialogs);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.get('/api/messages/unread/:userId', authUser, async (req, res) => {
-  try {
-    if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только своё' });
-    const r = await pool.query('SELECT COUNT(*)::int AS c FROM messages WHERE receiver_id=$1 AND is_read=0', [req.userId]);
-    res.json({ count: r.rows[0].c });
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только своё' }); const r = await pool.query('SELECT COUNT(*)::int AS c FROM messages WHERE receiver_id=$1 AND is_read=0', [req.userId]); res.json({ count: r.rows[0].c }); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.get('/api/messages/:userId/:otherId', authUser, async (req, res) => {
   try {
@@ -545,9 +450,7 @@ app.get('/api/messages/:userId/:otherId', authUser, async (req, res) => {
 });
 app.post('/api/messages', authUser, msgLimiter, async (req, res) => {
   try {
-    const { receiverId, text } = req.body;
-    const rid = parseInt(receiverId);
-    const cleanText = sanitize(text, 1000);
+    const rid = parseInt(req.body.receiverId); const cleanText = sanitize(req.body.text, 1000);
     if (!rid || !cleanText || rid === req.userId) return res.status(400).json({ error: 'Пусто' });
     const likeC = await pool.query(`SELECT 1 FROM likes WHERE (liker_id=$1 AND target_id=$2) OR (liker_id=$2 AND target_id=$1) LIMIT 1`, [req.userId, rid]);
     if (!likeC.rows.length) return res.status(403).json({ error: 'Нужен взаимный лайк' });
@@ -569,7 +472,6 @@ app.post('/api/messages/delete/:id', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ УВЕДОМЛЕНИЯ ============
 app.get('/api/notifications/:userId', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' });
@@ -579,11 +481,9 @@ app.get('/api/notifications/:userId', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/notifications/read-all', authUser, async (req, res) => {
-  try { await pool.query('UPDATE notifications SET is_read=1 WHERE user_id=$1', [req.userId]); res.json({ ok: true }); }
-  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { await pool.query('UPDATE notifications SET is_read=1 WHERE user_id=$1', [req.userId]); res.json({ ok: true }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ БОНУС / СТРИК ============
 app.post('/api/daily-bonus', authUser, async (req, res) => {
   try {
     const today = new Date().toISOString().slice(0, 10);
@@ -594,8 +494,7 @@ app.post('/api/daily-bonus', authUser, async (req, res) => {
     let streak = p.rows[0].bonus_streak || 0;
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
     if (lastDate === yesterday) streak += 1; else streak = 1;
-    let amount = 5;
-    if (streak >= 7) amount = 100;
+    let amount = 5; if (streak >= 7) amount = 100;
     await pool.query('UPDATE profiles SET vide = vide + $1, bonus_streak = $2, last_bonus_date = $3 WHERE id=$4', [amount, streak, today, req.userId]);
     const r = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
     res.json({ amount, streak, balance: r.rows[0].vide });
@@ -611,21 +510,13 @@ app.get('/api/daily-bonus/status', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ РУЛЕТКА ============
 app.get('/api/wheel/last/:userId', authUser, async (req, res) => {
-  try {
-    if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только своё' });
-    const r = await pool.query('SELECT result_name, created_at FROM wheel_spins WHERE user_id=$1 ORDER BY id DESC LIMIT 10', [req.userId]);
-    res.json(r.rows);
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только своё' }); const r = await pool.query('SELECT result_name, created_at FROM wheel_spins WHERE user_id=$1 ORDER BY id DESC LIMIT 10', [req.userId]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.get('/api/wheel/tape', authUser, async (req, res) => {
   try {
     const tape = [];
-    for (let i = 0; i < 60; i++) {
-      const item = WHEEL_POOL[Math.floor(Math.random() * WHEEL_POOL.length)];
-      tape.push({ name: item.name, icon: item.icon, rarity: item.rarity });
-    }
+    for (let i = 0; i < 60; i++) { const item = WHEEL_POOL[Math.floor(Math.random() * WHEEL_POOL.length)]; tape.push({ name: item.name, icon: item.icon, rarity: item.rarity }); }
     res.json(tape);
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
@@ -645,15 +536,13 @@ app.post('/api/wheel/spin', authUser, actionLimiter, async (req, res) => {
     await pool.query('UPDATE profiles SET vide = vide - $1 WHERE id=$2', [COST, req.userId]);
     await pool.query('INSERT INTO wheel_spins (user_id, result_name, result_photo, result_skin_id) VALUES ($1,$2,$3,$4)',
       [req.userId, prize.name, prize.icon, prize.type === 'skin' ? parseInt(prize.key) : null]);
-    if (prize.type === 'skin') {
-      await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, 'skin', prize.key]);
-    } else if (prize.type === 'coins') {
-      await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [1000, req.userId]);
-    } else if (prize.type === 'premium') {
+    if (prize.type === 'skin') await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, 'skin', prize.key]);
+    else if (prize.type === 'coins') await pool.query('UPDATE profiles SET vide = vide + $1 WHERE id=$2', [1000, req.userId]);
+    else if (prize.type === 'premium') {
       if (prize.key === 'forever') await pool.query('UPDATE profiles SET is_premium=1, premium_until=NULL WHERE id=$1', [req.userId]);
       else await pool.query(`UPDATE profiles SET is_premium=1, premium_until=COALESCE(premium_until, CURRENT_TIMESTAMP) + INTERVAL '7 days' WHERE id=$1`, [req.userId]);
     } else if (['theme','nick','color','chatbg'].includes(prize.type)) {
-      await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [req.userId, prize.type, prize.key]);
+      await pool.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, prize.type, prize.key]);
     }
     const nb = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
     await notify(req.userId, 'wheel', `🎰 Ты выбил: ${prize.name}`, null);
@@ -661,7 +550,6 @@ app.post('/api/wheel/spin', authUser, actionLimiter, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка прокрутки' }); }
 });
 
-// ============ ИНВЕНТАРЬ ============
 app.get('/api/inventory/:userId', async (req, res) => {
   try {
     const r = await pool.query('SELECT item_type, item_key, COUNT(*)::int AS count FROM inventory WHERE user_id=$1 GROUP BY item_type, item_key ORDER BY MAX(obtained_at) DESC', [parseInt(req.params.userId)]);
@@ -675,18 +563,14 @@ app.get('/api/inventory/:userId', async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
 });
 app.get('/api/inventory/owned/:userId', authUser, async (req, res) => {
-  try {
-    if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' });
-    const r = await pool.query('SELECT DISTINCT item_key FROM inventory WHERE user_id=$1', [req.userId]);
-    res.json(r.rows.map(x => x.item_key));
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' }); const r = await pool.query('SELECT DISTINCT item_key FROM inventory WHERE user_id=$1', [req.userId]); res.json(r.rows.map(x => x.item_key)); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ ПОДАРКИ ============
 app.post('/api/gifts/send', authUser, actionLimiter, async (req, res) => {
   try {
-    const { receiverId, itemKey, itemType } = req.body;
-    const rid = parseInt(receiverId);
+    const rid = parseInt(req.body.receiverId);
+    const { itemKey, itemType } = req.body;
     if (!rid || !itemKey || rid === req.userId) return res.status(400).json({ error: 'Некорректно' });
     const it = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_key=$2 AND item_type=$3 LIMIT 1', [req.userId, itemKey, itemType || 'skin']);
     if (!it.rows.length) return res.status(400).json({ error: 'У тебя нет этого предмета' });
@@ -699,7 +583,6 @@ app.post('/api/gifts/send', authUser, actionLimiter, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка подарка' }); }
 });
 
-// ============ ИСТОРИИ ============
 app.post('/api/stories', authUser, async (req, res) => {
   try {
     const photo = String(req.body.photo || '').slice(0, 500);
@@ -707,7 +590,7 @@ app.post('/api/stories', authUser, async (req, res) => {
     if (!photo) return res.status(400).json({ error: 'Нужно фото' });
     const r = await pool.query('INSERT INTO stories (user_id, photo, caption) VALUES ($1,$2,$3) RETURNING *', [req.userId, photo, caption]);
     res.json(r.rows[0]);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.get('/api/stories', async (req, res) => {
   try {
@@ -715,8 +598,7 @@ app.get('/api/stories', async (req, res) => {
       SELECT s.*, p.name, p.photo AS user_photo,
         (SELECT COUNT(*)::int FROM story_views WHERE story_id=s.id) AS views
       FROM stories s JOIN profiles p ON p.id=s.user_id
-      WHERE s.expires_at > CURRENT_TIMESTAMP
-      ORDER BY s.created_at DESC LIMIT 50
+      WHERE s.expires_at > CURRENT_TIMESTAMP ORDER BY s.created_at DESC LIMIT 50
     `);
     res.json(r.rows);
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
@@ -727,17 +609,14 @@ app.get('/api/stories/user/:userId', async (req, res) => {
       SELECT s.*, p.name, p.photo AS user_photo,
         (SELECT COUNT(*)::int FROM story_views WHERE story_id=s.id) AS views
       FROM stories s JOIN profiles p ON p.id=s.user_id
-      WHERE s.user_id=$1 AND s.expires_at > CURRENT_TIMESTAMP
-      ORDER BY s.created_at DESC
+      WHERE s.user_id=$1 AND s.expires_at > CURRENT_TIMESTAMP ORDER BY s.created_at DESC
     `, [parseInt(req.params.userId)]);
     res.json(r.rows);
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/stories/:id/view', authUser, async (req, res) => {
-  try {
-    await pool.query('INSERT INTO story_views (story_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [parseInt(req.params.id), req.userId]);
-    res.json({ ok: true });
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { await pool.query('INSERT INTO story_views (story_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [parseInt(req.params.id), req.userId]); res.json({ ok: true }); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.get('/api/stories/:id/views', authUser, async (req, res) => {
   try {
@@ -748,22 +627,15 @@ app.get('/api/stories/:id/views', authUser, async (req, res) => {
     res.json(r.rows);
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-app.delete('/api/stories/cleanup', async (req, res) => {
-  try { await pool.query('DELETE FROM stories WHERE expires_at <= CURRENT_TIMESTAMP'); res.json({ ok: true }); } catch { res.json({ ok: true }); }
-});
+app.delete('/api/stories/cleanup', async (req, res) => { try { await pool.query('DELETE FROM stories WHERE expires_at <= CURRENT_TIMESTAMP'); res.json({ ok: true }); } catch { res.json({ ok: true }); } });
 
-// ============ КОММЕНТАРИИ ============
 app.get('/api/comments/:targetId', async (req, res) => {
-  try {
-    const r = await pool.query(`SELECT c.*, p.name, p.photo FROM comments c JOIN profiles p ON p.id=c.author_id WHERE c.target_id=$1 ORDER BY c.created_at DESC`, [parseInt(req.params.targetId)]);
-    res.json(r.rows);
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { const r = await pool.query(`SELECT c.*, p.name, p.photo FROM comments c JOIN profiles p ON p.id=c.author_id WHERE c.target_id=$1 ORDER BY c.created_at DESC`, [parseInt(req.params.targetId)]); res.json(r.rows); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/comments', authUser, actionLimiter, async (req, res) => {
   try {
-    const { targetId, text } = req.body;
-    const tid = parseInt(targetId);
-    const cleanText = sanitize(text, 500);
+    const tid = parseInt(req.body.targetId); const cleanText = sanitize(req.body.text, 500);
     if (!tid || !cleanText) return res.status(400).json({ error: 'Пусто' });
     const r = await pool.query('INSERT INTO comments (target_id, author_id, text) VALUES ($1,$2,$3) RETURNING *', [tid, req.userId, cleanText]);
     const me = await pool.query('SELECT name FROM profiles WHERE id=$1', [req.userId]);
@@ -782,20 +654,16 @@ app.delete('/api/comments/:id', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
-// ============ МАГАЗИН ============
 app.get('/api/shop', (req, res) => {
   res.json({
     banners: [
-      { key: 'banner_web',    name: 'Паутина',   price: 300, preview: 'linear-gradient(135deg,#0d0d12,#050508)', icon: '🕸' },
-      { key: 'banner_sunset', name: 'Закат',     price: 250, preview: 'linear-gradient(135deg,#ff9a5c,#c45a1a)', icon: '🌅' },
-      { key: 'banner_cosmos', name: 'Космос',    price: 400, preview: 'linear-gradient(135deg,#1a0d33,#050510)', icon: '🌌' },
-      { key: 'banner_fire',   name: 'Огонь',     price: 350, preview: 'linear-gradient(135deg,#ff5c6e,#7a1a1a)', icon: '🔥' },
-      { key: 'banner_matrix', name: 'Матрица',   price: 300, preview: 'linear-gradient(135deg,#001505,#000300)', icon: '🟢' }
+      { key: 'banner_web', name: 'Паутина', price: 300, preview: 'linear-gradient(135deg,#0d0d12,#050508)', icon: '🕸' },
+      { key: 'banner_sunset', name: 'Закат', price: 250, preview: 'linear-gradient(135deg,#ff9a5c,#c45a1a)', icon: '🌅' },
+      { key: 'banner_cosmos', name: 'Космос', price: 400, preview: 'linear-gradient(135deg,#1a0d33,#050510)', icon: '🌌' },
+      { key: 'banner_fire', name: 'Огонь', price: 350, preview: 'linear-gradient(135deg,#ff5c6e,#7a1a1a)', icon: '🔥' },
+      { key: 'banner_matrix', name: 'Матрица', price: 300, preview: 'linear-gradient(135deg,#001505,#000300)', icon: '🟢' }
     ],
-    nicks: NICKS,
-    colors: COLORS,
-    themes: PROFILE_THEMES,
-    chatbgs: CHAT_BGS
+    nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS
   });
 });
 app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
@@ -822,17 +690,13 @@ app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
   finally { client.release(); }
 });
 
-// ============ РЫНОК ============
 app.get('/api/market', async (req, res) => {
-  try {
-    const r = await pool.query(`SELECT m.id, m.item_key, m.item_type, m.price, m.seller_id, m.created_at, p.name AS seller_name FROM market m JOIN profiles p ON p.id=m.seller_id WHERE m.is_sold=0 ORDER BY m.created_at DESC`);
-    res.json(r.rows);
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { const r = await pool.query(`SELECT m.id, m.item_key, m.item_type, m.price, m.seller_id, m.created_at, p.name AS seller_name FROM market m JOIN profiles p ON p.id=m.seller_id WHERE m.is_sold=0 ORDER BY m.created_at DESC`); res.json(r.rows); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/market/list', authUser, actionLimiter, async (req, res) => {
   try {
-    const { skinId, price } = req.body;
-    const sid = parseInt(skinId), p = parseInt(price);
+    const sid = parseInt(req.body.skinId), p = parseInt(req.body.price);
     if (isNaN(sid) || !p || p < 1 || p > 100000) return res.status(400).json({ error: 'Некорректно' });
     const it = await pool.query('SELECT id FROM inventory WHERE user_id=$1 AND item_type=$2 AND item_key=$3 LIMIT 1', [req.userId, 'skin', String(sid)]);
     if (!it.rows.length) return res.status(400).json({ error: 'Нет скина' });
@@ -873,33 +737,19 @@ app.post('/api/market/cancel', authUser, async (req, res) => {
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-app.get('/api/market/my/:userId', async (req, res) => {
-  try { const r = await pool.query('SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC', [parseInt(req.params.userId)]); res.json(r.rows); }
+app.get('/api/market/my/:userId', async (req, res) => { try { const r = await pool.query('SELECT * FROM market WHERE seller_id=$1 AND is_sold=0 ORDER BY created_at DESC', [parseInt(req.params.userId)]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
+  try { if (req.body.password !== ADMIN_PASSWORD) return res.status(403).json({ error: 'Неверный пароль' }); res.json({ token: makeAdminToken() }); }
   catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-
-// ============ АДМИНКА ============
-app.post('/api/admin/login', loginLimiter, async (req, res) => {
-  try {
-    if (req.body.password !== ADMIN_PASSWORD) return res.status(403).json({ error: 'Неверный пароль' });
-    res.json({ token: makeAdminToken() });
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
-});
 app.post('/api/admin/users', authAdmin, async (req, res) => {
-  try {
-    const r = await pool.query(`SELECT id, name, age, photo, vide, is_admin, is_premium, premium_until, reg_ip, device_id, created_at, (SELECT COUNT(*)::int FROM likes WHERE target_id=profiles.id) AS likes FROM profiles ORDER BY id DESC`);
-    res.json(r.rows);
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { const r = await pool.query(`SELECT id, name, age, photo, vide, is_admin, is_premium, premium_until, reg_ip, device_id, created_at, (SELECT COUNT(*)::int FROM likes WHERE target_id=profiles.id) AS likes FROM profiles ORDER BY id DESC`); res.json(r.rows); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/admin/give-vide', authAdmin, async (req, res) => {
-  try {
-    const { userId, amount } = req.body;
-    const amt = parseInt(amount);
-    if (!amt) return res.status(400).json({ error: 'Нет суммы' });
-    await pool.query('UPDATE profiles SET vide = GREATEST(0, vide + $1) WHERE id=$2', [amt, userId]);
-    const r = await pool.query('SELECT id, name, vide FROM profiles WHERE id=$1', [userId]);
-    res.json(r.rows[0]);
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { const amt = parseInt(req.body.amount); if (!amt) return res.status(400).json({ error: 'Нет суммы' }); await pool.query('UPDATE profiles SET vide = GREATEST(0, vide + $1) WHERE id=$2', [amt, req.body.userId]); const r = await pool.query('SELECT id, name, vide FROM profiles WHERE id=$1', [req.body.userId]); res.json(r.rows[0]); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/admin/toggle-premium', authAdmin, async (req, res) => {
   try {
@@ -926,13 +776,8 @@ app.post('/api/admin/delete-user', authAdmin, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/admin/reset-password', authAdmin, async (req, res) => {
-  try {
-    const { userId, newPassword } = req.body;
-    if (!newPassword || newPassword.length < 6) return res.status(400).json({ error: 'Пароль 6+' });
-    const hash = await bcrypt.hash(newPassword, 10);
-    await pool.query('UPDATE profiles SET password_hash=$1 WHERE id=$2', [hash, userId]);
-    res.json({ ok: true });
-  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+  try { const { userId, newPassword } = req.body; if (!newPassword || newPassword.length < 6) return res.status(400).json({ error: 'Пароль 6+' }); const hash = await bcrypt.hash(newPassword, 10); await pool.query('UPDATE profiles SET password_hash=$1 WHERE id=$2', [hash, userId]); res.json({ ok: true }); }
+  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 app.post('/api/admin/purge-nopass', authAdmin, async (req, res) => {
   const client = await pool.connect();
@@ -957,11 +802,10 @@ app.post('/api/admin/purge-nopass', authAdmin, async (req, res) => {
 app.post('/api/admin/purge-by-ids', authAdmin, async (req, res) => {
   const client = await pool.connect();
   try {
-    const { ids } = req.body;
-    const cleanIds = (ids||[]).map(x => parseInt(x)).filter(x => Number.isInteger(x) && x > 0);
-    if (!cleanIds.length) return res.status(400).json({ error: 'Нет валидных' });
+    const ids = (req.body.ids||[]).map(x => parseInt(x)).filter(x => Number.isInteger(x) && x > 0);
+    if (!ids.length) return res.status(400).json({ error: 'Нет валидных' });
     await client.query('BEGIN');
-    const e = await client.query('SELECT id FROM profiles WHERE id = ANY($1)', [cleanIds]);
+    const e = await client.query('SELECT id FROM profiles WHERE id = ANY($1)', [ids]);
     const okIds = e.rows.map(r => r.id);
     if (!okIds.length) { await client.query('ROLLBACK'); return res.json({ ok: true, deleted: 0 }); }
     await client.query('DELETE FROM likes WHERE liker_id = ANY($1) OR target_id = ANY($1)', [okIds]);
@@ -988,18 +832,9 @@ app.post('/api/admin/ban', authAdmin, async (req, res) => {
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
-app.post('/api/admin/bans', authAdmin, async (req, res) => {
-  try { const r = await pool.query('SELECT * FROM bans ORDER BY id DESC LIMIT 500'); res.json(r.rows); }
-  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
-});
-app.post('/api/admin/unban', authAdmin, async (req, res) => {
-  try { await pool.query('DELETE FROM bans WHERE id=$1', [req.body.banId]); res.json({ ok: true }); }
-  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
-});
-app.get('/api/admin/log', authAdmin, async (req, res) => {
-  try { const r = await pool.query(`SELECT a.*, p.name AS user_name FROM audit_log a LEFT JOIN profiles p ON p.id=a.user_id ORDER BY a.created_at DESC LIMIT 200`); res.json(r.rows); }
-  catch (err) { res.status(500).json({ error: 'Ошибка' }); }
-});
+app.post('/api/admin/bans', authAdmin, async (req, res) => { try { const r = await pool.query('SELECT * FROM bans ORDER BY id DESC LIMIT 500'); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+app.post('/api/admin/unban', authAdmin, async (req, res) => { try { await pool.query('DELETE FROM bans WHERE id=$1', [req.body.banId]); res.json({ ok: true }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
+app.get('/api/admin/log', authAdmin, async (req, res) => { try { const r = await pool.query(`SELECT a.*, p.name AS user_name FROM audit_log a LEFT JOIN profiles p ON p.id=a.user_id ORDER BY a.created_at DESC LIMIT 200`); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 app.post('/api/admin/messages/dialogs', authAdmin, async (req, res) => {
   try {
     const r = await pool.query(`SELECT LEAST(sender_id, receiver_id) AS a, GREATEST(sender_id, receiver_id) AS b, COUNT(*)::int AS total, MAX(created_at) AS last_at FROM messages GROUP BY a, b ORDER BY last_at DESC LIMIT 200`);
