@@ -16,7 +16,7 @@ if (!process.env.DATABASE_URL) { console.error('❌ НЕТ DATABASE_URL!'); proc
 if (!process.env.JWT_SECRET) { console.error('❌ НЕТ JWT_SECRET!'); process.exit(1); }
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1488206783242187661';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '148823242001';
 const ADMIN_JWT_SECRET = JWT_SECRET + ':admin';
 
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
@@ -35,6 +35,7 @@ async function initDB() {
         card_color TEXT DEFAULT '', card_bg TEXT DEFAULT '', card_rgb INTEGER DEFAULT 0, card_pinned INTEGER DEFAULT 0,
         profile_banner TEXT DEFAULT '', profile_theme TEXT DEFAULT '', profile_color TEXT DEFAULT '',
         profile_font TEXT DEFAULT '', nick_style TEXT DEFAULT '', chat_bg TEXT DEFAULT '', music_url TEXT DEFAULT '',
+        profile_layout TEXT DEFAULT '',
         ref_code TEXT UNIQUE, invited_by INTEGER,
         last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP, bonus_streak INTEGER DEFAULT 0,
         last_bonus_date DATE, show_gifts INTEGER DEFAULT 0,
@@ -54,6 +55,16 @@ async function initDB() {
     await pool.query(`CREATE TABLE IF NOT EXISTS story_views (id SERIAL PRIMARY KEY, story_id INTEGER NOT NULL, user_id INTEGER NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(story_id, user_id));`);
     await pool.query(`CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, target_id INTEGER NOT NULL, author_id INTEGER NOT NULL, text TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await pool.query(`CREATE TABLE IF NOT EXISTS daily_bonus (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, date DATE NOT NULL, amount INTEGER NOT NULL, UNIQUE(user_id, date));`);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS shame_posts (
+        id SERIAL PRIMARY KEY,
+        author_id INTEGER NOT NULL,
+        photo TEXT DEFAULT '',
+        text TEXT NOT NULL,
+        target_name TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
 
     const migr = [
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS premium_until TIMESTAMP`,
@@ -64,6 +75,7 @@ async function initDB() {
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS nick_style TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS chat_bg TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS music_url TEXT DEFAULT ''`,
+      `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_layout TEXT DEFAULT ''`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS ref_code TEXT`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS invited_by INTEGER`,
       `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
@@ -86,6 +98,7 @@ async function initDB() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_inv_key ON inventory(user_id, item_type, item_key);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_likes_liker ON likes(liker_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_likes_target ON likes(target_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_shame ON shame_posts(created_at DESC);`);
     console.log('✅ Таблицы готовы');
   } catch (err) { console.error('❌ Ошибка initDB:', err.message); }
 }
@@ -208,7 +221,7 @@ async function checkBan(req, res, next) {
     next();
   } catch { next(); }
 }
-['/api/register','/api/login','/api/profiles','/api/like','/api/messages'].forEach(p => app.use(p, checkBan));
+['/api/register','/api/login','/api/profiles','/api/like','/api/messages','/api/shame'].forEach(p => app.use(p, checkBan));
 async function touchSeen(userId) { try { await pool.query('UPDATE profiles SET last_seen = CURRENT_TIMESTAMP WHERE id=$1', [userId]); } catch {} }
 
 function pickProfile(row) {
@@ -217,7 +230,7 @@ function pickProfile(row) {
     photo: row.photo, vide: row.vide, is_premium: row.is_premium, premium_until: row.premium_until,
     card_color: row.card_color, card_bg: row.card_bg, card_rgb: row.card_rgb, card_pinned: row.card_pinned,
     profile_banner: row.profile_banner, profile_theme: row.profile_theme, profile_color: row.profile_color,
-    profile_font: row.profile_font,
+    profile_font: row.profile_font, profile_layout: row.profile_layout,
     nick_style: row.nick_style, chat_bg: row.chat_bg, music_url: row.music_url,
     ref_code: row.ref_code, show_gifts: row.show_gifts, last_seen: row.last_seen, created_at: row.created_at };
 }
@@ -295,7 +308,7 @@ app.get('/api/profiles', async (req, res) => {
     const r = await pool.query(`
       SELECT id, name, age, bio, contact_type, contact_value, photo, is_premium,
              card_color, card_bg, card_rgb, card_pinned, profile_banner, profile_theme, profile_color, profile_font, nick_style,
-             last_seen, show_gifts, created_at,
+             profile_layout, last_seen, show_gifts, created_at,
              (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
       FROM profiles ORDER BY card_pinned DESC, created_at DESC
     `);
@@ -308,7 +321,7 @@ app.get('/api/profiles/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const r = await pool.query(`
       SELECT id, name, age, bio, contact_type, contact_value, photo, is_premium,
-             profile_banner, profile_theme, profile_color, profile_font, nick_style, music_url, last_seen, show_gifts, created_at,
+             profile_banner, profile_theme, profile_color, profile_font, profile_layout, nick_style, music_url, last_seen, show_gifts, created_at,
              (SELECT COUNT(*)::int FROM likes WHERE target_id = profiles.id) AS likes
       FROM profiles WHERE id=$1
     `, [id]);
@@ -357,6 +370,7 @@ app.delete('/api/profiles/:id', authUser, async (req, res) => {
     await pool.query('DELETE FROM messages WHERE sender_id=$1 OR receiver_id=$1', [req.userId]);
     await pool.query('DELETE FROM gifts WHERE sender_id=$1 OR receiver_id=$1', [req.userId]);
     await pool.query('DELETE FROM comments WHERE author_id=$1 OR target_id=$1', [req.userId]);
+    await pool.query('DELETE FROM shame_posts WHERE author_id=$1', [req.userId]);
     for (const t of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await pool.query(`DELETE FROM ${t} WHERE user_id=$1`, [req.userId]);
     await pool.query('DELETE FROM story_views WHERE user_id=$1', [req.userId]);
     await pool.query('DELETE FROM profiles WHERE id=$1', [req.userId]);
@@ -412,6 +426,34 @@ app.post('/api/profiles/:id/profile-font', authUser, async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
 });
 
+// === РАСКЛАДКА ПРОФИЛЯ ===
+app.post('/api/profiles/:id/profile-layout', authUser, async (req, res) => {
+  try {
+    if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
+    const layout = req.body.layout;
+    if (typeof layout !== 'object' || layout === null) return res.status(400).json({ error: 'Некорректный layout' });
+    const safeLayout = {
+      bannerHeight: Math.max(60, Math.min(300, parseInt(layout.bannerHeight) || 180)),
+      bannerPosition: ['top', 'center', 'bottom'].includes(layout.bannerPosition) ? layout.bannerPosition : 'center',
+      avatarSize: Math.max(60, Math.min(180, parseInt(layout.avatarSize) || 110)),
+      avatarPosition: ['left', 'center', 'right'].includes(layout.avatarPosition) ? layout.avatarPosition : 'center',
+      avatarBorderColor: /^#[0-9a-fA-F]{3,8}$/.test(layout.avatarBorderColor) ? layout.avatarBorderColor : '',
+      avatarBorderWidth: Math.max(0, Math.min(8, parseInt(layout.avatarBorderWidth) || 4)),
+      avatarGlow: !!layout.avatarGlow,
+      panelColor: /^#[0-9a-fA-F]{3,8}$/.test(layout.panelColor) ? layout.panelColor : '',
+      panelOpacity: Math.max(0, Math.min(100, parseInt(layout.panelOpacity) ?? 100)),
+      panelRadius: Math.max(0, Math.min(40, parseInt(layout.panelRadius) || 22)),
+      textAlign: ['left', 'center', 'right'].includes(layout.textAlign) ? layout.textAlign : 'center',
+      elementOrder: Array.isArray(layout.elementOrder)
+        ? layout.elementOrder.filter(x => ['bio','contact','music','stories','stats'].includes(x))
+        : ['bio','contact','music','stories','stats']
+    };
+    await pool.query('UPDATE profiles SET profile_layout=$1 WHERE id=$2', [JSON.stringify(safeLayout), req.userId]);
+    const r = await pool.query('SELECT * FROM profiles WHERE id=$1', [req.userId]);
+    res.json(pickProfile(r.rows[0]));
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
 app.post('/api/profiles/:id/toggle-gifts', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.userId) return res.status(403).json({ error: 'Только свой' });
@@ -438,25 +480,85 @@ app.get('/api/likes/:userId', async (req, res) => { try { const r = await pool.q
 app.get('/api/liked-by/:userId', async (req, res) => { try { const r = await pool.query(`SELECT p.id, p.name, p.age, p.bio, p.photo, p.contact_type, p.contact_value FROM profiles p JOIN likes l ON l.liker_id=p.id WHERE l.target_id=$1 ORDER BY l.created_at DESC`, [parseInt(req.params.userId)]); res.json(r.rows); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 app.get('/api/mutual/:a/:b', async (req, res) => { try { const a = parseInt(req.params.a), b = parseInt(req.params.b); const r = await pool.query(`SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=$2 UNION SELECT 1 FROM likes WHERE liker_id=$2 AND target_id=$1`, [a, b]); res.json({ mutual: r.rows.length >= 2, any: r.rows.length >= 1 }); } catch (err) { res.status(500).json({ error: 'Ошибка' }); } });
 
-// === СПИСОК ТЕХ, КОМУ МОЖНО НАПИСАТЬ ===
+// === ДОСКА ПОЗОРА ===
+app.get('/api/shame', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT s.*, p.name AS author_name, p.photo AS author_photo, p.profile_font, p.nick_style
+      FROM shame_posts s JOIN profiles p ON p.id = s.author_id
+      ORDER BY s.created_at DESC LIMIT 100
+    `);
+    res.json(r.rows);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.post('/api/shame', authUser, upload.single('photo'), async (req, res) => {
+  try {
+    const text = sanitize(req.body.text, 500);
+    const target_name = sanitize(req.body.targetName, 60);
+    if (!text || text.length < 3) return res.status(400).json({ error: 'Напиши хотя бы пару слов' });
+    const photo = req.body.photoUrl || (req.file ? `/uploads/${req.file.filename}` : '');
+    const r = await pool.query(`
+      INSERT INTO shame_posts (author_id, photo, text, target_name)
+      VALUES ($1,$2,$3,$4) RETURNING *
+    `, [req.userId, photo, text, target_name]);
+    await audit(req.userId, 'shame_post', `id=${r.rows[0].id}`, req);
+    res.json(r.rows[0]);
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.delete('/api/shame/:id', authUser, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const r = await pool.query('SELECT * FROM shame_posts WHERE id=$1', [id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Нет' });
+    if (r.rows[0].author_id !== req.userId) return res.status(403).json({ error: 'Не твой пост' });
+    await pool.query('DELETE FROM shame_posts WHERE id=$1', [id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.post('/api/shame/:id/report', authUser, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await audit(req.userId, 'shame_report', `post=${id}`, req);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.post('/api/admin/shame/delete/:id', authAdmin, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await pool.query('DELETE FROM shame_posts WHERE id=$1', [id]);
+    await audit(null, 'admin_shame_delete', `post=${id}`, req);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+});
+
+app.post('/api/admin/shame/list', authAdmin, async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT s.*, p.name AS author_name FROM shame_posts s
+      JOIN profiles p ON p.id = s.author_id
+      ORDER BY s.created_at DESC LIMIT 200
+    `);
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ error: 'Ошибка' }); }
+});
+
+// === СООБЩЕНИЯ ===
 app.get('/api/messages/writable/:userId', authUser, async (req, res) => {
   try {
     if (parseInt(req.params.userId) !== req.userId) return res.status(403).json({ error: 'Только свои' });
     const me = req.userId;
-    // все, у кого есть хотя бы один лайк в любую сторону (кроме себя), и с кем ещё не было сообщений
     const r = await pool.query(`
       SELECT DISTINCT p.id, p.name, p.age, p.photo, p.profile_theme, p.profile_font, p.nick_style, p.last_seen
       FROM profiles p
       WHERE p.id <> $1
-        AND (
-          EXISTS (SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=p.id)
-          OR EXISTS (SELECT 1 FROM likes WHERE liker_id=p.id AND target_id=$1)
-        )
-        AND NOT EXISTS (
-          SELECT 1 FROM messages WHERE (sender_id=$1 AND receiver_id=p.id) OR (sender_id=p.id AND receiver_id=$1)
-        )
-      ORDER BY p.last_seen DESC NULLS LAST
-      LIMIT 100
+        AND (EXISTS (SELECT 1 FROM likes WHERE liker_id=$1 AND target_id=p.id)
+          OR EXISTS (SELECT 1 FROM likes WHERE liker_id=p.id AND target_id=$1))
+        AND NOT EXISTS (SELECT 1 FROM messages WHERE (sender_id=$1 AND receiver_id=p.id) OR (sender_id=p.id AND receiver_id=$1))
+      ORDER BY p.last_seen DESC NULLS LAST LIMIT 100
     `, [me]);
     res.json(r.rows);
   } catch (err) { console.error(err); res.status(500).json({ error: 'Ошибка' }); }
@@ -701,7 +803,6 @@ app.delete('/api/comments/:id', authUser, async (req, res) => {
 app.get('/api/shop', (req, res) => {
   res.json({ banners: BANNERS, nicks: NICKS, colors: COLORS, themes: PROFILE_THEMES, chatbgs: CHAT_BGS });
 });
-
 app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
   const client = await pool.connect();
   try {
@@ -720,7 +821,7 @@ app.post('/api/shop/buy', authUser, actionLimiter, async (req, res) => {
     await client.query('INSERT INTO inventory (user_id, item_type, item_key) VALUES ($1,$2,$3)', [req.userId, itemType, String(key)]);
     await client.query('COMMIT');
     const nb = await pool.query('SELECT vide FROM profiles WHERE id=$1', [req.userId]);
-    res.json({ ok: true, balance: nb.rows[0].vide });
+        res.json({ ok: true, balance: nb.rows[0].vide });
   } catch (err) { await client.query('ROLLBACK').catch(()=>{}); console.error(err); res.status(500).json({ error: 'Ошибка: ' + err.message }); }
   finally { client.release(); }
 });
@@ -810,6 +911,7 @@ app.post('/api/admin/delete-user', authAdmin, async (req, res) => {
     await pool.query('DELETE FROM messages WHERE sender_id=$1 OR receiver_id=$1', [userId]);
     await pool.query('DELETE FROM gifts WHERE sender_id=$1 OR receiver_id=$1', [userId]);
     await pool.query('DELETE FROM comments WHERE author_id=$1 OR target_id=$1', [userId]);
+    await pool.query('DELETE FROM shame_posts WHERE author_id=$1', [userId]);
     for (const t of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await pool.query(`DELETE FROM ${t} WHERE user_id=$1`, [userId]);
     await pool.query('DELETE FROM story_views WHERE user_id=$1', [userId]);
     await pool.query('DELETE FROM profiles WHERE id=$1', [userId]);
@@ -831,6 +933,7 @@ app.post('/api/admin/purge-nopass', authAdmin, async (req, res) => {
     await client.query('DELETE FROM messages WHERE sender_id = ANY($1) OR receiver_id = ANY($1)', [ids]);
     await client.query('DELETE FROM gifts WHERE sender_id = ANY($1) OR receiver_id = ANY($1)', [ids]);
     await client.query('DELETE FROM comments WHERE author_id = ANY($1) OR target_id = ANY($1)', [ids]);
+    await client.query('DELETE FROM shame_posts WHERE author_id = ANY($1)', [ids]);
     for (const tb of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await client.query(`DELETE FROM ${tb} WHERE user_id = ANY($1)`, [ids]);
     await client.query('DELETE FROM story_views WHERE user_id = ANY($1)', [ids]);
     await client.query('DELETE FROM audit_log WHERE user_id = ANY($1)', [ids]);
@@ -853,6 +956,7 @@ app.post('/api/admin/purge-by-ids', authAdmin, async (req, res) => {
     await client.query('DELETE FROM messages WHERE sender_id = ANY($1) OR receiver_id = ANY($1)', [okIds]);
     await client.query('DELETE FROM gifts WHERE sender_id = ANY($1) OR receiver_id = ANY($1)', [okIds]);
     await client.query('DELETE FROM comments WHERE author_id = ANY($1) OR target_id = ANY($1)', [okIds]);
+    await client.query('DELETE FROM shame_posts WHERE author_id = ANY($1)', [okIds]);
     for (const tb of ['wheel_spins','inventory','market','notifications','stories','daily_bonus']) await client.query(`DELETE FROM ${tb} WHERE user_id = ANY($1)`, [okIds]);
     await client.query('DELETE FROM story_views WHERE user_id = ANY($1)', [okIds]);
     await client.query('DELETE FROM audit_log WHERE user_id = ANY($1)', [okIds]);
